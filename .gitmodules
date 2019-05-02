@@ -1,0 +1,4 @@
+[submodule "LibAPR"]
+	path = LibAPR
+	url = https://github.com/AdaptiveParticles/LibAPR.git
+	branch = master
