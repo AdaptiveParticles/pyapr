@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from setuptools import setup, find_packages
 import subprocess
 from cmake_setuptools import *
@@ -8,6 +8,10 @@ class git_clone_external(CMakeBuildExt):
     def run(self):
         subprocess.check_call(['git', 'clone', 'https://github.com/pybind/pybind11.git'])
         subprocess.check_call(['git', 'clone', '--recursive', 'https://github.com/AdaptiveParticles/LibAPR.git'])
+
+        pyv = '{}.{}'.format(sys.version_info[0], sys.version_info[1])
+        os.environ['CMAKE_COMMON_VARIABLES'] = '-DPYBIND11_PYTHON_VERSION={}'.format(pyv)
+
         CMakeBuildExt.run(self)
 
 
@@ -15,7 +19,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name='pylibapr21',
+    name='pylibaprlol2',
     version='0.1.1',
     ext_modules=[CMakeExtension('pyApr')],
     cmdclass={
