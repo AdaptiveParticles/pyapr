@@ -21,7 +21,7 @@ set(APR_USE_CUDA OFF CACHE BOOL "" FORCE)
 set(APR_BUILD_PYTHON_WRAPPERS OFF CACHE BOOL "" FORCE)
 set(APR_USE_LIBTIFF ON CACHE BOOL "" FORCE)
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/LibAPR)
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/LibAPR ${HDF5_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${TIFF_INCLUDE_DIR})
 
 add_subdirectory("LibAPR")
 include_directories(LibAPR/src)
@@ -30,7 +30,7 @@ include_directories(LibAPR/src)
 ##------------- Python wrappers -------------##
 message(STATUS "PyAPR: Building PYTHON wrappers")
 
-set(PYBIND11_PYTHON_VERSION 2.7)
+set(PYBIND11_PYTHON_VERSION 3.6)
 add_subdirectory("pybind11")
 
 set(APR_PYTHON_MODULE_NAME pyApr)
