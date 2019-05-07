@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(PyLibAPR)
+project(PyLibAPR DESCRIPTION "Python wrappers for LibAPR")
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -30,7 +30,6 @@ include_directories(LibAPR/src)
 ##------------- Python wrappers -------------##
 message(STATUS "PyAPR: Building PYTHON wrappers")
 
-set(PYBIND11_PYTHON_VERSION 3.6)
 add_subdirectory("pybind11")
 
 set(APR_PYTHON_MODULE_NAME pyApr)
