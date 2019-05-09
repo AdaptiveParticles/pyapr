@@ -8,9 +8,11 @@
 #include <pybind11/numpy.h>
 
 #include "ConfigAPR.h"
+#include "data_structures/APR/APR.hpp"
 
 #include "PyPixelData.hpp"
 #include "PyAPR.hpp"
+#include "APRNetOps.hpp"
 
 
 namespace py = pybind11;
@@ -64,5 +66,18 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
             .def_readwrite("input_image_name", &APRParameters::input_image_name)
             .def_readwrite("input_dir", &APRParameters::input_dir)
             .def_readwrite("mask_file", &APRParameters::mask_file);
+
+
+    // wrap the APRNet operations
+    py::class_<APRNetOps>(m, "APRNetOps")
+            .def(py::init())
+            .def("convolve", &APRNetOps::convolve, "nxn convolution with thread parallelism over the batch")
+            .def("convolve_backward", &APRNetOps::convolve_backward, "backpropagation through convolve")
+            .def("convolve3x3", &APRNetOps::convolve3x3, "3x3 convolution with thread parallelism over the batch")
+            .def("convolve3x3_backward", &APRNetOps::convolve3x3_backward, "backpropagation through convolve1x1")
+            .def("convolve1x1", &APRNetOps::convolve1x1, "1x1 convolution with thread parallelism over the batch")
+            .def("convolve1x1_backward", &APRNetOps::convolve1x1_backward, "backpropagation through convolve1x1")
+            .def("max_pool", &APRNetOps::max_pool, "max pooling of (current) max level particles")
+            .def("max_pool_backward", &APRNetOps::max_pool_backward, "backpropagation through max_pool");
 
 }

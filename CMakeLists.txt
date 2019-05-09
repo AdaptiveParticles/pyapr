@@ -3,6 +3,10 @@ project(PyLibAPR DESCRIPTION "Python wrappers for LibAPR")
 
 set(CMAKE_CXX_STANDARD 14)
 
+
+# APR build options:
+option(PYAPR_USE_OPENMP "Use OpenMP for PyAPR functionality" ON)
+
 ##------------- Required libraries -------------##
 find_package(HDF5 REQUIRED)
 find_package(ZLIB REQUIRED)
@@ -20,12 +24,22 @@ set(APR_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(APR_USE_CUDA OFF CACHE BOOL "" FORCE)
 set(APR_BUILD_PYTHON_WRAPPERS OFF CACHE BOOL "" FORCE)
 set(APR_USE_LIBTIFF ON CACHE BOOL "" FORCE)
+set(APR_USE_OPENMP ON CACHE BOOL "" FORCE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/LibAPR ${HDF5_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${TIFF_INCLUDE_DIR})
 
 add_subdirectory("LibAPR")
 include_directories(LibAPR/src)
 
+
+##------------- Handle OpenMP -------------##
+find_package(OpenMP)
+if(NOT OPENMP_FOUND OR NOT PYAPR_USE_OPENMP)
+    message(WARNING "OpenMP support not found or disabled with current compiler. While PyAPR can compile like this, performance might not be optimal. Please see README.md for instructions.")
+else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPYAPR_HAVE_OPENMP ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPYAPR_HAVE_OPENMP ${OpenMP_CXX_FLAGS}")
+endif()
 
 ##------------- Python wrappers -------------##
 message(STATUS "PyAPR: Building PYTHON wrappers")

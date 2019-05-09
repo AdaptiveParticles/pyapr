@@ -2,8 +2,8 @@
 // Created by Joel Jonsson on 29.06.18.
 //
 
-#ifndef LIBAPR_PYPIXELDATA_HPP
-#define LIBAPR_PYPIXELDATA_HPP
+#ifndef PYLIBAPR_PYPIXELDATA_HPP
+#define PYLIBAPR_PYPIXELDATA_HPP
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -73,4 +73,4 @@ void AddPyPixelData(pybind11::module &m, const std::string &aTypeString) {
             });
 }
 
-#endif //LIBAPR_PYPIXELDATA_HPP
+#endif //PYLIBAPR_PYPIXELDATA_HPP
