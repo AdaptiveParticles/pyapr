@@ -10,7 +10,7 @@ from torch.autograd import Function
 from torch.nn import init
 import torch
 
-import pyApr
+import _pyaprwrapper
 
 
 def save_checkpoint(state, is_best, filedir, filename):
@@ -82,7 +82,7 @@ class APRConvFunction(Function):
 
         output = np.zeros(shape=(intensities.shape[0], weights.shape[0], intensities.shape[2]), dtype=np.float32)
 
-        dpo = pyApr.DataParallelOps()
+        dpo = _pyaprwrapper.DataParallelOps()
 
         dpo.convolve(aprs, intensities.data.numpy(), weights.data.numpy(), bias.data.numpy(), output, dlevel)
 
@@ -100,7 +100,7 @@ class APRConvFunction(Function):
         d_weights = np.empty(weights.shape, dtype=np.float32)
         d_bias = np.empty(bias.shape, dtype=np.float32)
 
-        dpo = pyApr.DataParallelOps()
+        dpo = _pyaprwrapper.DataParallelOps()
 
         dpo.convolve_backward(aprs, grad_output.data.numpy(), input_features.data.numpy(), weights.data.numpy(),
                               d_input, d_weights, d_bias, dlevel)
@@ -143,7 +143,7 @@ class APRConv3x3Function(Function):
 
         output = np.zeros(shape=(intensities.shape[0], weights.shape[0], intensities.shape[2]), dtype=np.float32)
 
-        dpo = pyApr.DataParallelOps()
+        dpo = _pyaprwrapper.DataParallelOps()
 
         dpo.convolve3x3(aprs, intensities.data.numpy(), weights.data.numpy(), bias.data.numpy(), output, dlevel)
 
@@ -161,7 +161,7 @@ class APRConv3x3Function(Function):
         d_weights = np.empty(weights.shape, dtype=np.float32)
         d_bias = np.empty(bias.shape, dtype=np.float32)
 
-        dpo = pyApr.DataParallelOps()
+        dpo = _pyaprwrapper.DataParallelOps()
 
         dpo.convolve3x3_backward(aprs, grad_output.data.numpy(), input_features.data.numpy(), weights.data.numpy(),
                                  d_input, d_weights, d_bias, dlevel)
@@ -206,7 +206,7 @@ class APRConv1x1Function(Function):
 
         output = np.zeros(shape=(intensities.shape[0], weights.shape[0], intensities.shape[2]), dtype=np.float32)
 
-        dpo = pyApr.DataParallelOps()
+        dpo = _pyaprwrapper.DataParallelOps()
 
         dpo.convolve1x1(aprs, intensities.data.numpy(), weights.data.numpy(), bias.data.numpy(), output, dlevel)
 
@@ -224,7 +224,7 @@ class APRConv1x1Function(Function):
         d_weights = np.empty(weights.shape, dtype=np.float32)
         d_bias = np.empty(bias.shape, dtype=np.float32)
 
-        dpo = pyApr.DataParallelOps()
+        dpo = _pyaprwrapper.DataParallelOps()
 
         dpo.convolve1x1_backward(aprs, grad_output.data.numpy(), input_features.data.numpy(), weights.data.numpy(),
                                  d_input, d_weights, d_bias, dlevel)
@@ -272,7 +272,7 @@ class APRMaxPoolFunction(Function):
         output = -np.finfo(np.float32).max * np.ones(shape=(intensities.shape[0], intensities.shape[1], npartmax), dtype=np.float32)
         index_arr = -np.ones(output.shape, dtype=np.int64)
 
-        dpo = pyApr.DataParallelOps()
+        dpo = _pyaprwrapper.DataParallelOps()
         dpo.max_pool(apr, intensities.data.numpy(), output, dlevel, index_arr)
 
         for i in range(level_deltas.shape[0]):
@@ -288,7 +288,7 @@ class APRMaxPoolFunction(Function):
         max_indices = ctx.max_indices
         grad_input = np.zeros(ctx.input_shape, dtype=np.float32)
 
-        dpo = pyApr.DataParallelOps()
+        dpo = _pyaprwrapper.DataParallelOps()
 
         dpo.max_pool_backward(grad_output.data.numpy(), grad_input, max_indices)
 
