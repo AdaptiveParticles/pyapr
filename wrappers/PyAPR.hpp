@@ -399,6 +399,15 @@ public:
     }
 
 
+    uint64_t min_level() {
+        return apr.level_min();
+    }
+
+    uint64_t max_level() {
+        return apr.level_max();
+    }
+
+
 };
 
 // -------- Templated wrapper -------------------------------------------------
@@ -421,7 +430,9 @@ void AddPyAPR(pybind11::module &m, const std::string &aTypeString) {
             .def("nparticles", &AprType::total_num_particles, "return number of particles")
             .def("number_particles_after_maxpool", &AprType::compute_particles_after_maxpool, "computes the number of particles in the output of max_pool")
             .def("sample_channels", &AprType::sample_multichannel_image, "samples each channel of the input image separately")
-            .def("get_mask", &AprType::get_mask, "compute mask for a given level (1 where particles exist, 0 elsewhere)");
+            .def("get_mask", &AprType::get_mask, "compute mask for a given level (1 where particles exist, 0 elsewhere)")
+            .def("min_level", &AprType::min_level, "return the minimum resolution level")
+            .def("max_level", &AprType::max_level, "return the maximum resolution level");
 }
 
 #endif //PYLIBAPR_PYAPR_HPP

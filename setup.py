@@ -33,13 +33,19 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name='pylibaprlol2',
+    name='PyLibAPR',
     version='0.1.1',
-    ext_modules=[CMakeExtension('pyApr')],
+    ext_modules=[CMakeExtension('_pyaprwrapper')],
     cmdclass={
         'build_ext': git_clone_external,
     },
     setup_requires=['cmake-setuptools'],
+    packages=find_packages(),
+    install_requires=[
+        'numpy',
+        'torch',
+        'torchvision'
+    ],
     description='Python wrappers for LibAPR',
     long_description=long_description,
     url='https://github.com/joeljonsson/PyLibAPR',
@@ -52,6 +58,6 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3'
     ],
-    keywords='LibAPR, PyLibAPR',
+    keywords='LibAPR, PyLibAPR, APRNet',
     zip_safe=False
 )

@@ -46,7 +46,7 @@ message(STATUS "PyAPR: Building PYTHON wrappers")
 
 add_subdirectory("pybind11")
 
-set(APR_PYTHON_MODULE_NAME pyApr)
+set(APR_PYTHON_MODULE_NAME _pyaprwrapper)
 add_definitions(-DAPR_PYTHON_MODULE_NAME=${APR_PYTHON_MODULE_NAME})
 add_library(${APR_PYTHON_MODULE_NAME} MODULE wrappers/pythonBind.cpp)
 target_include_directories(${APR_PYTHON_MODULE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/wrappers)
