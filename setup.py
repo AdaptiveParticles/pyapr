@@ -4,23 +4,32 @@ import subprocess
 from cmake_setuptools import *
 
 
+def check_submodules():
+    """ verify that the submodules are checked out and clean
+        use `git submodule update --init`; on failure
+    """
+    if not os.path.exists('.git'):
+        return
+    with open('.gitmodules') as f:
+        for l in f:
+            if 'path' in l:
+                p = l.split('=')[-1].strip()
+                if not os.path.exists(p):
+                    raise ValueError('Submodule %s missing' % p) #call git clone if this occurs???
+
+    proc = subprocess.Popen(['git', 'submodule', 'status'],
+                            stdout=subprocess.PIPE)
+    status, _ = proc.communicate()
+    status = status.decode("ascii", "replace")
+    for line in status.splitlines():
+        if line.startswith('-') or line.startswith('+'):
+            raise ValueError('Submodule not clean: %s' % line)
+
+
 class git_clone_external(CMakeBuildExt):
     def run(self):
 
-        tmp = False
-
-        if not os.path.isdir( os.path.join(os.getcwd(), 'pybind11') ):
-            subprocess.check_call(['git', 'clone', 'https://github.com/pybind/pybind11.git'])
-        else:
-            tmp = True
-
-        if not os.path.isdir( os.path.join(os.getcwd(), 'LibAPR') ):
-            subprocess.check_call(['git', 'clone', '--recursive', 'https://github.com/AdaptiveParticles/LibAPR.git'])
-        else:
-            tmp = True
-
-        if tmp:
-            subprocess.check_call(['git', 'submodule', 'update', '--init', '--recursive'])
+        check_submodules()
 
         #not sure if this works as intended
         pyv = '{}.{}'.format(sys.version_info[0], sys.version_info[1])

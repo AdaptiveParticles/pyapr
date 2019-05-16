@@ -67,7 +67,7 @@ public:
 #endif
         for(bn = 0; bn < batch_size; ++bn) {
 
-            PyAPR<float> *aPyAPR = apr_ptr[bn].cast<PyAPR<float> *>();
+            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
@@ -171,7 +171,7 @@ public:
             const size_t thread_id = 0;
 #endif
 
-            PyAPR<float> *aPyAPR = apr_ptr[bn].cast<PyAPR<float> *>();
+            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
@@ -303,7 +303,7 @@ public:
 #endif
         for(bn = 0; bn < batch_size; ++bn) {
 
-            PyAPR<float> *aPyAPR = apr_ptr[bn].cast<PyAPR<float> *>();
+            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
@@ -418,7 +418,7 @@ public:
 #else
             const size_t thread_id = 0;
 #endif
-            PyAPR<float> *aPyAPR = apr_ptr[bn].cast<PyAPR<float> *>();
+            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
@@ -546,7 +546,7 @@ public:
 #endif
         for(bn = 0; bn < batch_size; ++bn) {
 
-            PyAPR<float> *aPyAPR = apr_ptr[bn].cast<PyAPR<float> *>();
+            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
@@ -641,7 +641,7 @@ public:
 #else
             const size_t thread_id = 0;
 #endif
-            PyAPR<float> *aPyAPR = apr_ptr[bn].cast<PyAPR<float> *>();
+            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
@@ -744,7 +744,7 @@ public:
 #endif
         for(bn = 0; bn < batch_size; ++bn) {
 
-            PyAPR<float> *aPyAPR = apr_ptr[bn].cast<PyAPR<float> *>();
+            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());

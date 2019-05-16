@@ -8,6 +8,10 @@ class APRParameters:
     def __init__(self):
         self.pars = _pyaprwrapper.APRParameters()
 
+    def error_bound(self, val):
+
+        self.pars.rel_error = val
+
     def intensity_threshold(self, val):
 
         self.pars.Ip_th = val
@@ -23,6 +27,14 @@ class APRParameters:
     def sigma_threshold_max(self, val):
 
         self.pars.sigma_th_max = val
+
+    def smoothing(self, val):
+
+        self.pars.lmbda = val
+
+    def auto_parameters(self, val):
+
+        self.pars.auto_parameters = val
 
 
 # Prototype APR class
@@ -97,6 +109,10 @@ class APR:
             the minimum resolution level of the APR
         """
         return self.apr.min_level()
+
+    def get_apr_from_array(self, arr):
+
+        self.apr.get_apr_from_array(arr)
 
 
 # TODO: implement this?

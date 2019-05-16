@@ -19,5 +19,6 @@ viewer
 """
 
 from .data_containers import *
+from .io import *
 
 __all__ = ['data_containers', 'io', 'nn', 'viewer']

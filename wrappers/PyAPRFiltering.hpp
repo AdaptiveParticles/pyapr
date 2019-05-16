@@ -66,10 +66,7 @@ public:
             timer.start_timer("init temp vec");
 
             PixelData<float> temp_vec;
-            temp_vec.init(y_num_m,
-                          x_num_m,
-                          stencil_shape[2],
-                          0); //zero padded boundaries
+            temp_vec.initWithValue(y_num_m, x_num_m, stencil_shape[2], 0); //zero padded boundaries
 
             timer.stop_timer();
 
@@ -205,10 +202,7 @@ public:
             timer.start_timer("init temp vec");
 
             PixelData<float> temp_vec;
-            temp_vec.init(y_num_m,
-                          x_num_m,
-                          stencil_shape[2],
-                          0); //zero padded boundaries
+            temp_vec.initWithValue(y_num_m, x_num_m, stencil_shape[2], 0); //zero padded boundaries
 
             timer.stop_timer();
 
@@ -416,6 +410,7 @@ public:
                  apr_iterator.set_iterator_to_particle_next_particle()) {
 
                 temp_vec.mesh[apr_iterator.y() + stencil_half[0] + mesh_offset] = part_int[apr_iterator.global_index() + in_offset];//particleData.data[apr_iterator];
+
             }
         }
 
@@ -454,6 +449,7 @@ public:
 
                     temp_vec.at(treeIterator.y() + stencil_half[0], x + stencil_half[1],
                                 z % stencil_shape[2]) = tree_data[treeIterator];
+
                 }
             }
         }
@@ -504,10 +500,10 @@ public:
 
 
             PixelData<float> temp_vec;
-            temp_vec.init(y_num_m, x_num_m, stencil_shape[2], 0); //zero padded boundaries
+            temp_vec.initWithValue(y_num_m, x_num_m, stencil_shape[2], 0); //zero padded boundaries
 
             PixelData<float> temp_vec_di;
-            temp_vec_di.init(y_num_m, x_num_m, stencil_shape[2], 0);
+            temp_vec_di.initWithValue(y_num_m, x_num_m, stencil_shape[2], 0);
 
             /*
             for (int padd = 0; padd < stencil_half[2]; ++padd) {
@@ -652,10 +648,10 @@ public:
 
 
             PixelData<float> temp_vec;
-            temp_vec.init(y_num_m, x_num_m, stencil_shape[2], 0); //zero padded boundaries
+            temp_vec.initWithValue(y_num_m, x_num_m, stencil_shape[2], 0); //zero padded boundaries
 
             PixelData<float> temp_vec_di;
-            temp_vec_di.init(y_num_m, x_num_m, stencil_shape[2], 0);
+            temp_vec_di.initWithValue(y_num_m, x_num_m, stencil_shape[2], 0);
 
             //initial condition
             /*
@@ -965,10 +961,6 @@ public:
                                APRIterator &apr_iterator, APRTreeIterator &tree_iterator, uint64_t in_offset,
                                unsigned int current_max_level) {
 
-        APRTimer timer(false);
-
-        timer.start_timer("ds-init");
-
         if( current_max_level < apr.level_max() ) {
 
             tree_data.init(apr_tree.tree_access.global_index_by_level_and_zx_end[current_max_level].back());
@@ -984,8 +976,6 @@ public:
 
         //int z_d;
         int x_d;
-        timer.stop_timer();
-        timer.start_timer("ds-1l");
 
         //py::buffer_info input_buf = particle_data.request();
         //auto input_ptr = (float *) input_buf.ptr;
@@ -1067,9 +1057,6 @@ public:
             //}
         }
 
-        timer.stop_timer();
-        timer.start_timer("ds-2l");
-
         ///then do the rest of the tree where order matters
         for (unsigned int level = std::min(current_max_level, (unsigned int)tree_iterator.level_max()); level > tree_iterator.level_min(); --level) {
             //z_d = 0;
@@ -1119,7 +1106,6 @@ public:
             //}
             //}
         }
-        timer.stop_timer();
     }
 
 

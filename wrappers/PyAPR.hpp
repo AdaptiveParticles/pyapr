@@ -132,6 +132,9 @@ public:
         input_img.init_from_mesh(buf.shape[1], buf.shape[0], buf.shape[2], ptr); // may lead to memory issues
 
         apr.get_apr(input_img);
+
+        apr.apr_access.l_min = 2;
+        apr.apr_tree.init(apr);
     }
 
 
