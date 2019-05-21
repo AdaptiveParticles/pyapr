@@ -18,7 +18,6 @@ viewer
     a simple graphical user interface for visualizing results and exploring parameters
 """
 
-from .data_containers import *
-from .io import *
+from _pyaprwrapper import *
 
 __all__ = ['data_containers', 'io', 'nn', 'viewer']

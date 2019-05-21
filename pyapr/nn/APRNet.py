@@ -307,3 +307,16 @@ class APRMaxPool(nn.Module):
 
         return APRMaxPoolFunction.apply(input_features, apr, level_deltas)
 
+
+
+
+
+class Particles:
+
+    def sample_particles(self, apr, img):
+
+
+
+    def to_numpy(self):
+
+        return np.array(self.data, copy=False)

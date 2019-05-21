@@ -16,15 +16,17 @@
 
 //#include "ConfigAPR.h"
 #include "data_structures/APR/APR.hpp"
+#include "data_structures/APR/ParticleData.hpp"
 
 //#include "PyPixelData.hpp"
 #include "PyAPRFiltering.hpp"
-#include "PyAPR.hpp"
+#include "data_containers/PyAPR.hpp"
 
 #include <typeinfo>
 
 namespace py = pybind11;
 
+// TODO: no reason for this (or PyAPRFiltering) to be a class
 class APRNetOps {
 
     PyAPRFiltering filter_fns;
@@ -47,7 +49,7 @@ public:
         auto bias_ptr = (float *) bias_buf.ptr;
         auto output_ptr = (float *) output_buf.ptr;
         auto input_ptr = (float *) input_buf.ptr;
-        auto dlvl_ptr = (int32 *) dlvl_buf.ptr;
+        auto dlvl_ptr = (int32_t *) dlvl_buf.ptr;
 
         /// some important numbers implicit in array shapes
         const size_t out_channels = weights_buf.shape[0];
@@ -67,22 +69,22 @@ public:
 #endif
         for(bn = 0; bn < batch_size; ++bn) {
 
-            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
+            PyAPR* aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR*>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
 
             auto apr_iterator = aPyAPR->apr.iterator();
-            auto tree_iterator = aPyAPR->apr.apr_tree.tree_iterator();
+            auto tree_iterator = aPyAPR->apr.tree_iterator();
 
             for(in=0; in<in_channels; ++in) {
 
                 const uint64_t in_offset = bn * number_in_channels * nparticles + in * nparticles;
 
                 /**** initialize and fill the apr tree ****/
-                ExtraParticleData<float> tree_data;
+                ParticleData<float> tree_data;
 
-                filter_fns.fill_tree_mean_py_ptr(aPyAPR->apr, aPyAPR->apr.apr_tree, input_ptr, tree_data, apr_iterator,
+                filter_fns.fill_tree_mean_py_ptr(aPyAPR->apr, input_ptr, tree_data, apr_iterator,
                                                  tree_iterator, in_offset, current_max_level);
 
                 for (out = 0; out < out_channels; ++out) {
@@ -136,7 +138,7 @@ public:
         auto grad_weights_ptr = (float *) grad_weights_buf.ptr;
         auto grad_bias_ptr = (float *) grad_bias_buf.ptr;
         auto grad_output_ptr = (float *) grad_output_buf.ptr;
-        auto dlvl_ptr = (int32 *) dlvl_buf.ptr;
+        auto dlvl_ptr = (int32_t *) dlvl_buf.ptr;
 
         /// some important numbers implicit in array shapes
         const size_t out_channels = weights_buf.shape[0];
@@ -171,13 +173,13 @@ public:
             const size_t thread_id = 0;
 #endif
 
-            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
+            PyAPR* aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
 
             auto apr_iterator = aPyAPR->apr.iterator();
-            auto tree_iterator = aPyAPR->apr.apr_tree.tree_iterator();
+            auto tree_iterator = aPyAPR->apr.tree_iterator();
 
             for(in=0; in<in_channels; ++in) {
 
@@ -185,11 +187,11 @@ public:
 
                 /// initialize and fill the apr tree
 
-                ExtraParticleData<float> tree_data;
-                filter_fns.fill_tree_mean_py_ptr(aPyAPR->apr, aPyAPR->apr.apr_tree, input_ptr, tree_data,
+                ParticleData<float> tree_data;
+                filter_fns.fill_tree_mean_py_ptr(aPyAPR->apr, input_ptr, tree_data,
                                                  apr_iterator, tree_iterator, in_offset, current_max_level);
 
-                ExtraParticleData<float> grad_tree_temp;
+                ParticleData<float> grad_tree_temp;
                 grad_tree_temp.data.resize(tree_data.data.size(), 0.0f);
 
                 for (out = 0; out < out_channels; ++out) {
@@ -226,7 +228,7 @@ public:
                 }
 
                 /// push grad_tree_temp to grad_input
-                filter_fns.fill_tree_mean_py_backward_ptr(aPyAPR->apr, aPyAPR->apr.apr_tree, apr_iterator, tree_iterator,
+                filter_fns.fill_tree_mean_py_backward_ptr(aPyAPR->apr, apr_iterator, tree_iterator,
                                                           grad_input_ptr, grad_tree_temp, in_offset, current_max_level);
             }
 
@@ -279,7 +281,7 @@ public:
         auto bias_ptr = (float *) bias_buf.ptr;
         auto output_ptr = (float *) output_buf.ptr;
         auto input_ptr = (float *) input_buf.ptr;
-        auto dlvl_ptr = (int32 *) dlvl_buf.ptr;
+        auto dlvl_ptr = (int32_t *) dlvl_buf.ptr;
 
         /// some important numbers implicit in array shapes
         const size_t out_channels = weights_buf.shape[0];
@@ -303,13 +305,13 @@ public:
 #endif
         for(bn = 0; bn < batch_size; ++bn) {
 
-            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
+            PyAPR *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
 
             auto apr_iterator = aPyAPR->apr.iterator();
-            auto tree_iterator = aPyAPR->apr.apr_tree.tree_iterator();
+            auto tree_iterator = aPyAPR->apr.tree_iterator();
 
             for(in=0; in<in_channels; ++in) {
 
@@ -317,9 +319,9 @@ public:
 
                 /**** initialize and fill the apr tree ****/
 
-                ExtraParticleData<float> tree_data;
+                ParticleData<float> tree_data;
 
-                filter_fns.fill_tree_mean_py_ptr(aPyAPR->apr, aPyAPR->apr.apr_tree, input_ptr, tree_data, apr_iterator,
+                filter_fns.fill_tree_mean_py_ptr(aPyAPR->apr, input_ptr, tree_data, apr_iterator,
                                                  tree_iterator, in_offset, current_max_level);
 
                 for (out = 0; out < out_channels; ++out) {
@@ -380,7 +382,7 @@ public:
         auto grad_weights_ptr = (float *) grad_weights_buf.ptr;
         auto grad_bias_ptr = (float *) grad_bias_buf.ptr;
         auto grad_output_ptr = (float *) grad_output_buf.ptr;
-        auto dlvl_ptr = (int32 *) dlvl_buf.ptr;
+        auto dlvl_ptr = (int32_t *) dlvl_buf.ptr;
 
         /// some important numbers implicit in array shapes
         const size_t out_channels = weights_buf.shape[0];
@@ -418,13 +420,13 @@ public:
 #else
             const size_t thread_id = 0;
 #endif
-            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
+            PyAPR *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
 
             auto apr_iterator = aPyAPR->apr.iterator();
-            auto tree_iterator = aPyAPR->apr.apr_tree.tree_iterator();
+            auto tree_iterator = aPyAPR->apr.tree_iterator();
 
             for(in=0; in<in_channels; ++in) {
 
@@ -432,11 +434,11 @@ public:
 
                 /// initialize and fill the apr tree
 
-                ExtraParticleData<float> tree_data;
-                filter_fns.fill_tree_mean_py_ptr(aPyAPR->apr, aPyAPR->apr.apr_tree, input_ptr, tree_data,
+                ParticleData<float> tree_data;
+                filter_fns.fill_tree_mean_py_ptr(aPyAPR->apr, input_ptr, tree_data,
                                                  apr_iterator, tree_iterator, in_offset, current_max_level);
 
-                ExtraParticleData<float> grad_tree_temp;
+                ParticleData<float> grad_tree_temp;
                 grad_tree_temp.data.resize(tree_data.data.size(), 0.0f);
 
                 for (out = 0; out < out_channels; ++out) {
@@ -471,7 +473,7 @@ public:
                 }
 
                 /// push grad_tree_temp to grad_input
-                filter_fns.fill_tree_mean_py_backward_ptr(aPyAPR->apr, aPyAPR->apr.apr_tree, apr_iterator, tree_iterator,
+                filter_fns.fill_tree_mean_py_backward_ptr(aPyAPR->apr, apr_iterator, tree_iterator,
                                                           grad_input_ptr, grad_tree_temp, in_offset, current_max_level);
             }
 
@@ -522,7 +524,7 @@ public:
         auto bias_ptr = (float *) bias_buf.ptr;
         auto output_ptr = (float *) output_buf.ptr;
         auto input_ptr = (float *) input_buf.ptr;
-        auto dlvl_ptr = (int32 *) dlvl_buf.ptr;
+        auto dlvl_ptr = (int32_t *) dlvl_buf.ptr;
 
         /// some important numbers implicit in array shapes
         const size_t out_channels = weights_buf.shape[0];
@@ -546,13 +548,13 @@ public:
 #endif
         for(bn = 0; bn < batch_size; ++bn) {
 
-            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
+            PyAPR *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
 
             auto apr_iterator = aPyAPR->apr.iterator();
-            auto tree_iterator = aPyAPR->apr.apr_tree.tree_iterator();
+            auto tree_iterator = aPyAPR->apr.tree_iterator();
 
             std::vector<float> stencil_vec;
             stencil_vec.resize(nstencils);
@@ -603,7 +605,7 @@ public:
         auto grad_weights_ptr = (float *) grad_weights_buf.ptr;
         auto grad_bias_ptr = (float *) grad_bias_buf.ptr;
         auto grad_output_ptr = (float *) grad_output_buf.ptr;
-        auto dlvl_ptr = (int32 *) dlvl_buf.ptr;
+        auto dlvl_ptr = (int32_t *) dlvl_buf.ptr;
 
         /// some important numbers implicit in array shapes
         const size_t out_channels = weights_buf.shape[0];
@@ -641,13 +643,13 @@ public:
 #else
             const size_t thread_id = 0;
 #endif
-            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
+            PyAPR *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
 
             auto apr_iterator = aPyAPR->apr.iterator();
-            auto tree_iterator = aPyAPR->apr.apr_tree.tree_iterator();
+            auto tree_iterator = aPyAPR->apr.tree_iterator();
 
             for(in=0; in<in_channels; ++in) {
 
@@ -744,17 +746,17 @@ public:
 #endif
         for(bn = 0; bn < batch_size; ++bn) {
 
-            PyAPR<float> *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR<float> *>();
+            PyAPR *aPyAPR = apr_ptr[bn].attr("apr").cast<PyAPR *>();
 
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR->apr.level_max() - dlevel, aPyAPR->apr.level_min());
 
-            const int64_t tree_offset_in  = filter_fns.compute_tree_offset(aPyAPR->apr, current_max_level, false);
-            const int64_t tree_offset_out = filter_fns.compute_tree_offset(aPyAPR->apr, current_max_level-1, false);
-
             auto apr_iterator = aPyAPR->apr.iterator();
-            auto tree_iterator = aPyAPR->apr.apr_tree.tree_iterator();
-            auto parent_iterator = aPyAPR->apr.apr_tree.tree_iterator();
+            auto tree_iterator = aPyAPR->apr.tree_iterator();
+            auto parent_iterator = aPyAPR->apr.tree_iterator();
+
+            const int64_t tree_offset_in  = filter_fns.compute_tree_offset(apr_iterator, tree_iterator, current_max_level);
+            const int64_t tree_offset_out = filter_fns.compute_tree_offset(apr_iterator, tree_iterator, current_max_level-1);
 
             for (channel = 0; channel < number_channels; ++channel) {
 

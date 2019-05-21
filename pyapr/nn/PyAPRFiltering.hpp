@@ -12,9 +12,10 @@
 #include "data_structures/APR/APRTree.hpp"
 #include "data_structures/APR/APRTreeIterator.hpp"
 #include "data_structures/APR/APRIterator.hpp"
+#include "data_structures/APR/ParticleData.hpp"
 
-#include "PyAPR.hpp"
-#include "PyPixelData.hpp"
+#include "data_containers/PyAPR.hpp"
+#include "data_containers/PyPixelData.hpp"
 
 
 namespace py = pybind11;
@@ -29,11 +30,10 @@ public:
     //                              Forward convolution arbitrary filter size
     //*****************************************************************************************************************
 
-    template<typename ImageType>
-    void convolve_batchparallel(APR<ImageType> &apr, float *input_intensities,
+    void convolve_batchparallel(APR &apr, float *input_intensities,
                                 const std::vector<PixelData<float>> &stencil_vec, float bias, int out_channel,
                                 int in_channel, int current_max_level, const uint64_t in_offset,
-                                ExtraParticleData<float> &tree_data, APRIterator &apr_iterator,
+                                ParticleData<float> &tree_data, APRIterator &apr_iterator,
                                 APRTreeIterator &tree_iterator, const size_t number_in_channels,
                                 const uint64_t out_offset, float *output_ptr) {
 
@@ -58,9 +58,9 @@ public:
 
             const unsigned int z_num = apr_iterator.spatial_index_z_max(level);
 
-            const unsigned int y_num_m = (apr.apr_access.org_dims[0] > 1) ? apr_iterator.spatial_index_y_max(level) +
+            const unsigned int y_num_m = (apr.orginal_dimensions(0) > 1) ? apr_iterator.spatial_index_y_max(level) +
                                                                             stencil_shape[0] - 1 : 1;
-            const unsigned int x_num_m = (apr.apr_access.org_dims[1] > 1) ? apr_iterator.spatial_index_x_max(level) +
+            const unsigned int x_num_m = (apr.orginal_dimensions(1) > 1) ? apr_iterator.spatial_index_x_max(level) +
                                                                             stencil_shape[1] - 1 : 1;
 
             timer.start_timer("init temp vec");
@@ -130,7 +130,7 @@ public:
 
                     timer.start_timer("convolve tree particles");
 
-                    const int64_t tree_offset = compute_tree_offset(apr, level, false);
+                    const int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
                     for (x = 0; x < tree_iterator.spatial_index_x_max(level); ++x) {
                         for (tree_iterator.set_new_lzx(level, z, x);
@@ -164,11 +164,10 @@ public:
     //                              Forward convolution 3x3 filter
     //*****************************************************************************************************************
 
-    template<typename ImageType>
-    void convolve3x3_batchparallel(APR<ImageType> &apr, float *input_intensities,
+    void convolve3x3_batchparallel(APR &apr, float *input_intensities,
                                    const std::vector<PixelData<float>> &stencil_vec, float bias, int out_channel,
                                    int in_channel, int current_max_level, const uint64_t in_offset,
-                                   ExtraParticleData<float> &tree_data, APRIterator &apr_iterator,
+                                   ParticleData<float> &tree_data, APRIterator &apr_iterator,
                                    APRTreeIterator &tree_iterator, const size_t number_in_channels,
                                    const uint64_t out_offset, float *output_ptr) {
 
@@ -194,9 +193,9 @@ public:
 
             const int z_num = apr_iterator.spatial_index_z_max(level);
 
-            const int y_num_m = (apr.apr_access.org_dims[0] > 1) ? apr_iterator.spatial_index_y_max(level) +
+            const int y_num_m = (apr.orginal_dimensions(0) > 1) ? apr_iterator.spatial_index_y_max(level) +
                                                                    stencil_shape[0] - 1 : 1;
-            const int x_num_m = (apr.apr_access.org_dims[1] > 1) ? apr_iterator.spatial_index_x_max(level) +
+            const int x_num_m = (apr.orginal_dimensions(1) > 1) ? apr_iterator.spatial_index_x_max(level) +
                                                                    stencil_shape[1] - 1 : 1;
 
             timer.start_timer("init temp vec");
@@ -267,7 +266,7 @@ public:
 
                     timer.start_timer("convolve tree particles");
 
-                    const int64_t tree_offset = compute_tree_offset(apr, level, false);
+                    const int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
                     for (x = 0; x < tree_iterator.spatial_index_x_max(level); ++x) {
                         for (tree_iterator.set_new_lzx(level, z, x);
@@ -302,8 +301,7 @@ public:
     //                              Forward convolution 1x1 filter
     //*****************************************************************************************************************
 
-    template<typename ImageType>
-    void convolve1x1_batchparallel(APR<ImageType> &apr, float * input_ptr, const std::vector<float> &stencil_vec,
+    void convolve1x1_batchparallel(APR &apr, float * input_ptr, const std::vector<float> &stencil_vec,
                                    float bias, int out_channel, int in_channel, int current_max_level,
                                    const uint64_t in_offset, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
                                    const size_t number_in_channels, const uint64_t out_offset, float * output_ptr) {
@@ -344,7 +342,7 @@ public:
 
                     timer.start_timer("convolve 1x1 tree particles");
 
-                    const int64_t tree_offset = compute_tree_offset(apr, level, false);
+                    const int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
                     for (x = 0; x < tree_iterator.spatial_index_x_max(level); ++x) {
                         for (tree_iterator.set_new_lzx(level, z, x);
@@ -373,13 +371,12 @@ public:
     //                              Temporary isotropic patch reconstruction
     //*****************************************************************************************************************
 
-    template<typename ImageType>
     void update_dense_array_ptr(const uint64_t level,
                                 const uint64_t z,
-                                APR<ImageType> &apr,
+                                APR &apr,
                                 APRIterator &apr_iterator,
                                 APRTreeIterator &treeIterator,
-                                ExtraParticleData<float> &tree_data,
+                                ParticleData<float> &tree_data,
                                 PixelData<float> &temp_vec,
                                 float * part_int,
                                 const std::vector<int> &stencil_shape,
@@ -460,13 +457,12 @@ public:
     //                              Backward convolution arbitrary filter size
     //*****************************************************************************************************************
 
-    template<typename ImageType>
-    void convolve_batchparallel_backward(APR<ImageType> &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
+    void convolve_batchparallel_backward(APR &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
                                          float * input_ptr, const uint64_t in_offset, const uint64_t out_offset,
                                          const std::vector<PixelData<float>>& stencil_vec,
                                          float * grad_output_ptr, float * grad_input_ptr, std::vector<float> &temp_vec_db,
                                          std::vector<float> &temp_vec_dw, const uint64_t grad_weight_offset, const size_t db_offset,
-                                         ExtraParticleData<float> &grad_tree_temp, ExtraParticleData<float> &tree_data,
+                                         ParticleData<float> &grad_tree_temp, ParticleData<float> &tree_data,
                                          const int out_channel, const int in_channel, const unsigned int current_max_level) {
 
         int stencil_counter = 0;
@@ -493,9 +489,9 @@ public:
 
             const int z_num = 1; //apr_iterator.spatial_index_z_max(level);
 
-            const int y_num_m = (apr.apr_access.org_dims[0] > 1) ? apr_iterator.spatial_index_y_max(level) +
+            const int y_num_m = (apr.orginal_dimensions(0) > 1) ? apr_iterator.spatial_index_y_max(level) +
                                                                    stencil_shape[0] - 1 : 1;
-            const int x_num_m = (apr.apr_access.org_dims[1] > 1) ? apr_iterator.spatial_index_x_max(level) +
+            const int x_num_m = (apr.orginal_dimensions(1) > 1) ? apr_iterator.spatial_index_x_max(level) +
                                                                    stencil_shape[1] - 1 : 1;
 
 
@@ -563,7 +559,7 @@ public:
                 /// if there are downsampled values, we need to use the tree iterator for those outputs
                 if(level == current_max_level && current_max_level < apr.level_max()) {
 
-                    int64_t tree_offset = compute_tree_offset(apr, level, false);
+                    int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
                     for(x = 0; x<tree_iterator.spatial_index_x_max(level); ++x) {
                         for (tree_iterator.set_new_lzx(level, z, x);
@@ -613,13 +609,12 @@ public:
     //                              Backward convolution 3x3 filter
     //*****************************************************************************************************************
 
-    template<typename ImageType>
-    void convolve3x3_batchparallel_backward(APR<ImageType> &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
+    void convolve3x3_batchparallel_backward(APR &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
                                             float * input_ptr, const uint64_t in_offset, const uint64_t out_offset,
                                             const std::vector<PixelData<float>>& stencil_vec,
                                             float * grad_output_ptr, float * grad_input_ptr, std::vector<float> &temp_vec_db,
                                             std::vector<float> &temp_vec_dw, const uint64_t grad_weight_offset, const size_t db_offset,
-                                            ExtraParticleData<float> &grad_tree_temp, ExtraParticleData<float> &tree_data,
+                                            ParticleData<float> &grad_tree_temp, ParticleData<float> &tree_data,
                                             const int out_channel, const int in_channel, const unsigned int current_max_level) {
 
         int stencil_counter = 0;
@@ -641,9 +636,9 @@ public:
 
             const int z_num = 1; //apr_iterator.spatial_index_z_max(level);
 
-            const int y_num_m = (apr.apr_access.org_dims[0] > 1) ? apr_iterator.spatial_index_y_max(level) +
+            const int y_num_m = (apr.orginal_dimensions(0) > 1) ? apr_iterator.spatial_index_y_max(level) +
                                                                    stencil_shape[0] - 1 : 1;
-            const int x_num_m = (apr.apr_access.org_dims[1] > 1) ? apr_iterator.spatial_index_x_max(level) +
+            const int x_num_m = (apr.orginal_dimensions(1) > 1) ? apr_iterator.spatial_index_x_max(level) +
                                                                    stencil_shape[1] - 1 : 1;
 
 
@@ -733,7 +728,7 @@ public:
                 /// if there are downsampled values, we need to use the tree iterator for those outputs
                 if(level == current_max_level && current_max_level < apr.level_max()) {
 
-                    int64_t tree_offset = compute_tree_offset(apr, level, false);
+                    int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
                     for(x = 0; x<tree_iterator.spatial_index_x_max(level); ++x) {
                         for (tree_iterator.set_new_lzx(level, z, x);
@@ -800,8 +795,7 @@ public:
     //                              Backward convolution 1x1 filter
     //*****************************************************************************************************************
 
-    template<typename ImageType>
-    void convolve1x1_batchparallel_backward(APR<ImageType> &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
+    void convolve1x1_batchparallel_backward(APR &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
                                             float * input_ptr, const uint64_t in_offset, const uint64_t out_offset,
                                             const std::vector<float>& stencil_vec, float * grad_output_ptr, float * grad_input_ptr,
                                             std::vector<float> &temp_vec_db, std::vector<float> &temp_vec_dw,
@@ -838,7 +832,7 @@ public:
                 /// if there are downsampled values, we need to use the tree iterator for those outputs
                 if(level == current_max_level && current_max_level < apr.level_max()) {
 
-                    const int64_t tree_offset = compute_tree_offset(apr, level, false);
+                    const int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
                     for(x = 0; x < tree_iterator.spatial_index_x_max(level); ++x) {
                         for (tree_iterator.set_new_lzx(level, z, x);
@@ -873,13 +867,12 @@ public:
     //                              Backward temporary isotropic patch reconstruction
     //*****************************************************************************************************************
 
-    template<typename ImageType>
     void update_dense_array_ptr_backward(const uint64_t level,
                                          const uint64_t z,
-                                         APR<ImageType> &apr,
+                                         APR &apr,
                                          APRIterator &apr_iterator,
                                          APRTreeIterator &treeIterator,
-                                         ExtraParticleData<float> &grad_tree_data,
+                                         ParticleData<float> &grad_tree_data,
                                          PixelData<float> &temp_vec_di,
                                          float * grad_input_ptr,
                                          const std::vector<int> &stencil_shape,
@@ -956,23 +949,22 @@ public:
     //                              Fill APRTree by average-downsampling APR particles
     //*****************************************************************************************************************
 
-    template<typename T,typename U>
-    void fill_tree_mean_py_ptr(APR<T>& apr, APRTree<T>& apr_tree, float * input_ptr, ExtraParticleData<U>& tree_data,
+    template<typename U>
+    void fill_tree_mean_py_ptr(APR& apr, float * input_ptr, ParticleData<U>& tree_data,
                                APRIterator &apr_iterator, APRTreeIterator &tree_iterator, uint64_t in_offset,
                                unsigned int current_max_level) {
 
         if( current_max_level < apr.level_max() ) {
 
-            tree_data.init(apr_tree.tree_access.global_index_by_level_and_zx_end[current_max_level].back());
+            //tree_data.init(apr_tree.tree_access.global_index_by_level_and_zx_end[current_max_level].back());
+            tree_data.init(tree_iterator.particles_level_end(current_max_level));
 
         } else {
 
-            tree_data.init(apr_tree.total_number_parent_cells());
+            tree_data.init(apr.total_number_parent_cells());
         }
 
-        //auto tree_iterator = apr_tree.tree_iterator();
-        auto parent_iterator = apr_tree.tree_iterator();
-        //auto apr_iterator = apr.iterator();
+        auto parent_iterator = apr.tree_iterator();
 
         //int z_d;
         int x_d;
@@ -986,7 +978,7 @@ public:
             int z=0;
             int x;
 
-            const int64_t tree_offset_in  = compute_tree_offset(apr, current_max_level, false);
+            const int64_t tree_offset_in  = compute_tree_offset(apr_iterator, tree_iterator, current_max_level);
 
             //for (z = 0; z < treeIterator.spatial_index_z_max(current_max_level); z++) {
             for (x = 0; x < tree_iterator.spatial_index_x_max(current_max_level); ++x) {
@@ -1113,15 +1105,15 @@ public:
     //                              Backward fill APRTree (push APRTree gradient values to APR particles)
     //*****************************************************************************************************************
 
-    template<typename T,typename U>
-    void fill_tree_mean_py_backward_ptr(APR<T>& apr, APRTree<T>& apr_tree, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
-                                        float * grad_input_ptr, ExtraParticleData<U> &grad_tree_temp, uint64_t in_offset,
+    template<typename U>
+    void fill_tree_mean_py_backward_ptr(APR& apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
+                                        float * grad_input_ptr, ParticleData<U> &grad_tree_temp, uint64_t in_offset,
                                         unsigned int current_max_level) {
 
         APRTimer timer(false);
         APRTimer t2(false);
 
-        auto parent_iterator = apr_tree.tree_iterator();
+        auto parent_iterator = apr.tree_iterator();
 
         //int z_d;
         int x_d;
@@ -1261,7 +1253,7 @@ public:
             int z=0;
             int x;
 
-            int64_t tree_offset_in  = compute_tree_offset(apr, current_max_level, false);
+            int64_t tree_offset_in  = compute_tree_offset(apr_iterator, tree_iterator, current_max_level);
 
             //for (z = 0; z < treeIterator.spatial_index_z_max(current_max_level); z++) {
             t2.start_timer("fill tree backward, third loop");
@@ -1289,8 +1281,7 @@ public:
     //                              Forward 2x2 maxpooling
     //*****************************************************************************************************************
 
-    template<typename ImageType>
-    void max_pool_batchparallel(APR<ImageType> &apr, float * input_ptr, float * output_ptr, int64_t * idx_ptr,
+    void max_pool_batchparallel(APR &apr, float * input_ptr, float * output_ptr, int64_t * idx_ptr,
                                 const uint64_t in_offset, const uint64_t out_offset, const int64_t tree_offset_in,
                                 const int64_t tree_offset_out, APRIterator &apr_iterator, APRTreeIterator &treeIterator,
                                 APRTreeIterator &parentIterator, const unsigned int current_max_level) {
@@ -1378,22 +1369,21 @@ public:
     //                              Compute APRTree index offset
     //*****************************************************************************************************************
 
-    template<typename ImageType>
-    int64_t compute_tree_offset(APR<ImageType> &apr, unsigned int level, bool init_tree = false) {
+    int64_t compute_tree_offset(APRIterator &apr_iterator, APRTreeIterator &tree_iterator, unsigned int level) {
 
-        if(init_tree) { apr.apr_tree.init(apr); }
+        //if(init_tree) { apr.init_tree(); }
 
         int number_parts;
         int tree_start;
 
-        if(level >= apr.level_min()) {
-            number_parts = apr.apr_access.global_index_by_level_and_zx_end[level].back();
+        if(level >= apr_iterator.level_min()) {
+            number_parts = apr_iterator.particles_level_end(level);//apr.apr_access.global_index_by_level_and_zx_end[level].back();
         } else {
             number_parts = 0;
         }
 
-        if(level > apr.apr_tree.tree_access.level_min()) {
-            tree_start = apr.apr_tree.tree_access.global_index_by_level_and_zx_end[level - 1].back();
+        if(level > tree_iterator.level_min()) {
+            tree_start = tree_iterator.particles_level_begin(level); //apr.apr_tree.tree_access.global_index_by_level_and_zx_end[level - 1].back();
         } else {
             tree_start = 0;
         }
@@ -1408,27 +1398,26 @@ public:
     /**
     * Computes the required number of intensity values required to represent the image with a given maximum level.
     */
-    template<typename ImageType>
-    uint64_t number_parts_at_level(APR<ImageType> &apr, unsigned int max_level) {
+    uint64_t number_parts_at_level(APRIterator &apr_iterator, APRTreeIterator &tree_iterator, unsigned int max_level) {
 
         unsigned int number_parts;
         unsigned int tree_start;
         unsigned int tree_end;
 
-        if(max_level >= apr.level_min()) {
-            number_parts = apr.apr_access.global_index_by_level_and_zx_end[max_level].back();
+        if(max_level >= apr_iterator.level_min()) {
+            number_parts = apr_iterator.particles_level_end(max_level); //apr.apr_access.global_index_by_level_and_zx_end[max_level].back();
         } else {
             number_parts = 0;
         }
 
-        if(max_level > apr.apr_tree.tree_access.level_min()) {
-            tree_start = apr.apr_tree.tree_access.global_index_by_level_and_zx_end[max_level - 1].back();
+        if(max_level > tree_iterator.level_min()) {
+            tree_start = tree_iterator.particles_level_begin(max_level); //apr.apr_tree.tree_access.global_index_by_level_and_zx_end[max_level - 1].back();
         } else {
             tree_start = 0;
         }
 
-        if(max_level >= apr.apr_tree.tree_access.level_min()) {
-            tree_end = apr.apr_tree.tree_access.global_index_by_level_and_zx_end[max_level].back();
+        if(max_level >= tree_iterator.level_min()) {
+            tree_end = tree_iterator.particles_level_end(max_level); //apr.apr_tree.tree_access.global_index_by_level_and_zx_end[max_level].back();
         } else {
             tree_end = 0;
         }
@@ -1438,123 +1427,6 @@ public:
         uint64_t number_parts_out = number_parts + number_graduated_parts;
 
         return number_parts_out;
-    }
-
-
-
-
-    /**
-    * Compute a piecewise constant reconstruction using the provided py::array of particle intensities, that may
-    * include downsampled values that have to be read using the apr tree
-    */
-    template<typename U,typename S>
-    void interp_img_new_intensities(APR<S>& apr, PixelData<U>& img, py::array &intensities, int level_delta){
-
-        //  Takes in an APR and a python array of intensities to create piece-wise constant image
-
-        py::buffer_info buf = intensities.request();
-        auto intptr = (float *) buf.ptr;
-
-
-        //unsigned int current_max_level = find_max_level(apr, intensities, true);
-        unsigned int current_max_level = std::max(apr.level_max()-level_delta, apr.level_min());
-
-        img.init(apr.apr_access.y_num[current_max_level], apr.apr_access.x_num[current_max_level], apr.apr_access.z_num[current_max_level], 0);
-
-        APRIterator apr_iterator = apr.iterator();
-
-        //int max_dim = std::max(std::max(apr.apr_access.org_dims[1], apr.apr_access.org_dims[0]), apr.apr_access.org_dims[2]);
-        //int max_level = ceil(std::log2(max_dim));
-
-        /// fill in values from the APR
-        for (unsigned int level = apr_iterator.level_min(); level <= current_max_level; ++level) {
-            int z = 0;
-            int x = 0;
-
-            const float step_size = pow(2, current_max_level - level);
-
-#ifdef PYAPR_HAVE_OPENMP
-            const bool parallel_z = apr_iterator.spatial_index_z_max(level) > 1;
-            const bool parallel_x = !parallel_z && apr_iterator.spatial_index_x_max(level) > 1;
-#endif
-
-#ifdef PYAPR_HAVE_OPENMP
-#pragma omp parallel for schedule(dynamic) private(z, x) firstprivate(apr_iterator) if(parallel_z)
-#endif
-            for (z = 0; z < apr_iterator.spatial_index_z_max(level); z++) {
-#ifdef PYAPR_HAVE_OPENMP
-#pragma omp parallel for schedule(dynamic) private(z, x) firstprivate(apr_iterator) if(parallel_x)
-#endif
-                for (x = 0; x < apr_iterator.spatial_index_x_max(level); ++x) {
-                    for (apr_iterator.set_new_lzx(level, z, x);
-                         apr_iterator.global_index() < apr_iterator.end_index;
-                         apr_iterator.set_iterator_to_particle_next_particle()) {
-                        //
-                        //  Parallel loop over level
-                        //
-
-                        int dim1 = apr_iterator.y() * step_size;
-                        int dim2 = apr_iterator.x() * step_size;
-                        int dim3 = apr_iterator.z() * step_size;
-
-                        float temp_int;
-                        //add to all the required rays
-
-                        temp_int = intptr[apr_iterator.global_index()];
-
-                        const int offset_max_dim1 = std::min((int) img.y_num, (int) (dim1 + step_size));
-                        const int offset_max_dim2 = std::min((int) img.x_num, (int) (dim2 + step_size));
-                        const int offset_max_dim3 = std::min((int) img.z_num, (int) (dim3 + step_size));
-
-                        for (int64_t q = dim3; q < offset_max_dim3; ++q) {
-                            for (int64_t k = dim2; k < offset_max_dim2; ++k) {
-                                for (int64_t i = dim1; i < offset_max_dim1; ++i) {
-                                    img.mesh[i + (k) * img.y_num + q * img.y_num * img.x_num] = temp_int;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        /// fill in eventual downsampled values using the tree iterator
-        if(current_max_level < apr.level_max()) {
-
-            APRTreeIterator tree_iterator = apr.apr_tree.tree_iterator();
-
-            int64_t tree_offset = compute_tree_offset(apr, current_max_level, false);
-
-            int z = 0;
-            int x = 0;
-
-#ifdef PYAPR_HAVE_OPENMP
-            const bool parallel_z = tree_iterator.spatial_index_z_max(current_max_level) > 1000;
-            const bool parallel_x = !parallel_z && tree_iterator.spatial_index_x_max(current_max_level) > 1000;
-#endif
-
-#ifdef PYAPR_HAVE_OPENMP
-#pragma omp parallel for schedule(dynamic) private(z, x) firstprivate(tree_iterator) if(parallel_z)
-#endif
-            for (z = 0; z < tree_iterator.spatial_index_z_max(current_max_level); z++) {
-#ifdef PYAPR_HAVE_OPENMP
-#pragma omp parallel for schedule(dynamic) private(z, x) firstprivate(tree_iterator) if(parallel_x)
-#endif
-                for (x = 0; x < tree_iterator.spatial_index_x_max(current_max_level); ++x) {
-                    for (tree_iterator.set_new_lzx(current_max_level, z, x);
-                         tree_iterator.global_index() < tree_iterator.end_index;
-                         tree_iterator.set_iterator_to_particle_next_particle()) {
-
-                        int dim1 = tree_iterator.y();
-                        int dim2 = tree_iterator.x();
-                        int dim3 = tree_iterator.z();
-
-                        img.mesh[dim3*img.x_num*img.y_num + dim2*img.y_num + dim1] = intptr[tree_offset + tree_iterator.global_index()];
-
-                    }
-                }
-            }
-        }
     }
 
 };
