@@ -8,16 +8,26 @@ Subpackages
 data_containers
     fundamental data container classes
 
+converter
+    templated classes for creating APRs from images of different data types
+
 io
-    reading, saving and displaying images as APRs
+    reading and writing APRs from/to file
 
 nn
     pytorch modules for APR based neural networks
+
+numerics
+    subpackage for processing using APRs
 
 viewer
     a simple graphical user interface for visualizing results and exploring parameters
 """
 
-from _pyaprwrapper import *
+from .data_containers import *
+from .converter import *
+from .io import *
+from .numerics import *
+from .viewer import *
 
-__all__ = ['data_containers', 'io', 'nn', 'viewer']
+__all__ = ['data_containers', 'io', 'nn', 'viewer', 'converter', 'numerics']
