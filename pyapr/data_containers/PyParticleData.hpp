@@ -108,6 +108,7 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
     using TypeParticles = PyParticleData<DataType>;
     std::string typeStr = aTypeString + "Particles";
     py::class_<TypeParticles>(m, typeStr.c_str(), py::buffer_protocol())
+            .def(py::init())
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
             .def("sample_image", &TypeParticles::sample_image, "sample particle values from an image (numpy array)")
             .def("fill_with_levels", &TypeParticles::fill_with_levels, "fill particle values with levels")
