@@ -61,6 +61,6 @@ void fill_slice(PyAPR &aPyAPR, PyParticleData<float> &particles,py::array &input
 void AddViewerHelpers(py::module &m, const std::string &modulename) {
 
     auto m2 = m.def_submodule(modulename.c_str());
-    m2.def("fill_slice", &fill_slice, "fills an array with particles at that level and slice z");
-    def("min_occupied_level", &min_occupied_level, "Returns the minimum occupied level in the APR")
+    m2.def("fill_slice", &fill_slice, "fills an array with particles at that level and slice z")
+    m2.def("min_occupied_level", &min_occupied_level, "Returns the minimum occupied level in the APR");
 }
