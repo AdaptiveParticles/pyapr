@@ -26,7 +26,7 @@ namespace py = pybind11;
  * @z                  slice of image at levels resolution
  * @level              the level of particles to be added.
  */
-void fill_slice(PyAPR &aPyAPR, PyParticleData<float> &particles,py::array &input,int z,int level) {
+void fill_slice(PyAPR &aPyAPR, PyParticleData<uint16_t> &particles,py::array &input,int z,int level) {
 
         uint16_t min_val = std::numeric_limits<uint16_t>::min();
 

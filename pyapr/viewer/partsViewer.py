@@ -223,6 +223,11 @@ class MainWindow(QtGui.QMainWindow):
 
         ## Needs to be updated to relay on a subsection of the particles
         arr = np.array(parts, copy=False)
+        #arr.shape = (arr.size(), 1)
+        arr = arr.reshape((arr.shape[0], 1))
+
+        ## then need to make it 2D, so it can be interpreted as an img;
+
         self.img_hist = pg.ImageItem(arr)
         self.hist.setImageItem(self.img_hist)
 
@@ -241,7 +246,7 @@ class MainWindow(QtGui.QMainWindow):
                 prev_z = int(self.current_view/sz)
 
                 if prev_z != curr_z:
-                    pyapr.partsViewer.fill_slice(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
+                    pyapr.viewer.fill_slice(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
 
                     self.img_list[l].setImage(self.array_list[l], False)
 
