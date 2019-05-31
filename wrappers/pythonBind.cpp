@@ -48,20 +48,19 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     AddPyParticleData<float>(data_containers, "Float");
     AddPyParticleData<uint16_t>(data_containers, "Short");
 
-
+    // wrap the APRNet operations
     py::module nn = m.def_submodule("nn");
-    // wrap the APRNet operations #TODO: shouldnt be a class
-    py::class_<APRNetOps>(nn, "APRNetOps")
-            .def(py::init())
-            .def("convolve", &APRNetOps::convolve, "nxn convolution with thread parallelism over the batch")
-            .def("convolve_backward", &APRNetOps::convolve_backward, "backpropagation through convolve")
-            .def("convolve3x3", &APRNetOps::convolve3x3, "3x3 convolution with thread parallelism over the batch")
-            .def("convolve3x3_backward", &APRNetOps::convolve3x3_backward, "backpropagation through convolve1x1")
-            .def("convolve1x1", &APRNetOps::convolve1x1, "1x1 convolution with thread parallelism over the batch")
-            .def("convolve1x1_backward", &APRNetOps::convolve1x1_backward, "backpropagation through convolve1x1")
-            .def("max_pool", &APRNetOps::max_pool, "max pooling of (current) max level particles")
-            .def("max_pool_backward", &APRNetOps::max_pool_backward, "backpropagation through max_pool");
+    nn.def("convolve", &APRNetOps::convolve, "kxk convolution with thread parallelism over the batch");
+    nn.def("convolve_backward", &APRNetOps::convolve_backward, "backpropagation through convolve");
+    nn.def("convolve3x3", &APRNetOps::convolve3x3, "3x3 convolution with thread parallelism over the batch");
+    nn.def("convolve3x3_backward", &APRNetOps::convolve3x3_backward, "backpropagation through convolve1x1");
+    nn.def("convolve1x1", &APRNetOps::convolve1x1, "1x1 convolution with thread parallelism over the batch");
+    nn.def("convolve1x1_backward", &APRNetOps::convolve1x1_backward, "backpropagation through convolve1x1");
+    nn.def("max_pool", &APRNetOps::max_pool, "max pooling of (current) max level particles");
+    nn.def("max_pool_backward", &APRNetOps::max_pool_backward, "backpropagation through max_pool");
+    nn.def("number_particles_after_pool", &APRNetOps::number_parts_after_pool, "compute number particles after downsampling");
 
+    // wrap numerics module and submodules
     py::module numerics = m.def_submodule("numerics");
     AddPyAPRReconstruction(numerics, "reconstruction");
 

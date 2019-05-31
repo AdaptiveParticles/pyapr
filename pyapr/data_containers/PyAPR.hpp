@@ -12,9 +12,6 @@
 //#include "ConfigAPR.h"
 #include "data_structures/APR/APR.hpp"
 
-#include "PyPixelData.hpp"
-#include "nn/PyAPRFiltering.hpp"
-
 namespace py = pybind11;
 
 class PyAPR {
@@ -37,6 +34,10 @@ public:
         return apr.total_number_particles();
     }
 
+    void init_tree() {
+        apr.init_tree();
+    }
+
 
 };
 
@@ -46,7 +47,8 @@ void AddPyAPR(pybind11::module &m, const std::string &modulename) {
             .def(py::init())
             .def("total_number_particles", &PyAPR::total_number_particles, "return number of particles")
             .def("level_min", &PyAPR::level_min, "return the minimum resolution level")
-            .def("level_max", &PyAPR::level_max, "return the maximum resolution level");
+            .def("level_max", &PyAPR::level_max, "return the maximum resolution level")
+            .def("init_tree", &PyAPR::init_tree, "initialize APRTree");
 }
 
 #endif //PYLIBAPR_PYAPR_HPP

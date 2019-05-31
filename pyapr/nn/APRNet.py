@@ -10,55 +10,41 @@ from torch.autograd import Function
 from torch.nn import init
 import torch
 
-import _pyaprwrapper
+import _pyaprwrapper.nn as aprnn
 
 
-# TODO: fix this guy
 class APRInputLayer:
-    def __init__(self, rgb=False, get_level=False, level_only=False):
-
-        self.rgb = rgb
-        self.get_level = get_level
-        self.level_only = level_only
-
-    def __call__(self, apr_arr):
+    def __call__(self, apr_arr, parts_arr):
 
         batch_size = len(apr_arr)
+        #assert parts_arr.shape[0] == batch_size
+
+        #if parts_arr.ndim == 1:
+        nch = 1
+        #parts_arr = np.expand_dims(parts_arr, -1)
+        #elif parts_arr.ndim == 2:
+        #    nch = parts_arr.shape[1]
+        #else:
+        #    raise AssertionError('array of input particles must be of dimension 1 or 2')
+
         npartmax = 0
         for apr in apr_arr:
-            npart = apr.number_particles() #nparticles()
-            npartmax = max(npartmax, npart)
+            npart = apr.total_number_particles()
+            npartmax = max(npart, npartmax)
 
-        channels = 1 if self.level_only else (1 + (2 if self.rgb else 0) + (1 if self.get_level else 0))
-        x = np.zeros((batch_size, channels, npartmax), dtype=np.float32)
+        x = np.empty((batch_size, nch, npartmax), dtype=np.float32)
 
-        for i in range(batch_size):
+        for i in range(len(parts_arr)):
+            #for j in range(nch):
+            tmp = np.array(parts_arr[i], copy=False)
+            npart = len(tmp)
 
-            if self.get_level:
-                lvl = apr_arr[i].get_levels()
-                if npartmax > lvl.shape[0]:
-                    x[i, -1, :] = np.concatenate((lvl, np.zeros(npartmax - len(lvl), dtype=np.float32)))
-                else:
-                    x[i, -1, :] = lvl
+            x[i, 0, :npart] = tmp
+            x[i, 0, npart:] = 0
 
-            if not self.level_only:
-                tmp = apr_arr[i].get_intensities()
+        dlvl = torch.zeros(batch_size, dtype=torch.int)
 
-                if self.rgb:
-                    tmp = tmp.reshape(3, -1)
-                    if npartmax > tmp.shape[1]:
-                        x[i, 0:3, :] = np.concatenate((tmp, np.zeros((3, npartmax-tmp.shape[1]), dtype=np.float32)), axis=1)
-                    else:
-                        x[i, 0:3, :] = tmp
-                else:
-                    if npartmax > tmp.shape[0]:
-                        x[i, 0, :] = np.concatenate((tmp, np.zeros(npartmax - len(tmp), dtype=np.float32)))
-                    else:
-                        x[i, 0, :] = tmp
-
-        level_deltas = torch.zeros(len(apr_arr), dtype=torch.int)
-
-        return torch.from_numpy(x), level_deltas
+        return torch.from_numpy(x), dlvl
 
 
 class APRConvFunction(Function):
@@ -73,9 +59,7 @@ class APRConvFunction(Function):
 
         output = np.zeros(shape=(intensities.shape[0], weights.shape[0], intensities.shape[2]), dtype=np.float32)
 
-        dpo = _pyaprwrapper.APRNetOps()
-
-        dpo.convolve(aprs, intensities.data.numpy(), weights.data.numpy(), bias.data.numpy(), output, dlevel)
+        aprnn.convolve(aprs, intensities.data.numpy(), weights.data.numpy(), bias.data.numpy(), output, dlevel)
 
         return torch.from_numpy(output)
 
@@ -91,10 +75,8 @@ class APRConvFunction(Function):
         d_weights = np.empty(weights.shape, dtype=np.float32)
         d_bias = np.empty(bias.shape, dtype=np.float32)
 
-        dpo = _pyaprwrapper.APRNetOps()
-
-        dpo.convolve_backward(aprs, grad_output.data.numpy(), input_features.data.numpy(), weights.data.numpy(),
-                              d_input, d_weights, d_bias, dlevel)
+        aprnn.convolve_backward(aprs, grad_output.data.numpy(), input_features.data.numpy(), weights.data.numpy(),
+                                d_input, d_weights, d_bias, dlevel)
 
         return torch.from_numpy(d_input), torch.from_numpy(d_weights), torch.from_numpy(d_bias), None, None
 
@@ -107,7 +89,6 @@ class APRConv(nn.Module):
         self.out_channels = out_channels
         self.kernel_size = kernel_size
         self.nstencils = nstencils
-
 
         self.weight = nn.Parameter(torch.Tensor(out_channels, in_channels, nstencils, kernel_size, kernel_size))
         self.bias = nn.Parameter(torch.Tensor(out_channels))
@@ -147,9 +128,7 @@ class APRConv3x3Function(Function):
 
         output = np.zeros(shape=(intensities.shape[0], weights.shape[0], intensities.shape[2]), dtype=np.float32)
 
-        dpo = _pyaprwrapper.APRNetOps()
-
-        dpo.convolve3x3(aprs, intensities.data.numpy(), weights.data.numpy(), bias.data.numpy(), output, dlevel)
+        aprnn.convolve3x3(aprs, intensities.data.numpy(), weights.data.numpy(), bias.data.numpy(), output, dlevel)
 
         return torch.from_numpy(output)
 
@@ -165,10 +144,8 @@ class APRConv3x3Function(Function):
         d_weights = np.empty(weights.shape, dtype=np.float32)
         d_bias = np.empty(bias.shape, dtype=np.float32)
 
-        dpo = _pyaprwrapper.APRNetOps()
-
-        dpo.convolve3x3_backward(aprs, grad_output.data.numpy(), input_features.data.numpy(), weights.data.numpy(),
-                                 d_input, d_weights, d_bias, dlevel)
+        aprnn.convolve3x3_backward(aprs, grad_output.data.numpy(), input_features.data.numpy(), weights.data.numpy(),
+                                   d_input, d_weights, d_bias, dlevel)
 
         return torch.from_numpy(d_input), torch.from_numpy(d_weights), torch.from_numpy(d_bias), None, None
 
@@ -210,9 +187,7 @@ class APRConv1x1Function(Function):
 
         output = np.zeros(shape=(intensities.shape[0], weights.shape[0], intensities.shape[2]), dtype=np.float32)
 
-        dpo = _pyaprwrapper.APRNetOps()
-
-        dpo.convolve1x1(aprs, intensities.data.numpy(), weights.data.numpy(), bias.data.numpy(), output, dlevel)
+        aprnn.convolve1x1(aprs, intensities.data.numpy(), weights.data.numpy(), bias.data.numpy(), output, dlevel)
 
         return torch.from_numpy(output)
 
@@ -228,10 +203,8 @@ class APRConv1x1Function(Function):
         d_weights = np.empty(weights.shape, dtype=np.float32)
         d_bias = np.empty(bias.shape, dtype=np.float32)
 
-        dpo = _pyaprwrapper.APRNetOps()
-
-        dpo.convolve1x1_backward(aprs, grad_output.data.numpy(), input_features.data.numpy(), weights.data.numpy(),
-                                 d_input, d_weights, d_bias, dlevel)
+        aprnn.convolve1x1_backward(aprs, grad_output.data.numpy(), input_features.data.numpy(), weights.data.numpy(),
+                                   d_input, d_weights, d_bias, dlevel)
 
         return torch.from_numpy(d_input), torch.from_numpy(d_weights), torch.from_numpy(d_bias), None, None
 
@@ -270,14 +243,13 @@ class APRMaxPoolFunction(Function):
 
         npartmax = 0
         for i in range(len(apr)):
-            npart = apr[i].apr.number_particles_after_maxpool(dlevel[i])
+            npart = aprnn.number_particles_after_pool(apr[i], dlevel[i])
             npartmax = max(npartmax, npart)
 
-        output = -np.finfo(np.float32).max * np.ones(shape=(intensities.shape[0], intensities.shape[1], npartmax), dtype=np.float32)
+        output = -(np.finfo(np.float32).max / 2) * np.ones(shape=(intensities.shape[0], intensities.shape[1], npartmax), dtype=np.float32)
         index_arr = -np.ones(output.shape, dtype=np.int64)
 
-        dpo = _pyaprwrapper.APRNetOps()
-        dpo.max_pool(apr, intensities.data.numpy(), output, dlevel, index_arr)
+        aprnn.max_pool(apr, intensities.data.numpy(), output, dlevel, index_arr)
 
         for i in range(level_deltas.shape[0]):
             level_deltas[i] += 1
@@ -292,9 +264,7 @@ class APRMaxPoolFunction(Function):
         max_indices = ctx.max_indices
         grad_input = np.zeros(ctx.input_shape, dtype=np.float32)
 
-        dpo = _pyaprwrapper.APRNetOps()
-
-        dpo.max_pool_backward(grad_output.data.numpy(), grad_input, max_indices)
+        aprnn.max_pool_backward(grad_output.data.numpy(), grad_input, max_indices)
 
         return torch.from_numpy(grad_input), None, None
 
@@ -306,17 +276,3 @@ class APRMaxPool(nn.Module):
     def forward(self, input_features, apr, level_deltas):
 
         return APRMaxPoolFunction.apply(input_features, apr, level_deltas)
-
-
-
-
-
-class Particles:
-
-    def sample_particles(self, apr, img):
-
-
-
-    def to_numpy(self):
-
-        return np.array(self.data, copy=False)
