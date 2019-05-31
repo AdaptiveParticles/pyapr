@@ -18,7 +18,7 @@
 #include "numerics/reconstruction/PyAPRReconstruction.hpp"
 #include "converter/PyAPRConverter.hpp"
 #include "io/PyAPRFile.hpp"
-
+#include "viewer/ViewerHelpers.hpp"
 
 namespace py = pybind11;
 
@@ -71,5 +71,8 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
 
     py::module io = m.def_submodule("io");
     AddPyAPRFile(io, "APRFile");
+
+    py::module viewer = m.def_submodule("viewer");
+    AddViewerHelpers(viewer,"viewerHelp");
 
 }

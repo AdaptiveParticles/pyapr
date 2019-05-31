@@ -18,7 +18,7 @@ class PyParticleData {
 
 public:
 
-    ParticleData<T> parts;
+    ParticleData<T> parts; //#TODO: should this be called something else?
 
     PyParticleData() {}
     PyParticleData(uint64_t num_particles){ parts.init(num_particles); }

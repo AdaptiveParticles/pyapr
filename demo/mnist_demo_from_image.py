@@ -123,8 +123,8 @@ def test(model, test_loader, loss_fn):
     test_loss = 0
     correct = 0
     with torch.no_grad():
-        for data, target in test_loader:
-            output = model(data)
+        for aprs, parts, target in test_loader:
+            output = model(aprs, parts)
             test_loss += loss_fn(output, target).item()
             pred = output.max(1, keepdim=True)[1]
             correct += pred.eq(target.view_as(pred)).sum().item()

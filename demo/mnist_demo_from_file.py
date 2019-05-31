@@ -16,6 +16,7 @@ import pyapr.nn
 Run the script 'convert_mnist_to_apr.py' and give the root of the resulting folder hierarchy as the --data-dir argument
 """
 
+
 class APRDataset(Dataset):
     def __init__(self, apr_list, part_list, labels):
         self.apr_list = apr_list
@@ -54,28 +55,28 @@ def train(model, train_loader, loss_fn, optimizer, epoch, log_interval=10):
     acc_log = []
 
     for batch_idx, (aprs, parts, target) in enumerate(train_loader):
-        with torch.autograd.set_detect_anomaly(True):
-            optimizer.zero_grad()
-            output = model(aprs, parts)
-            loss = loss_fn(output, target)
-            loss_list.append(float(loss.item()) / len(aprs))
-            pred = output.max(1, keepdim=True)[1]
-            correct = pred.eq(target.view_as(pred)).sum().item()
-            acc_list.append(float(correct) / len(target))
-            loss.backward()
-            optimizer.step()
-            if batch_idx % log_interval == 0 and batch_idx is not 0:
-                avg_loss = np.mean(np.array(loss_list))
-                avg_acc = np.mean(np.array(acc_list))
-                loss_list = []
-                acc_list = []
-                loss_log.append(avg_loss)
-                acc_log.append(avg_acc)
+        #with torch.autograd.set_detect_anomaly(True):
+        optimizer.zero_grad()
+        output = model(aprs, parts)
+        loss = loss_fn(output, target)
+        loss_list.append(float(loss.item()) / len(aprs))
+        pred = output.max(1, keepdim=True)[1]
+        correct = pred.eq(target.view_as(pred)).sum().item()
+        acc_list.append(float(correct) / len(target))
+        loss.backward()
+        optimizer.step()
+        if batch_idx % log_interval == 0 and batch_idx is not 0:
+            avg_loss = np.mean(np.array(loss_list))
+            avg_acc = np.mean(np.array(acc_list))
+            loss_list = []
+            acc_list = []
+            loss_log.append(avg_loss)
+            acc_log.append(avg_acc)
 
-                print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAcc: {}'.format(
-                    epoch, batch_idx * len(aprs), len(train_loader.dataset),
-                    100. * batch_idx / len(train_loader), avg_loss, avg_acc)
-                )
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAcc: {}'.format(
+                epoch, batch_idx * len(aprs), len(train_loader.dataset),
+                100. * batch_idx / len(train_loader), avg_loss, avg_acc)
+            )
 
     return acc_log, loss_log
 
@@ -85,8 +86,8 @@ def test(model, test_loader, loss_fn):
     test_loss = 0
     correct = 0
     with torch.no_grad():
-        for data, target in test_loader:
-            output = model(data)
+        for (aprs, parts, target) in test_loader:
+            output = model(aprs, parts)
             test_loss += loss_fn(output, target).item()
             pred = output.max(1, keepdim=True)[1]
             correct += pred.eq(target.view_as(pred)).sum().item()
