@@ -18,17 +18,21 @@ def mnist_apr_loader(train=True, batch_size=32, shuffle=True, transform=None):
 
     data = datasets.MNIST('../data', train=train, download=True, transform=transform)
 
-    pars = pyapr.data_containers.APRParameters()
+    pars = pyapr.APRParameters()
 
-    pars.intensity_threshold(5)
-    pars.sigma_threshold(10)
-    pars.sigma_threshold_max(1)
-    pars.error_bound(0.1)
-    pars.smoothing(1)
+    pars.Ip_th = 5
+    pars.sigma_th = 10
+    pars.sigma_th_max = 2
+    pars.gradient_smoothing = 1
+    pars.rel_error = 0.1
+    pars.auto_parameters = False
 
-    pars.auto_parameters(False)
+    conv = pyapr.converter.FloatConverter()
+    conv.set_parameters(pars)
+    conv.set_verbose(False)
 
-    aprList = []
+    part_list = []
+    apr_list = []
     targets = torch.zeros(len(data), dtype=torch.long)
 
     i = 0
@@ -38,40 +42,44 @@ def mnist_apr_loader(train=True, batch_size=32, shuffle=True, transform=None):
 
         targets[i] = y
 
-        aprList.append(pyapr.data_containers.APR(dtype=np.float32))
-        aprList[i].set_parameters(pars)
-        aprList[i].get_apr_from_array(x.reshape(28, 28, 1))
+        apr_list.append(pyapr.APR())
+        conv.get_apr(apr_list[i], x)
+        apr_list[i].init_tree()
+        part_list.append(pyapr.FloatParticles())
+        part_list[i].sample_image(apr_list[i], x)
 
         i += 1
 
-    apr_data = APRDataset(aprList, targets)
+    apr_data = APRDataset(apr_list, part_list, targets)
 
     return DataLoader(apr_data, batch_size=batch_size, shuffle=shuffle, collate_fn=custom_collate_fn)
 
 
 class APRDataset(Dataset):
-    def __init__(self, aprList, labels):
-        self.aprList = aprList
+    def __init__(self, apr_list, part_list, labels):
+        self.apr_list = apr_list
+        self.part_list = part_list
         self.labels = labels
 
     def __getitem__(self, index):
-        apr = self.aprList[index]
+        apr = self.apr_list[index]
+        part = self.part_list[index]
         target = self.labels[index]
 
-        return apr, target
+        return apr, part, target
 
     def __len__(self):
-        return len(self.aprList)
+        return len(self.apr_list)
 
 
 def custom_collate_fn(data):
 
-    x, y = zip(*data)
+    x, y, z = zip(*data)
 
     apr_arr = np.stack(x)
-    targets = torch.stack(y)
+    targets = torch.stack(z)
 
-    return apr_arr, targets
+    return apr_arr, y, targets
 
 
 def train(model, train_loader, loss_fn, optimizer, epoch, log_interval=10):
@@ -83,28 +91,29 @@ def train(model, train_loader, loss_fn, optimizer, epoch, log_interval=10):
     loss_log = []
     acc_log = []
 
-    for batch_idx, (data, target) in enumerate(train_loader):
-        optimizer.zero_grad()
-        output = model(data)
-        loss = loss_fn(output, target)
-        loss_list.append(float(loss.item()) / len(data))
-        pred = output.max(1, keepdim=True)[1]
-        correct = pred.eq(target.view_as(pred)).sum().item()
-        acc_list.append(float(correct) / len(target))
-        loss.backward()
-        optimizer.step()
-        if batch_idx % log_interval == 0 and batch_idx is not 0:
-            avg_loss = np.mean(np.array(loss_list))
-            avg_acc = np.mean(np.array(acc_list))
-            loss_list = []
-            acc_list = []
-            loss_log.append(avg_loss)
-            acc_log.append(avg_acc)
+    for batch_idx, (aprs, parts, target) in enumerate(train_loader):
+        with torch.autograd.set_detect_anomaly(True):
+            optimizer.zero_grad()
+            output = model(aprs, parts)
+            loss = loss_fn(output, target)
+            loss_list.append(float(loss.item()) / len(aprs))
+            pred = output.max(1, keepdim=True)[1]
+            correct = pred.eq(target.view_as(pred)).sum().item()
+            acc_list.append(float(correct) / len(target))
+            loss.backward()
+            optimizer.step()
+            if batch_idx % log_interval == 0 and batch_idx is not 0:
+                avg_loss = np.mean(np.array(loss_list))
+                avg_acc = np.mean(np.array(acc_list))
+                loss_list = []
+                acc_list = []
+                loss_log.append(avg_loss)
+                acc_log.append(avg_acc)
 
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAcc: {}'.format(
-                epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), avg_loss, avg_acc)
-            )
+                print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAcc: {}'.format(
+                    epoch, batch_idx * len(aprs), len(train_loader.dataset),
+                    100. * batch_idx / len(train_loader), avg_loss, avg_acc)
+                )
 
     return acc_log, loss_log
 
@@ -160,7 +169,7 @@ class APRConvNet(nn.Module):
     def __init__(self):
         super(APRConvNet, self).__init__()
 
-        self.input_layer = pyapr.nn.APRInputLayer(rgb=False, get_level=False, level_only=False)
+        self.input_layer = pyapr.nn.APRInputLayer()
 
         self.conv1 = pyapr.nn.APRConv(in_channels=1, out_channels=16, kernel_size=3, nstencils=2)
         self.conv1_bn = nn.BatchNorm1d(16)
@@ -187,22 +196,22 @@ class APRConvNet(nn.Module):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
 
-    def forward(self, aprList):
+    def forward(self, apr_arr, parts_arr):
 
-        x, level_deltas = self.input_layer(aprList)
+        x, level_deltas = self.input_layer(apr_arr, parts_arr)
 
-        x = self.conv1(x, aprList, level_deltas)
-        x = self.pool1(x, aprList, level_deltas)
+        x = self.conv1(x, apr_arr, level_deltas)
+        x = self.pool1(x, apr_arr, level_deltas)
         x = F.relu(x)
         x = self.conv1_bn(x)
 
-        x = self.conv2(x, aprList, level_deltas)
-        x = self.pool2(x, aprList, level_deltas)
+        x = self.conv2(x, apr_arr, level_deltas)
+        #x = self.pool2(x, apr_arr, level_deltas)  # FIXME
         x = F.relu(x)
         x = self.conv2_bn(x)
 
-        x = self.fc1(x, aprList, level_deltas)
-        x = self.fc2(x, aprList, level_deltas)
+        x = self.fc1(x, apr_arr, level_deltas)
+        x = self.fc2(x, apr_arr, level_deltas)
 
         x = self.globavg(x).view(-1, 10)
 
@@ -214,7 +223,6 @@ if __name__ == '__main__':
     parser.add_argument('--nepoch', type=int, default=5)
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--lr', type=float, default=0.005)
-
     args = parser.parse_args()
 
     main(args)
