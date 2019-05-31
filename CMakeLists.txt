@@ -14,7 +14,9 @@ find_package(TIFF REQUIRED)
 set(CMAKE_C_FLAGS "${CMAKE_CFLAGS} -DHAVE_LIBTIFF")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXXFLAGS} -DHAVE_LIBTIFF")
 
-##------------- LibAPR -------------##
+###############################################################################
+# Build LibAPR
+###############################################################################
 message(STATUS "PyAPR: Building LibAPR")
 
 set(APR_TESTS OFF CACHE BOOL "" FORCE)
@@ -32,7 +34,9 @@ add_subdirectory("LibAPR")
 include_directories(LibAPR/src)
 
 
-##------------- Handle OpenMP -------------##
+###############################################################################
+# Handle OpenMP
+###############################################################################
 find_package(OpenMP)
 if(NOT OPENMP_FOUND OR NOT PYAPR_USE_OPENMP)
     message(WARNING "OpenMP support not found or disabled with current compiler. While PyAPR can compile like this, performance might not be optimal. Please see README.md for instructions.")
@@ -41,8 +45,36 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPYAPR_HAVE_OPENMP ${OpenMP_CXX_FLAGS}")
 endif()
 
-##------------- Python wrappers -------------##
+
+
+###############################################################################
+# Configure compiler options
+###############################################################################
+# If you ever want to compile with Intel's icc (or any other compiler) provide
+# compiler names/paths in cmake command like this:
+# CC="icc" CXX="icc" CXXFLAGS="-O3" cmake -DAPR_TESTS=1
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic ")
+if(CMAKE_COMPILER_IS_GNUCC)
+    set(CMAKE_CXX_FLAGS_RELEASE "-O4 -ffast-math")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Bdynamic")
+    if(NOT WIN32)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ldl -lz")
+    endif()
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ffast-math")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lz")
+endif()
+
+###############################################################################
+# Python wrappers
+###############################################################################
 message(STATUS "PyAPR: Building PYTHON wrappers")
+
+set(PYTHON_VERSION 3)
+find_package( PythonInterp ${PYTHON_VERSION} REQUIRED )
+find_package( PythonLibs ${PYTHON_VERSION} REQUIRED )
 
 add_subdirectory("pybind11")
 
