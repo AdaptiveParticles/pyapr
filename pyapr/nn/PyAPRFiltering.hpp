@@ -9,10 +9,10 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
-#include "data_structures/APR/APRTree.hpp"
-#include "data_structures/APR/APRTreeIterator.hpp"
-#include "data_structures/APR/APRIterator.hpp"
-#include "data_structures/APR/ParticleData.hpp"
+//#include "data_structures/APR/APRTree.hpp"
+#include "data_structures/APR/iterators/APRTreeIterator.hpp"
+#include "data_structures/APR/iterators/APRIterator.hpp"
+#include "data_structures/APR/particles/ParticleData.hpp"
 
 #include "data_containers/PyAPR.hpp"
 #include "data_containers/PyPixelData.hpp"
@@ -24,15 +24,13 @@ namespace py = pybind11;
 namespace PyAPRFiltering {
 
     template<typename T>
-    void update_dense_array(const uint64_t level, const uint64_t z, APR &apr, APRIterator &apr_iterator,
-                            APRTreeIterator &treeIterator, ParticleData<T> &tree_data, PixelData<T> &temp_vec,
+    void update_dense_array(const uint64_t level, const uint64_t z, APR &apr, ParticleData<T> &tree_data, PixelData<T> &temp_vec,
                             T *part_int, const std::vector<int> &stencil_shape, const std::vector<int> &stencil_half,
                             uint64_t in_offset);
 
 
     template<typename T>
-    void update_dense_array_backward(const uint64_t level, const uint64_t z, APR &apr, APRIterator &apr_iterator,
-                                     APRTreeIterator &treeIterator, ParticleData<T> &grad_tree_data,
+    void update_dense_array_backward(const uint64_t level, const uint64_t z, APR &apr, ParticleData<T> &grad_tree_data,
                                      PixelData<T> &temp_vec_di, T *grad_input_ptr,
                                      const std::vector<int> &stencil_shape, const std::vector<int> &stencil_half,
                                      const uint64_t in_offset);
@@ -41,14 +39,12 @@ namespace PyAPRFiltering {
     void convolve_generic(APR &apr, T *input_intensities,
                           const std::vector<PixelData<T>> &stencil_vec, T bias, int out_channel,
                           int in_channel, int current_max_level, const uint64_t in_offset,
-                          ParticleData<T> &tree_data, APRIterator &apr_iterator,
-                          APRTreeIterator &tree_iterator, const size_t number_in_channels,
+                          ParticleData<T> &tree_data, const size_t number_in_channels,
                           const uint64_t out_offset, T *output_ptr);
 
 
     template<typename T>
-    void convolve_generic_backward(APR &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
-                                   T *input_ptr, const uint64_t in_offset, const uint64_t out_offset,
+    void convolve_generic_backward(APR &apr, T *input_ptr, const uint64_t in_offset, const uint64_t out_offset,
                                    const std::vector<PixelData<T>> &stencil_vec,
                                    T *grad_output_ptr, T *grad_input_ptr, std::vector<float> &temp_vec_db,
                                    std::vector<T> &temp_vec_dw, const uint64_t grad_weight_offset,
@@ -60,14 +56,12 @@ namespace PyAPRFiltering {
     void convolve_3x3(APR &apr, T *input_intensities,
                       const std::vector<PixelData<T>> &stencil_vec, T bias, int out_channel,
                       int in_channel, int current_max_level, const uint64_t in_offset,
-                      ParticleData<T> &tree_data, APRIterator &apr_iterator,
-                      APRTreeIterator &tree_iterator, const size_t number_in_channels,
+                      ParticleData<T> &tree_data, const size_t number_in_channels,
                       const uint64_t out_offset, T *output_ptr);
 
 
     template<typename T>
-    void convolve_3x3_backward(APR &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
-                               T *input_ptr, const uint64_t in_offset, const uint64_t out_offset,
+    void convolve_3x3_backward(APR &apr, T *input_ptr, const uint64_t in_offset, const uint64_t out_offset,
                                const std::vector<PixelData<T>> &stencil_vec,
                                T *grad_output_ptr, T *grad_input_ptr, std::vector<float> &temp_vec_db,
                                std::vector<T> &temp_vec_dw, const uint64_t grad_weight_offset,
@@ -76,15 +70,13 @@ namespace PyAPRFiltering {
                                const int out_channel, const int in_channel, const unsigned int current_max_level);
 
     template<typename T>
-    void convolve_1x1(APR &apr, T* input_ptr, const std::vector<float> &stencil_vec,
-                      float bias, int out_channel, int in_channel, int current_max_level,
-                      const uint64_t in_offset, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
-                      const size_t number_in_channels, const uint64_t out_offset, T* output_ptr);
+    void convolve_1x1(APR &apr, T* input_ptr, const std::vector<float> &stencil_vec, float bias, int out_channel,
+                      int in_channel, int current_max_level, const uint64_t in_offset, const size_t number_in_channels,
+                      const uint64_t out_offset, T* output_ptr);
 
 
     template<typename T>
-    void convolve_1x1_backward(APR &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
-                               T* input_ptr, const uint64_t in_offset, const uint64_t out_offset,
+    void convolve_1x1_backward(APR &apr, T* input_ptr, const uint64_t in_offset, const uint64_t out_offset,
                                const std::vector<float> &stencil_vec, T* grad_output_ptr, T* grad_input_ptr,
                                std::vector<float> &temp_vec_db, std::vector<float> &temp_vec_dw,
                                const uint64_t grad_weight_offset, const size_t db_offset, const int out_channel,
@@ -92,31 +84,29 @@ namespace PyAPRFiltering {
 
 
     template<typename T>
-    void max_pool_2x2(APR &apr, T *input_ptr, T *output_ptr, int64_t *idx_ptr,
+    void max_pool_2x2(APR &apr, T *input_ptr, T *output_ptr, uint64_t *idx_ptr,
                       const uint64_t in_offset, const uint64_t out_offset, const int64_t tree_offset_in,
-                      const int64_t tree_offset_out, APRIterator &apr_iterator, APRTreeIterator &treeIterator,
-                      APRTreeIterator &parentIterator, const unsigned int current_max_level);
+                      const int64_t tree_offset_out, const unsigned int current_max_level);
 
 
     template<typename T>
-    void max_pool_backward_stored_indices(T* grad_input_ptr, T* grad_output_ptr, int64_t* index_ptr,
+    void max_pool_backward_stored_indices(T* grad_input_ptr, T* grad_output_ptr, uint64_t* index_ptr,
                                           uint64_t in_size, uint64_t out_size);
 
 
     template<typename T>
-    void fill_tree_mean(APR &apr, T *input_ptr, ParticleData<T> &tree_data, APRIterator &apr_iterator,
-                        APRTreeIterator &tree_iterator, uint64_t in_offset, unsigned int current_max_level);
+    void fill_tree_mean(APR &apr, T *input_ptr, ParticleData<T> &tree_data, uint64_t in_offset, unsigned int current_max_level);
 
 
     template<typename T>
-    void fill_tree_mean_backward(APR &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
-                                 T *grad_input_ptr, ParticleData<T> &grad_tree_temp, uint64_t in_offset,
+    void fill_tree_mean_backward(APR &apr, T *grad_input_ptr, ParticleData<T> &grad_tree_temp, uint64_t in_offset,
                                  unsigned int current_max_level);
 
+    template<typename APRIteratorType, typename APRTreeIteratorType>
+    int64_t compute_tree_offset(APRIteratorType &apr_iterator, APRTreeIteratorType &tree_iterator, unsigned int level);
 
-    int64_t compute_tree_offset(APRIterator &apr_iterator, APRTreeIterator &tree_iterator, unsigned int level);
-
-    uint64_t number_parts_at_level(APRIterator &apr_iterator, APRTreeIterator &tree_iterator, unsigned int max_level);
+    template<typename APRIteratorType, typename APRTreeIteratorType>
+    uint64_t number_parts_at_level(APRIteratorType &apr_iterator, APRTreeIteratorType &tree_iterator, unsigned int max_level);
 }
 
 //*****************************************************************************************************************
@@ -126,9 +116,11 @@ template<typename T>
 void PyAPRFiltering::convolve_generic(APR &apr, T *input_intensities,
                                       const std::vector<PixelData<T>> &stencil_vec, T bias, int out_channel,
                                       int in_channel, int current_max_level, const uint64_t in_offset,
-                                      ParticleData<T> &tree_data, APRIterator &apr_iterator,
-                                      APRTreeIterator &tree_iterator, const size_t number_in_channels,
+                                      ParticleData<T> &tree_data, const size_t number_in_channels,
                                       const uint64_t out_offset, T *output_ptr) {
+
+    auto apr_iterator = apr.iterator();
+    auto tree_iterator = apr.tree_iterator();
 
     APRTimer timer(false);
 
@@ -149,103 +141,65 @@ void PyAPRFiltering::convolve_generic(APR &apr, T *input_intensities,
         unsigned int z = 0;
         unsigned int x = 0;
 
-        const unsigned int z_num = apr_iterator.spatial_index_z_max(level);
-
-        const unsigned int y_num_m = (apr.orginal_dimensions(0) > 1) ? apr_iterator.spatial_index_y_max(level) +
-                                                                        stencil_shape[0] - 1 : 1;
-        const unsigned int x_num_m = (apr.orginal_dimensions(1) > 1) ? apr_iterator.spatial_index_x_max(level) +
-                                                                        stencil_shape[1] - 1 : 1;
-
-        timer.start_timer("init temp vec");
+        const unsigned int y_num_m = (apr.org_dims(0) > 1) ? apr_iterator.y_num(level) + stencil_shape[0] - 1 : 1;
+        const unsigned int x_num_m = (apr.org_dims(1) > 1) ? apr_iterator.x_num(level) + stencil_shape[1] - 1 : 1;
 
         PixelData<T> temp_vec;
         temp_vec.initWithValue(y_num_m, x_num_m, stencil_shape[2], 0); //zero padded boundaries
 
-        timer.stop_timer();
-
-        timer.start_timer("update temp vec first ('pad')");
         //initial condition
-        for (int padd = 0; padd < stencil_half[2]; ++padd) {
-            update_dense_array(level, padd, apr, apr_iterator, tree_iterator, tree_data, temp_vec,
-                               input_intensities, stencil_shape, stencil_half, in_offset);
-        }
+        update_dense_array(level, 0, apr, tree_data, temp_vec,
+                           input_intensities, stencil_shape, stencil_half, in_offset);
+
+        /// Compute convolution output at apr particles
+        timer.start_timer("convolve apr particles");
+
+        for (x = 0; x < apr.x_num(level); ++x) {
+            for (apr_iterator.begin(level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
+
+                T neigh_sum = 0;
+                int counter = 0;
+
+                for (size_t ix = 0; ix < stencil_shape[1]; ++ix) {
+                    for (size_t iy = 0; iy < stencil_shape[0]; ++iy) {
+                        neigh_sum += temp_vec.at(iy + apr_iterator.y(), ix + x, 0) *
+                                     stencil_vec[stencil_counter].mesh[counter++];
+                    }
+                }
+
+                output_ptr[out_offset + apr_iterator] += neigh_sum + b;
+
+            }//y, pixels/columns (apr)
+        }//x , rows (apr)
+
         timer.stop_timer();
 
-        for (z = 0; z < apr.spatial_index_z_max(level); ++z) {
+        /// if there are downsampled values, we need to use the tree iterator for those outputs
+        if (level == current_max_level && current_max_level < apr.level_max()) {
 
-            if (z < (z_num - stencil_half[2])) {
-                //update the next z plane for the access
-                timer.start_timer("update_dense_array");
-                update_dense_array(level, z + stencil_half[2], apr, apr_iterator, tree_iterator, tree_data,
-                                   temp_vec, input_intensities, stencil_shape, stencil_half, in_offset);
-                timer.stop_timer();
-            } else {
-                //padding
-                uint64_t index = temp_vec.x_num * temp_vec.y_num * ((z + stencil_half[2]) % stencil_shape[2]);
-                timer.start_timer("padding");
+            timer.start_timer("convolve tree particles");
 
-                for (x = 0; x < temp_vec.x_num; ++x) {
-                    std::fill(temp_vec.mesh.begin() + index + (x + 0) * temp_vec.y_num,
-                              temp_vec.mesh.begin() + index + (x + 1) * temp_vec.y_num, 0);
-                }
-                timer.stop_timer();
-            }
+            const int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
-            //std::string fileName = "/Users/joeljonsson/Documents/STUFF/temp_vec_lvl" + std::to_string(level) + ".tif";
-            //TiffUtils::saveMeshAsTiff(fileName, temp_vec);
-
-            /// Compute convolution output at apr particles
-            timer.start_timer("convolve apr particles");
-
-            for (x = 0; x < apr.spatial_index_x_max(level); ++x) {
-                for (apr_iterator.set_new_lzx(level, z, x);
-                     apr_iterator.global_index() < apr_iterator.end_index;
-                     apr_iterator.set_iterator_to_particle_next_particle()) {
+            for (x = 0; x < tree_iterator.x_num(level); ++x) {
+                for (tree_iterator.begin(level, z, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
 
                     T neigh_sum = 0;
+                    int counter = 0;
 
                     for (size_t ix = 0; ix < stencil_shape[1]; ++ix) {
                         for (size_t iy = 0; iy < stencil_shape[0]; ++iy) {
-                            neigh_sum += temp_vec.at(iy + apr_iterator.y(), ix + x, 0) *
-                                         stencil_vec[stencil_counter].mesh[ix * stencil_shape[0] + iy];
+                            neigh_sum += temp_vec.at(iy + tree_iterator.y(), ix + x, 0) *
+                                         stencil_vec[stencil_counter].mesh[counter++];
                         }
                     }
 
-                    output_ptr[out_offset + apr_iterator.global_index()] += neigh_sum + b;
+                    output_ptr[out_offset + tree_iterator + tree_offset] += neigh_sum + b;
 
-                }//y, pixels/columns (apr)
-            }//x , rows (apr)
-
+                }//y, pixels/columns (tree)
+            }//x, rows (tree)
             timer.stop_timer();
-
-            /// if there are downsampled values, we need to use the tree iterator for those outputs
-            if (level == current_max_level && current_max_level < apr.level_max()) {
-
-                timer.start_timer("convolve tree particles");
-
-                const int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
-
-                for (x = 0; x < tree_iterator.spatial_index_x_max(level); ++x) {
-                    for (tree_iterator.set_new_lzx(level, z, x);
-                         tree_iterator.global_index() < tree_iterator.end_index;
-                         tree_iterator.set_iterator_to_particle_next_particle()) {
-
-                        T neigh_sum = 0;
-
-                        for (size_t ix = 0; ix < stencil_shape[1]; ++ix) {
-                            for (size_t iy = 0; iy < stencil_shape[0]; ++iy) {
-                                neigh_sum += temp_vec.at(iy + tree_iterator.y(), ix + x, 0) *
-                                             stencil_vec[stencil_counter].mesh[ix * stencil_shape[0] + iy];
-                            }
-                        }
-
-                        output_ptr[out_offset + tree_iterator.global_index() + tree_offset] += neigh_sum + b;
-
-                    }//y, pixels/columns (tree)
-                }//x, rows (tree)
-                timer.stop_timer();
-            } //if
-        }//z
+        } //if
 
         // Use the next stencil (if available). The last supplied stencil will be used for all remaining levels.
         stencil_counter = std::min(stencil_counter + 1, (int) stencil_vec.size() - 1);
@@ -260,9 +214,11 @@ template<typename T>
 void PyAPRFiltering::convolve_3x3(APR &apr, T *input_intensities,
                                   const std::vector<PixelData<T>> &stencil_vec, T bias, int out_channel,
                                   int in_channel, int current_max_level, const uint64_t in_offset,
-                                  ParticleData<T> &tree_data, APRIterator &apr_iterator,
-                                  APRTreeIterator &tree_iterator, const size_t number_in_channels,
+                                  ParticleData<T> &tree_data, const size_t number_in_channels,
                                   const uint64_t out_offset, T *output_ptr){
+
+    auto apr_iterator = apr.iterator();
+    auto tree_iterator = apr.tree_iterator();
 
     int stencil_counter = 0;
 
@@ -270,98 +226,66 @@ void PyAPRFiltering::convolve_3x3(APR &apr, T *input_intensities,
 
     for (int level = current_max_level; level >= apr_iterator.level_min(); --level) {
 
-        const std::vector<int> stencil_shape = {(int) stencil_vec[stencil_counter].y_num,
-                                                (int) stencil_vec[stencil_counter].x_num,
-                                                (int) stencil_vec[stencil_counter].z_num};
-        const std::vector<int> stencil_half = {(stencil_shape[0] - 1) / 2,
-                                               (stencil_shape[1] - 1) / 2,
-                                               (stencil_shape[2] - 1) / 2};
-
-        // assert stencil_shape compatible with apr org_dims?
+        const std::vector<int> stencil_shape = {3, 3, 1};
+        const std::vector<int> stencil_half = {1, 1, 0};
 
         unsigned int z = 0;
         unsigned int x = 0;
 
-        const int z_num = apr_iterator.spatial_index_z_max(level);
-
-        const int y_num_m = (apr.orginal_dimensions(0) > 1) ? apr_iterator.spatial_index_y_max(level) +
-                                                               stencil_shape[0] - 1 : 1;
-        const int x_num_m = (apr.orginal_dimensions(1) > 1) ? apr_iterator.spatial_index_x_max(level) +
-                                                               stencil_shape[1] - 1 : 1;
+        const int y_num_m = (apr.org_dims(0) > 1) ? apr_iterator.y_num(level) + stencil_shape[0] - 1 : 1;
+        const int x_num_m = (apr.org_dims(1) > 1) ? apr_iterator.x_num(level) + stencil_shape[1] - 1 : 1;
 
         // TODO: allocate this memory outside and simply change dimension sizes and pad boundary in each iteration
         PixelData<T> temp_vec;
         temp_vec.initWithValue(y_num_m, x_num_m, stencil_shape[2], 0); //zero padded boundaries
 
-        //initial condition
-        for (int padd = 0; padd < stencil_half[2]; ++padd) {
-            update_dense_array(level, padd, apr, apr_iterator, tree_iterator, tree_data, temp_vec,
+        // fill temporary image with values (isotropic neighborhoods)
+        update_dense_array(level, 0, apr, tree_data, temp_vec,
                                input_intensities, stencil_shape, stencil_half, in_offset);
-        }
 
-        for (z = 0; z < apr.spatial_index_z_max(level); ++z) {
+        /// Compute convolution output at apr particles
 
-            if (z < (z_num - stencil_half[2])) {
-                update_dense_array(level, z + stencil_half[2], apr, apr_iterator, tree_iterator, tree_data,
-                                   temp_vec, input_intensities, stencil_shape, stencil_half, in_offset);
-            } else {
-                //padding
-                uint64_t index = temp_vec.x_num * temp_vec.y_num * ((z + stencil_half[2]) % stencil_shape[2]);
+        for (x = 0; x < apr.x_num(level); ++x) {
+            for (apr_iterator.begin(level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
-                for (x = 0; x < temp_vec.x_num; ++x) {
-                    std::fill(temp_vec.mesh.begin() + index + (x + 0) * temp_vec.y_num,
-                              temp_vec.mesh.begin() + index + (x + 1) * temp_vec.y_num, 0);
-                }
-            }
+                T neigh_sum = temp_vec.at(apr_iterator.y(),   x, 0)   * stencil_vec[stencil_counter].mesh[0] +
+                              temp_vec.at(apr_iterator.y()+1, x, 0)   * stencil_vec[stencil_counter].mesh[1] +
+                              temp_vec.at(apr_iterator.y()+2, x, 0)   * stencil_vec[stencil_counter].mesh[2] +
+                              temp_vec.at(apr_iterator.y(),   x+1, 0) * stencil_vec[stencil_counter].mesh[3] +
+                              temp_vec.at(apr_iterator.y()+1, x+1, 0) * stencil_vec[stencil_counter].mesh[4] +
+                              temp_vec.at(apr_iterator.y()+2, x+1, 0) * stencil_vec[stencil_counter].mesh[5] +
+                              temp_vec.at(apr_iterator.y(),   x+2, 0) * stencil_vec[stencil_counter].mesh[6] +
+                              temp_vec.at(apr_iterator.y()+1, x+2, 0) * stencil_vec[stencil_counter].mesh[7] +
+                              temp_vec.at(apr_iterator.y()+2, x+2, 0) * stencil_vec[stencil_counter].mesh[8];
 
-            /// Compute convolution output at apr particles
+                output_ptr[out_offset + apr_iterator] += neigh_sum + b;
 
-            for (x = 0; x < apr.spatial_index_x_max(level); ++x) {
-                for (apr_iterator.set_new_lzx(level, z, x);
-                     apr_iterator.global_index() < apr_iterator.end_index;
-                     apr_iterator.set_iterator_to_particle_next_particle()) {
+            }//y, pixels/columns (apr)
+        }//x , rows (apr)
 
-                    T neigh_sum = temp_vec.at(apr_iterator.y(),   x, 0)   * stencil_vec[stencil_counter].mesh[0] +
-                                  temp_vec.at(apr_iterator.y()+1, x, 0)   * stencil_vec[stencil_counter].mesh[1] +
-                                  temp_vec.at(apr_iterator.y()+2, x, 0)   * stencil_vec[stencil_counter].mesh[2] +
-                                  temp_vec.at(apr_iterator.y(),   x+1, 0) * stencil_vec[stencil_counter].mesh[3] +
-                                  temp_vec.at(apr_iterator.y()+1, x+1, 0) * stencil_vec[stencil_counter].mesh[4] +
-                                  temp_vec.at(apr_iterator.y()+2, x+1, 0) * stencil_vec[stencil_counter].mesh[5] +
-                                  temp_vec.at(apr_iterator.y(),   x+2, 0) * stencil_vec[stencil_counter].mesh[6] +
-                                  temp_vec.at(apr_iterator.y()+1, x+2, 0) * stencil_vec[stencil_counter].mesh[7] +
-                                  temp_vec.at(apr_iterator.y()+2, x+2, 0) * stencil_vec[stencil_counter].mesh[8];
+        /// if there are downsampled values, we need to use the tree iterator for those outputs
+        if(level == current_max_level && current_max_level < apr.level_max()) {
 
-                    output_ptr[out_offset + apr_iterator.global_index()] += neigh_sum + b;
+            const int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
-                }//y, pixels/columns (apr)
-            }//x , rows (apr)
+            for (x = 0; x < tree_iterator.x_num(level); ++x) {
+                for (tree_iterator.begin(level, z, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
 
-            /// if there are downsampled values, we need to use the tree iterator for those outputs
-            if(level == current_max_level && current_max_level < apr.level_max()) {
+                    T neigh_sum = temp_vec.at(tree_iterator.y(),   x, 0)   * stencil_vec[stencil_counter].mesh[0] +
+                                  temp_vec.at(tree_iterator.y()+1, x, 0)   * stencil_vec[stencil_counter].mesh[1] +
+                                  temp_vec.at(tree_iterator.y()+2, x, 0)   * stencil_vec[stencil_counter].mesh[2] +
+                                  temp_vec.at(tree_iterator.y(),   x+1, 0) * stencil_vec[stencil_counter].mesh[3] +
+                                  temp_vec.at(tree_iterator.y()+1, x+1, 0) * stencil_vec[stencil_counter].mesh[4] +
+                                  temp_vec.at(tree_iterator.y()+2, x+1, 0) * stencil_vec[stencil_counter].mesh[5] +
+                                  temp_vec.at(tree_iterator.y(),   x+2, 0) * stencil_vec[stencil_counter].mesh[6] +
+                                  temp_vec.at(tree_iterator.y()+1, x+2, 0) * stencil_vec[stencil_counter].mesh[7] +
+                                  temp_vec.at(tree_iterator.y()+2, x+2, 0) * stencil_vec[stencil_counter].mesh[8];
 
-                const int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
+                    output_ptr[out_offset + tree_iterator + tree_offset] += neigh_sum + b;
 
-                for (x = 0; x < tree_iterator.spatial_index_x_max(level); ++x) {
-                    for (tree_iterator.set_new_lzx(level, z, x);
-                         tree_iterator.global_index() < tree_iterator.end_index;
-                         tree_iterator.set_iterator_to_particle_next_particle()) {
-
-                        T neigh_sum = temp_vec.at(tree_iterator.y(),   x, 0)   * stencil_vec[stencil_counter].mesh[0] +
-                                      temp_vec.at(tree_iterator.y()+1, x, 0)   * stencil_vec[stencil_counter].mesh[1] +
-                                      temp_vec.at(tree_iterator.y()+2, x, 0)   * stencil_vec[stencil_counter].mesh[2] +
-                                      temp_vec.at(tree_iterator.y(),   x+1, 0) * stencil_vec[stencil_counter].mesh[3] +
-                                      temp_vec.at(tree_iterator.y()+1, x+1, 0) * stencil_vec[stencil_counter].mesh[4] +
-                                      temp_vec.at(tree_iterator.y()+2, x+1, 0) * stencil_vec[stencil_counter].mesh[5] +
-                                      temp_vec.at(tree_iterator.y(),   x+2, 0) * stencil_vec[stencil_counter].mesh[6] +
-                                      temp_vec.at(tree_iterator.y()+1, x+2, 0) * stencil_vec[stencil_counter].mesh[7] +
-                                      temp_vec.at(tree_iterator.y()+2, x+2, 0) * stencil_vec[stencil_counter].mesh[8];
-
-                        output_ptr[out_offset + tree_iterator.global_index() + tree_offset] += neigh_sum + b;
-
-                    }//y, pixels/columns (tree)
-                }//x, rows (tree)
-            } //if
-        }//z
+                }//y, pixels/columns (tree)
+            }//x, rows (tree)
+        } //if
 
         // Use the next stencil (if available). The last supplied stencil will be used for all remaining levels.
         stencil_counter = std::min(stencil_counter + 1, (int) stencil_vec.size() - 1);
@@ -376,8 +300,10 @@ void PyAPRFiltering::convolve_3x3(APR &apr, T *input_intensities,
 template<typename T>
 void PyAPRFiltering::convolve_1x1(APR &apr, T* input_ptr, const std::vector<float> &stencil_vec, float bias,
                                   int out_channel, int in_channel, int current_max_level, const uint64_t in_offset,
-                                  APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
                                   const size_t number_in_channels, const uint64_t out_offset, T* output_ptr){
+
+    auto apr_iterator = apr.iterator();
+    auto tree_iterator = apr.tree_iterator();
 
     APRTimer timer(false);
 
@@ -392,18 +318,16 @@ void PyAPRFiltering::convolve_1x1(APR &apr, T* input_ptr, const std::vector<floa
 
         T w = (T) stencil_vec[stencil_counter];
 
-        for (z = 0; z < apr.spatial_index_z_max(level); ++z) {
+        for (z = 0; z < apr.z_num(level); ++z) {
 
             /// Compute convolution output at apr particles
             timer.start_timer("convolve 1x1 apr particles");
 
-            for (x = 0; x < apr.spatial_index_x_max(level); ++x) {
-                for (apr_iterator.set_new_lzx(level, z, x);
-                     apr_iterator.global_index() < apr_iterator.end_index;
-                     apr_iterator.set_iterator_to_particle_next_particle()) {
+            for (x = 0; x < apr.x_num(level); ++x) {
+                for (apr_iterator.begin(level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
-                    output_ptr[out_offset + apr_iterator.global_index()] +=
-                            w * input_ptr[in_offset + apr_iterator.global_index()] + b;
+                    output_ptr[out_offset + apr_iterator] +=
+                            w * input_ptr[in_offset + apr_iterator] + b;
 
                 }//y, pixels/columns (apr)
             }//x , rows (apr)
@@ -417,12 +341,10 @@ void PyAPRFiltering::convolve_1x1(APR &apr, T* input_ptr, const std::vector<floa
 
                 const int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
-                for (x = 0; x < tree_iterator.spatial_index_x_max(level); ++x) {
-                    for (tree_iterator.set_new_lzx(level, z, x);
-                         tree_iterator.global_index() < tree_iterator.end_index;
-                         tree_iterator.set_iterator_to_particle_next_particle()) {
+                for (x = 0; x < tree_iterator.x_num(level); ++x) {
+                    for (tree_iterator.begin(level, z, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
 
-                        const uint64_t idx = tree_iterator.global_index() + tree_offset;
+                        const uint64_t idx = tree_iterator + tree_offset;
 
                         output_ptr[out_offset + idx] += w * input_ptr[in_offset + idx] + b;
 
@@ -445,21 +367,18 @@ void PyAPRFiltering::convolve_1x1(APR &apr, T* input_ptr, const std::vector<floa
 //*****************************************************************************************************************
 
 template<typename T>
-void PyAPRFiltering::update_dense_array(const uint64_t level, const uint64_t z, APR &apr, APRIterator &apr_iterator,
-                                        APRTreeIterator &treeIterator, ParticleData<T> &tree_data,
-                                        PixelData<T> &temp_vec, T *part_int,
-                                        const std::vector<int> &stencil_shape, const std::vector<int> &stencil_half,
-                                        uint64_t in_offset){
+void PyAPRFiltering::update_dense_array(const uint64_t level, const uint64_t z, APR &apr, ParticleData<T> &tree_data,
+                                        PixelData<T> &temp_vec, T *part_int, const std::vector<int> &stencil_shape,
+                                        const std::vector<int> &stencil_half, uint64_t in_offset){
 
-    //py::buffer_info particleData = particle_intensities.request(); // pybind11::buffer_info to access data
-    //auto part_int = (float *) particleData.ptr;
-
+    auto apr_iterator = apr.iterator();
+    auto treeIterator = apr.tree_iterator();
     uint64_t x;
 
     const uint64_t x_num_m = temp_vec.x_num;
     const uint64_t y_num_m = temp_vec.y_num;
 
-    for (x = 0; x < apr_iterator.spatial_index_x_max(level); ++x) {
+    for (x = 0; x < apr_iterator.x_num(level); ++x) {
 
         //
         //  This loop recreates particles at the current level, using a simple copy
@@ -467,37 +386,30 @@ void PyAPRFiltering::update_dense_array(const uint64_t level, const uint64_t z, 
 
         uint64_t mesh_offset = (x + stencil_half[1]) * y_num_m + x_num_m * y_num_m * (z % stencil_shape[2]);
 
+        for (apr_iterator.begin(level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
-        //std::cout << "stencil_shape = {" << stencil_shape[0] << ", " << stencil_shape[1] << ", " << stencil_shape[2] << "}" << std::endl;
-
-        for (apr_iterator.set_new_lzx(level, z, x);
-             apr_iterator.global_index() < apr_iterator.end_index;
-             apr_iterator.set_iterator_to_particle_next_particle()) {
-
-            temp_vec.mesh[apr_iterator.y() + stencil_half[0] + mesh_offset] = part_int[apr_iterator.global_index() + in_offset];//particleData.data[apr_iterator];
+            temp_vec.mesh[apr_iterator.y() + stencil_half[0] + mesh_offset] = part_int[apr_iterator + in_offset];
 
         }
     }
 
     if (level > apr_iterator.level_min()) {
-        const int y_num = apr_iterator.spatial_index_y_max(level);
+        const int y_num = apr_iterator.y_num(level);
 
         //
         //  This loop interpolates particles at a lower level (Larger Particle Cell or resolution), by simple uploading
         //
 
-        for (x = 0; x < apr.spatial_index_x_max(level); ++x) {
+        for (x = 0; x < apr.x_num(level); ++x) {
 
-            for (apr_iterator.set_new_lzx(level - 1, z / 2, x / 2);
-                 apr_iterator.global_index() < apr_iterator.end_index;
-                 apr_iterator.set_iterator_to_particle_next_particle()) {
+            for (apr_iterator.begin(level-1, z/2, x/2); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
                 int y_m = std::min(2 * apr_iterator.y() + 1, y_num - 1);    // 2y+1+offset
 
                 temp_vec.at(2 * apr_iterator.y() + stencil_half[0], x + stencil_half[1],
-                            z % stencil_shape[2]) = part_int[apr_iterator.global_index() + in_offset];//particleData[apr_iterator];
+                            z % stencil_shape[2]) = part_int[apr_iterator + in_offset];
                 temp_vec.at(y_m + stencil_half[0], x + stencil_half[1],
-                            z % stencil_shape[2]) = part_int[apr_iterator.global_index() + in_offset];//particleData[apr_iterator];
+                            z % stencil_shape[2]) = part_int[apr_iterator + in_offset];
 
             }
         }
@@ -507,10 +419,8 @@ void PyAPRFiltering::update_dense_array(const uint64_t level, const uint64_t z, 
 
     if (level < apr_iterator.level_max()) {
 
-        for (x = 0; x < apr.spatial_index_x_max(level); ++x) {
-            for (treeIterator.set_new_lzx(level, z, x);
-                 treeIterator.global_index() < treeIterator.end_index;
-                 treeIterator.set_iterator_to_particle_next_particle()) {
+        for (x = 0; x < apr.x_num(level); ++x) {
+            for (treeIterator.begin(level, z, x); treeIterator < treeIterator.end(); ++treeIterator) {
 
                 temp_vec.at(treeIterator.y() + stencil_half[0], x + stencil_half[1],
                             z % stencil_shape[2]) = tree_data[treeIterator];
@@ -525,8 +435,7 @@ void PyAPRFiltering::update_dense_array(const uint64_t level, const uint64_t z, 
 //                              Backward convolution arbitrary filter size
 //*****************************************************************************************************************
 template<typename T>
-void PyAPRFiltering::convolve_generic_backward(APR &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
-                                               T *input_ptr, const uint64_t in_offset,
+void PyAPRFiltering::convolve_generic_backward(APR &apr, T *input_ptr, const uint64_t in_offset,
                                                const uint64_t out_offset,
                                                const std::vector<PixelData<T>> &stencil_vec,
                                                T *grad_output_ptr, T *grad_input_ptr,
@@ -536,6 +445,8 @@ void PyAPRFiltering::convolve_generic_backward(APR &apr, APRIterator &apr_iterat
                                                const int out_channel, const int in_channel,
                                                const unsigned int current_max_level){
 
+    auto apr_iterator = apr.iterator();
+    auto tree_iterator = apr.tree_iterator();
     int stencil_counter = 0;
     T d_bias = 0;
 
@@ -558,11 +469,11 @@ void PyAPRFiltering::convolve_generic_backward(APR &apr, APRIterator &apr_iterat
         unsigned int z = 0;
         unsigned int x = 0;
 
-        const int z_num = 1; //apr_iterator.spatial_index_z_max(level);
+        const int z_num = 1; //apr_iterator.z_num(level);
 
-        const int y_num_m = (apr.orginal_dimensions(0) > 1) ? apr_iterator.spatial_index_y_max(level) +
+        const int y_num_m = (apr.org_dims(0) > 1) ? apr_iterator.y_num(level) +
                                                                stencil_shape[0] - 1 : 1;
-        const int x_num_m = (apr.orginal_dimensions(1) > 1) ? apr_iterator.spatial_index_x_max(level) +
+        const int x_num_m = (apr.org_dims(1) > 1) ? apr_iterator.x_num(level) +
                                                                stencil_shape[1] - 1 : 1;
 
 
@@ -588,11 +499,11 @@ void PyAPRFiltering::convolve_generic_backward(APR &apr, APRIterator &apr_iterat
         }
         */
 
-        for (z = 0; z < apr.spatial_index_z_max(level); ++z) {
+        for (z = 0; z < apr.z_num(level); ++z) {
 
             if (z < (z_num - stencil_half[2])) {
                 //update the next z plane for the access
-                update_dense_array(level, z + stencil_half[2], apr, apr_iterator, tree_iterator, tree_data,
+                update_dense_array(level, z + stencil_half[2], apr, tree_data,
                                    temp_vec, input_ptr, stencil_shape, stencil_half, in_offset);
             } else {
                 //padding
@@ -604,12 +515,10 @@ void PyAPRFiltering::convolve_generic_backward(APR &apr, APRIterator &apr_iterat
                 }
             }
 
-            for(x = 0; x < apr_iterator.spatial_index_x_max(level); ++x) {
-                for (apr_iterator.set_new_lzx(level, z, x);
-                     apr_iterator.global_index() < apr_iterator.end_index;
-                     apr_iterator.set_iterator_to_particle_next_particle()) {
+            for(x = 0; x < apr_iterator.x_num(level); ++x) {
+                for (apr_iterator.begin(level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
-                    const T dO = grad_output_ptr[out_offset + apr_iterator.global_index()];
+                    const T dO = grad_output_ptr[out_offset + apr_iterator];
                     d_bias += dO;
 
                     for(size_t ix=0; ix < stencil_shape[1]; ++ix) {
@@ -632,15 +541,13 @@ void PyAPRFiltering::convolve_generic_backward(APR &apr, APRIterator &apr_iterat
 
                 int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
-                for(x = 0; x<tree_iterator.spatial_index_x_max(level); ++x) {
-                    for (tree_iterator.set_new_lzx(level, z, x);
-                         tree_iterator.global_index() < tree_iterator.end_index;
-                         tree_iterator.set_iterator_to_particle_next_particle()) {
+                for(x = 0; x<tree_iterator.x_num(level); ++x) {
+                    for (tree_iterator.begin(level, z, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
 
                         //const int k = tree_iterator.y() + stencil_half[0]; // offset to allow for boundary padding
                         //const int i = x + stencil_half[1];
 
-                        T dO = grad_output_ptr[out_offset + tree_iterator.global_index() + tree_offset];
+                        T dO = grad_output_ptr[out_offset + tree_iterator + tree_offset];
                         d_bias += dO;
 
                         for(size_t ix=0; ix < stencil_shape[1]; ++ix) {
@@ -661,7 +568,7 @@ void PyAPRFiltering::convolve_generic_backward(APR &apr, APRIterator &apr_iterat
 
             //TODO: this works for 2D images, but for 3D the updating needs to change
             /// push temp_vec_di to grad_input and grad_tree_temp
-            update_dense_array_backward(level, z, apr, apr_iterator, tree_iterator, grad_tree_temp, temp_vec_di,
+            update_dense_array_backward(level, z, apr, grad_tree_temp, temp_vec_di,
                                         grad_input_ptr, stencil_shape, stencil_half, in_offset);
 
         }//z
@@ -680,8 +587,7 @@ void PyAPRFiltering::convolve_generic_backward(APR &apr, APRIterator &apr_iterat
 //                              Backward convolution 3x3 filter
 //*****************************************************************************************************************
 template<typename T>
-void PyAPRFiltering::convolve_3x3_backward(APR &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
-                                           T *input_ptr, const uint64_t in_offset, const uint64_t out_offset,
+void PyAPRFiltering::convolve_3x3_backward(APR &apr, T *input_ptr, const uint64_t in_offset, const uint64_t out_offset,
                                            const std::vector<PixelData<T>> &stencil_vec, T *grad_output_ptr,
                                            T *grad_input_ptr, std::vector<float> &temp_vec_db,
                                            std::vector<T> &temp_vec_dw, const uint64_t grad_weight_offset,
@@ -689,6 +595,8 @@ void PyAPRFiltering::convolve_3x3_backward(APR &apr, APRIterator &apr_iterator, 
                                            ParticleData<T> &tree_data, const int out_channel,
                                            const int in_channel, const unsigned int current_max_level){
 
+    auto apr_iterator = apr.iterator();
+    auto tree_iterator = apr.tree_iterator();
     int stencil_counter = 0;
     T d_bias = 0;
 
@@ -706,11 +614,11 @@ void PyAPRFiltering::convolve_3x3_backward(APR &apr, APRIterator &apr_iterator, 
         unsigned int z = 0;
         unsigned int x = 0;
 
-        const int z_num = 1; //apr_iterator.spatial_index_z_max(level);
+        const int z_num = 1; //apr_iterator.z_num(level);
 
-        const int y_num_m = (apr.orginal_dimensions(0) > 1) ? apr_iterator.spatial_index_y_max(level) +
+        const int y_num_m = (apr.org_dims(0) > 1) ? apr_iterator.y_num(level) +
                                                                stencil_shape[0] - 1 : 1;
-        const int x_num_m = (apr.orginal_dimensions(1) > 1) ? apr_iterator.spatial_index_x_max(level) +
+        const int x_num_m = (apr.org_dims(1) > 1) ? apr_iterator.x_num(level) +
                                                                stencil_shape[1] - 1 : 1;
 
 
@@ -720,11 +628,11 @@ void PyAPRFiltering::convolve_3x3_backward(APR &apr, APRIterator &apr_iterator, 
         PixelData<T> temp_vec_di;
         temp_vec_di.initWithValue(y_num_m, x_num_m, stencil_shape[2], 0);
 
-        for (z = 0; z < apr.spatial_index_z_max(level); ++z) {
+        for (z = 0; z < apr.z_num(level); ++z) {
 
             if (z < (z_num - stencil_half[2])) {
                 //update the next z plane for the access
-                update_dense_array(level, z + stencil_half[2], apr, apr_iterator, tree_iterator, tree_data,
+                update_dense_array(level, z + stencil_half[2], apr, tree_data,
                                        temp_vec, input_ptr, stencil_shape, stencil_half, in_offset);
             } else {
                 //padding
@@ -736,12 +644,10 @@ void PyAPRFiltering::convolve_3x3_backward(APR &apr, APRIterator &apr_iterator, 
                 }
             }
 
-            for(x = 0; x < apr_iterator.spatial_index_x_max(level); ++x) {
-                for (apr_iterator.set_new_lzx(level, z, x);
-                     apr_iterator.global_index() < apr_iterator.end_index;
-                     apr_iterator.set_iterator_to_particle_next_particle()) {
+            for(x = 0; x < apr_iterator.x_num(level); ++x) {
+                for (apr_iterator.begin(level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
-                    const T dO = grad_output_ptr[out_offset + apr_iterator.global_index()];
+                    const T dO = grad_output_ptr[out_offset + apr_iterator];
                     d_bias += dO;
 
                     const size_t y_num = temp_vec.y_num;
@@ -782,12 +688,10 @@ void PyAPRFiltering::convolve_3x3_backward(APR &apr, APRIterator &apr_iterator, 
 
                 int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
-                for(x = 0; x<tree_iterator.spatial_index_x_max(level); ++x) {
-                    for (tree_iterator.set_new_lzx(level, z, x);
-                         tree_iterator.global_index() < tree_iterator.end_index;
-                         tree_iterator.set_iterator_to_particle_next_particle()) {
+                for(x = 0; x<tree_iterator.x_num(level); ++x) {
+                    for (tree_iterator.begin(level, z, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
 
-                        T dO = grad_output_ptr[out_offset + tree_iterator.global_index() + tree_offset];
+                        T dO = grad_output_ptr[out_offset + tree_iterator + tree_offset];
                         d_bias += dO;
 
                         const size_t y_num = temp_vec.y_num;
@@ -825,7 +729,7 @@ void PyAPRFiltering::convolve_3x3_backward(APR &apr, APRIterator &apr_iterator, 
 
             //TODO: this works for 2D images, but for 3D the updating needs to change
             /// push temp_vec_di to grad_input and grad_tree_temp
-            update_dense_array_backward(level, z, apr, apr_iterator, tree_iterator, grad_tree_temp, temp_vec_di,
+            update_dense_array_backward(level, z, apr, grad_tree_temp, temp_vec_di,
                                         grad_input_ptr, stencil_shape, stencil_half, in_offset);
 
         }//z
@@ -845,13 +749,15 @@ void PyAPRFiltering::convolve_3x3_backward(APR &apr, APRIterator &apr_iterator, 
 //                              Backward convolution 1x1 filter
 //*****************************************************************************************************************
 template<typename T>
-void PyAPRFiltering::convolve_1x1_backward(APR &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
-                                           T* input_ptr, const uint64_t in_offset, const uint64_t out_offset,
+void PyAPRFiltering::convolve_1x1_backward(APR &apr, T* input_ptr, const uint64_t in_offset, const uint64_t out_offset,
                                            const std::vector<float> &stencil_vec, T* grad_output_ptr,
                                            T* grad_input_ptr, std::vector<float> &temp_vec_db,
                                            std::vector<float> &temp_vec_dw, const uint64_t grad_weight_offset,
                                            const size_t db_offset, const int out_channel, const int in_channel,
                                            const unsigned int current_max_level){
+
+    auto apr_iterator = apr.iterator();
+    auto tree_iterator = apr.tree_iterator();
 
     float d_bias = 0;
     int stencil_counter = 0;
@@ -864,18 +770,16 @@ void PyAPRFiltering::convolve_1x1_backward(APR &apr, APRIterator &apr_iterator, 
         unsigned int z = 0;
         unsigned int x = 0;
 
-        for (z = 0; z < apr.spatial_index_z_max(level); ++z) {
+        for (z = 0; z < apr.z_num(level); ++z) {
 
-            for(x = 0; x < apr_iterator.spatial_index_x_max(level); ++x) {
-                for (apr_iterator.set_new_lzx(level, z, x);
-                     apr_iterator.global_index() < apr_iterator.end_index;
-                     apr_iterator.set_iterator_to_particle_next_particle()) {
+            for(x = 0; x < apr_iterator.x_num(level); ++x) {
+                for (apr_iterator.begin(level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
-                    const T dO = grad_output_ptr[out_offset + apr_iterator.global_index()];
+                    const T dO = grad_output_ptr[out_offset + apr_iterator];
 
                     d_bias += dO;
-                    d_weight += dO * input_ptr[in_offset + apr_iterator.global_index()];
-                    grad_input_ptr[in_offset + apr_iterator.global_index()] += dO * w;
+                    d_weight += dO * input_ptr[in_offset + apr_iterator];
+                    grad_input_ptr[in_offset + apr_iterator] += dO * w;
 
                 }//y, pixels/columns
             } //x
@@ -885,12 +789,10 @@ void PyAPRFiltering::convolve_1x1_backward(APR &apr, APRIterator &apr_iterator, 
 
                 const int64_t tree_offset = compute_tree_offset(apr_iterator, tree_iterator, level);
 
-                for(x = 0; x < tree_iterator.spatial_index_x_max(level); ++x) {
-                    for (tree_iterator.set_new_lzx(level, z, x);
-                         tree_iterator.global_index() < tree_iterator.end_index;
-                         tree_iterator.set_iterator_to_particle_next_particle()) {
+                for(x = 0; x < tree_iterator.x_num(level); ++x) {
+                    for (tree_iterator.begin(level, z, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
 
-                        const uint64_t idx = tree_iterator.global_index() + tree_offset;
+                        const uint64_t idx = tree_iterator + tree_offset;
                         const T dO = grad_output_ptr[out_offset + idx];
 
                         d_bias += dO;
@@ -919,11 +821,12 @@ void PyAPRFiltering::convolve_1x1_backward(APR &apr, APRIterator &apr_iterator, 
 //*****************************************************************************************************************
 template<typename T>
 void PyAPRFiltering::update_dense_array_backward(const uint64_t level, const uint64_t z, APR &apr,
-                                                 APRIterator &apr_iterator, APRTreeIterator &treeIterator,
                                                  ParticleData<T> &grad_tree_data, PixelData<T> &temp_vec_di,
                                                  T *grad_input_ptr, const std::vector<int> &stencil_shape,
                                                  const std::vector<int> &stencil_half, const uint64_t in_offset){
 
+    auto apr_iterator = apr.iterator();
+    auto treeIterator = apr.tree_iterator();
 
     size_t x;
 
@@ -933,32 +836,28 @@ void PyAPRFiltering::update_dense_array_backward(const uint64_t level, const uin
 
     /// insert values at matching apr particle locations
 
-    for (x = 0; x < apr_iterator.spatial_index_x_max(level); ++x) {
+    for (x = 0; x < apr_iterator.x_num(level); ++x) {
 
         uint64_t mesh_offset = x_num_m * y_num_m * (z % stencil_shape[2]) + (x + stencil_half[1]) * y_num_m + stencil_half[0];
 
-        for (apr_iterator.set_new_lzx(level, z, x);
-             apr_iterator.global_index() < apr_iterator.end_index;
-             apr_iterator.set_iterator_to_particle_next_particle()) {
+        for (apr_iterator.begin(level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
-            grad_input_ptr[in_offset + apr_iterator.global_index()] += temp_vec_di.mesh[apr_iterator.y() + mesh_offset];
+            grad_input_ptr[in_offset + apr_iterator] += temp_vec_di.mesh[apr_iterator.y() + mesh_offset];
         }
     }
 
     if (level > apr_iterator.level_min()) {
-        const int y_num = apr_iterator.spatial_index_y_max(level);
+        const int y_num = apr_iterator.y_num(level);
 
         /// insert values at lower level particles
 
-        for (x = 0; x < apr.spatial_index_x_max(level); ++x) {
+        for (x = 0; x < apr.x_num(level); ++x) {
 
-            for (apr_iterator.set_new_lzx(level - 1, z / 2, x / 2);
-                 apr_iterator.global_index() < apr_iterator.end_index;
-                 apr_iterator.set_iterator_to_particle_next_particle()) {
+            for (apr_iterator.begin(level-1, z/2, x/2); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
                 int y_m = std::min(2 * apr_iterator.y() + 1, y_num - 1);
 
-                grad_input_ptr[in_offset + apr_iterator.global_index()] +=
+                grad_input_ptr[in_offset + apr_iterator] +=
                         temp_vec_di.at(2 * apr_iterator.y() + stencil_half[0], x + stencil_half[1], z % stencil_shape[2]) +
                         temp_vec_di.at(y_m + stencil_half[0], x + stencil_half[1], z % stencil_shape[2]);
 
@@ -970,10 +869,8 @@ void PyAPRFiltering::update_dense_array_backward(const uint64_t level, const uin
 
     if (level < apr_iterator.level_max()) {
 
-        for (x = 0; x < apr.spatial_index_x_max(level); ++x) {
-            for (treeIterator.set_new_lzx(level, z, x);
-                 treeIterator.global_index() < treeIterator.end_index;
-                 treeIterator.set_iterator_to_particle_next_particle()) {
+        for (x = 0; x < apr.x_num(level); ++x) {
+            for (treeIterator.begin(level, z, x); treeIterator < treeIterator.end(); ++treeIterator) {
 
                 grad_tree_data[treeIterator] += temp_vec_di.at(treeIterator.y() + stencil_half[0], x + stencil_half[1], z % stencil_shape[2]);
 
@@ -988,9 +885,11 @@ void PyAPRFiltering::update_dense_array_backward(const uint64_t level, const uin
 //*****************************************************************************************************************
 
 template<typename T>
-void PyAPRFiltering::fill_tree_mean(APR &apr, T *input_ptr, ParticleData<T> &tree_data,
-                                    APRIterator &apr_iterator, APRTreeIterator &tree_iterator, uint64_t in_offset,
+void PyAPRFiltering::fill_tree_mean(APR &apr, T *input_ptr, ParticleData<T> &tree_data, uint64_t in_offset,
                                     unsigned int current_max_level){
+
+    auto apr_iterator = apr.iterator();
+    auto tree_iterator = apr.tree_iterator();
 
     if( current_max_level < apr.level_max() ) {
         tree_data.init(tree_iterator.particles_level_end(current_max_level));
@@ -1014,13 +913,11 @@ void PyAPRFiltering::fill_tree_mean(APR &apr, T *input_ptr, ParticleData<T> &tre
 
         const int64_t tree_offset_in  = compute_tree_offset(apr_iterator, tree_iterator, current_max_level);
 
-        //for (z = 0; z < treeIterator.spatial_index_z_max(current_max_level); z++) {
-        for (x = 0; x < tree_iterator.spatial_index_x_max(current_max_level); ++x) {
-            for (tree_iterator.set_new_lzx(current_max_level, z, x);
-                 tree_iterator.global_index() < tree_iterator.end_index;
-                 tree_iterator.set_iterator_to_particle_next_particle()) {
+        //for (z = 0; z < treeIterator.z_num(current_max_level); z++) {
+        for (x = 0; x < tree_iterator.x_num(current_max_level); ++x) {
+            for (tree_iterator.begin(current_max_level, z, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
 
-                tree_data[tree_iterator] = input_ptr[in_offset + tree_iterator.global_index() + tree_offset_in];
+                tree_data[tree_iterator] = input_ptr[in_offset + tree_iterator + tree_offset_in];
 
             }
         }//x
@@ -1032,20 +929,20 @@ void PyAPRFiltering::fill_tree_mean(APR &apr, T *input_ptr, ParticleData<T> &tre
         //z_d = 0;
         int z = 0;
 
-        //for (z_d = 0; z_d < parentIterator.spatial_index_z_max(level-1); z_d++) {
-        //for (int z = 2*z_d; z <= std::min(2*z_d+1,(int)apr.spatial_index_z_max(level)-1); ++z) {
+        //for (z_d = 0; z_d < parentIterator.z_num(level-1); z_d++) {
+        //for (int z = 2*z_d; z <= std::min(2*z_d+1,(int)apr.z_num(level)-1); ++z) {
         //the loop is bundled into blocks of 2, this prevents race conditions with OpenMP parents
-        for (x_d = 0; x_d < parent_iterator.spatial_index_x_max(level-1); ++x_d) {
-            for (int x = 2 * x_d; x <= std::min(2 * x_d + 1, (int) apr.spatial_index_x_max(level)-1); ++x) {
+        for (x_d = 0; x_d < parent_iterator.x_num(level-1); ++x_d) {
+            for (int x = 2 * x_d; x <= std::min(2 * x_d + 1, (int) apr.x_num(level)-1); ++x) {
 
-                parent_iterator.set_new_lzx(level - 1, z / 2, x / 2);
+                parent_iterator.begin(level - 1, z / 2, x / 2);
 
                 //dealing with boundary conditions
                 T scale_factor_xz =
-                        (((2 * parent_iterator.spatial_index_x_max(level - 1) != apr.spatial_index_x_max(level)) &&
-                          ((x / 2) == (parent_iterator.spatial_index_x_max(level - 1) - 1))) +
-                         ((2 * parent_iterator.spatial_index_z_max(level - 1) != apr.spatial_index_z_max(level)) &&
-                          (z / 2) == (parent_iterator.spatial_index_z_max(level - 1) - 1))) * 2;
+                        (((2 * parent_iterator.x_num(level - 1) != apr.x_num(level)) &&
+                          ((x / 2) == (parent_iterator.x_num(level - 1) - 1))) +
+                         ((2 * parent_iterator.z_num(level - 1) != apr.z_num(level)) &&
+                          (z / 2) == (parent_iterator.z_num(level - 1) - 1))) * 2;
 
                 if (scale_factor_xz == 0) {
                     scale_factor_xz = 1;
@@ -1053,27 +950,25 @@ void PyAPRFiltering::fill_tree_mean(APR &apr, T *input_ptr, ParticleData<T> &tre
 
                 T scale_factor_yxz = scale_factor_xz;
 
-                if ((2 * parent_iterator.spatial_index_y_max(level - 1) != apr.spatial_index_y_max(level))) {
+                if ((2 * parent_iterator.y_num(level - 1) != apr.y_num(level))) {
                     scale_factor_yxz = scale_factor_xz * 2;
                 }
 
 
-                for (apr_iterator.set_new_lzx(level, z, x);
-                     apr_iterator.global_index() <
-                     apr_iterator.end_index; apr_iterator.set_iterator_to_particle_next_particle()) {
+                for (apr_iterator.begin(level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
                     while (parent_iterator.y() != (apr_iterator.y() / 2)) {
-                        parent_iterator.set_iterator_to_particle_next_particle();
+                        parent_iterator++;
                     }
 
 
-                    if (parent_iterator.y() == (parent_iterator.spatial_index_y_max(level - 1) - 1)) {
+                    if (parent_iterator.y() == (parent_iterator.y_num(level - 1) - 1)) {
                         tree_data[parent_iterator] +=
-                                scale_factor_yxz * input_ptr[in_offset + apr_iterator.global_index()] / 8.0f;
+                                scale_factor_yxz * input_ptr[in_offset + apr_iterator] / 8.0f;
                     } else {
 
                         tree_data[parent_iterator] +=
-                                scale_factor_xz * input_ptr[in_offset + apr_iterator.global_index()] / 8.0f;
+                                scale_factor_xz * input_ptr[in_offset + apr_iterator] / 8.0f;
                     }
 
                 }
@@ -1088,19 +983,19 @@ void PyAPRFiltering::fill_tree_mean(APR &apr, T *input_ptr, ParticleData<T> &tre
         //z_d = 0;
         int z = 0;
 
-        //for (z_d = 0; z_d < treeIterator.spatial_index_z_max(level-1); z_d++) {
-        //for (int z = 2*z_d; z <= std::min(2*z_d+1,(int)treeIterator.spatial_index_z_max(level)-1); ++z) {
+        //for (z_d = 0; z_d < treeIterator.z_num(level-1); z_d++) {
+        //for (int z = 2*z_d; z <= std::min(2*z_d+1,(int)treeIterator.z_num(level)-1); ++z) {
         //the loop is bundled into blocks of 2, this prevents race conditions with OpenMP parents
-        for (x_d = 0; x_d < tree_iterator.spatial_index_x_max(level-1); ++x_d) {
-            for (int x = 2 * x_d; x <= std::min(2 * x_d + 1, (int) tree_iterator.spatial_index_x_max(level)-1); ++x) {
+        for (x_d = 0; x_d < tree_iterator.x_num(level-1); ++x_d) {
+            for (int x = 2 * x_d; x <= std::min(2 * x_d + 1, (int) tree_iterator.x_num(level)-1); ++x) {
 
-                parent_iterator.set_new_lzx(level - 1, z/2, x/2);
+                parent_iterator.begin(level - 1, z/2, x/2);
 
                 T scale_factor_xz =
-                        (((2 * parent_iterator.spatial_index_x_max(level - 1) != parent_iterator.spatial_index_x_max(level)) &&
-                          ((x / 2) == (parent_iterator.spatial_index_x_max(level - 1) - 1))) +
-                         ((2 * parent_iterator.spatial_index_z_max(level - 1) != parent_iterator.spatial_index_z_max(level)) &&
-                          ((z / 2) == (parent_iterator.spatial_index_z_max(level - 1) - 1)))) * 2;
+                        (((2 * parent_iterator.x_num(level - 1) != parent_iterator.x_num(level)) &&
+                          ((x / 2) == (parent_iterator.x_num(level - 1) - 1))) +
+                         ((2 * parent_iterator.z_num(level - 1) != parent_iterator.z_num(level)) &&
+                          ((z / 2) == (parent_iterator.z_num(level - 1) - 1)))) * 2;
 
                 if (scale_factor_xz == 0) {
                     scale_factor_xz = 1;
@@ -1108,19 +1003,17 @@ void PyAPRFiltering::fill_tree_mean(APR &apr, T *input_ptr, ParticleData<T> &tre
 
                 T scale_factor_yxz = scale_factor_xz;
 
-                if ((2 * parent_iterator.spatial_index_y_max(level - 1) != parent_iterator.spatial_index_y_max(level))) {
+                if ((2 * parent_iterator.y_num(level - 1) != parent_iterator.y_num(level))) {
                     scale_factor_yxz = scale_factor_xz * 2;
                 }
 
-                for (tree_iterator.set_new_lzx(level, z, x);
-                     tree_iterator.global_index() < tree_iterator.end_index;
-                     tree_iterator.set_iterator_to_particle_next_particle()) {
+                for (tree_iterator.begin(level, z, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
 
                     while (parent_iterator.y() != tree_iterator.y() / 2) {
-                        parent_iterator.set_iterator_to_particle_next_particle();
+                        parent_iterator++;
                     }
 
-                    if (parent_iterator.y() == (parent_iterator.spatial_index_y_max(level - 1) - 1)) {
+                    if (parent_iterator.y() == (parent_iterator.y_num(level - 1) - 1)) {
                         tree_data[parent_iterator] += scale_factor_yxz * tree_data[tree_iterator] / 8.0f;
                     } else {
                         tree_data[parent_iterator] += scale_factor_xz * tree_data[tree_iterator] / 8.0f;
@@ -1140,10 +1033,11 @@ void PyAPRFiltering::fill_tree_mean(APR &apr, T *input_ptr, ParticleData<T> &tre
 //*****************************************************************************************************************
 
 template<typename T>
-void PyAPRFiltering::fill_tree_mean_backward(APR &apr, APRIterator &apr_iterator, APRTreeIterator &tree_iterator,
-                                             T *grad_input_ptr, ParticleData<T> &grad_tree_temp,
+void PyAPRFiltering::fill_tree_mean_backward(APR &apr, T *grad_input_ptr, ParticleData<T> &grad_tree_temp,
                                              uint64_t in_offset, unsigned int current_max_level){
 
+    auto apr_iterator = apr.iterator();
+    auto tree_iterator = apr.tree_iterator();
     auto parent_iterator = apr.tree_iterator();
 
     //int z_d;
@@ -1157,20 +1051,20 @@ void PyAPRFiltering::fill_tree_mean_backward(APR &apr, APRIterator &apr_iterator
         //z_d = 0;
         int z = 0;
 
-        //for (z_d = 0; z_d < treeIterator.spatial_index_z_max(level-1); z_d++) {
-        //for (int z = 2*z_d; z <= std::min(2*z_d+1,(int)treeIterator.spatial_index_z_max(level)-1); ++z) {
+        //for (z_d = 0; z_d < treeIterator.z_num(level-1); z_d++) {
+        //for (int z = 2*z_d; z <= std::min(2*z_d+1,(int)treeIterator.z_num(level)-1); ++z) {
         //the loop is bundled into blocks of 2, this prevents race conditions with OpenMP parents
 
-        for (x_d = 0; x_d < tree_iterator.spatial_index_x_max(level-1); ++x_d) {
-            for (int x = 2 * x_d; x <= std::min(2 * x_d + 1, (int) tree_iterator.spatial_index_x_max(level)-1); ++x) {
+        for (x_d = 0; x_d < tree_iterator.x_num(level-1); ++x_d) {
+            for (int x = 2 * x_d; x <= std::min(2 * x_d + 1, (int) tree_iterator.x_num(level)-1); ++x) {
 
-                parent_iterator.set_new_lzx(level - 1, z/2, x/2);
+                parent_iterator.begin(level - 1, z/2, x/2);
 
                 T scale_factor_xz =
-                        (((2 * parent_iterator.spatial_index_x_max(level - 1) != parent_iterator.spatial_index_x_max(level)) &&
-                          ((x / 2) == (parent_iterator.spatial_index_x_max(level - 1) - 1))) +
-                         ((2 * parent_iterator.spatial_index_z_max(level - 1) != parent_iterator.spatial_index_z_max(level)) &&
-                          ((z / 2) == (parent_iterator.spatial_index_z_max(level - 1) - 1)))) * 2;
+                        (((2 * parent_iterator.x_num(level - 1) != parent_iterator.x_num(level)) &&
+                          ((x / 2) == (parent_iterator.x_num(level - 1) - 1))) +
+                         ((2 * parent_iterator.z_num(level - 1) != parent_iterator.z_num(level)) &&
+                          ((z / 2) == (parent_iterator.z_num(level - 1) - 1)))) * 2;
 
                 if (scale_factor_xz == 0) {
                     scale_factor_xz = 1;
@@ -1178,19 +1072,17 @@ void PyAPRFiltering::fill_tree_mean_backward(APR &apr, APRIterator &apr_iterator
 
                 T scale_factor_yxz = scale_factor_xz;
 
-                if ((2 * parent_iterator.spatial_index_y_max(level - 1) != parent_iterator.spatial_index_y_max(level))) {
+                if ((2 * parent_iterator.y_num(level - 1) != parent_iterator.y_num(level))) {
                     scale_factor_yxz = scale_factor_xz * 2;
                 }
 
-                for (tree_iterator.set_new_lzx(level, z, x);
-                     tree_iterator.global_index() < tree_iterator.end_index;
-                     tree_iterator.set_iterator_to_particle_next_particle()) {
+                for (tree_iterator.begin(level, z, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
 
                     while (parent_iterator.y() != tree_iterator.y() / 2) {
-                        parent_iterator.set_iterator_to_particle_next_particle();
+                        parent_iterator++;
                     }
 
-                    if (parent_iterator.y() == (parent_iterator.spatial_index_y_max(level - 1) - 1)) {
+                    if (parent_iterator.y() == (parent_iterator.y_num(level - 1) - 1)) {
                         //tree_data[parentIterator] = scale_factor_yxz * tree_data[treeIterator] / 8.0f +
                         //                            tree_data[parentIterator];
                         grad_tree_temp[tree_iterator] += grad_tree_temp[parent_iterator] * scale_factor_yxz / 8.0f;
@@ -1213,21 +1105,21 @@ void PyAPRFiltering::fill_tree_mean_backward(APR &apr, APRIterator &apr_iterator
         //int z_d = 0;
         int z = 0;
 
-        //for (z_d = 0; z_d < parentIterator.spatial_index_z_max(level-1); z_d++) {
-        //for (int z = 2*z_d; z <= std::min(2*z_d+1,(int)apr.spatial_index_z_max(level)-1); ++z) {
+        //for (z_d = 0; z_d < parentIterator.z_num(level-1); z_d++) {
+        //for (int z = 2*z_d; z <= std::min(2*z_d+1,(int)apr.z_num(level)-1); ++z) {
         //the loop is bundled into blocks of 2, this prevents race conditions with OpenMP parents
 
-        for (x_d = 0; x_d < parent_iterator.spatial_index_x_max(level-1); ++x_d) {
-            for (int x = 2 * x_d; x <= std::min(2 * x_d + 1, (int) apr.spatial_index_x_max(level)-1); ++x) {
+        for (x_d = 0; x_d < parent_iterator.x_num(level-1); ++x_d) {
+            for (int x = 2 * x_d; x <= std::min(2 * x_d + 1, (int) apr.x_num(level)-1); ++x) {
 
-                parent_iterator.set_new_lzx(level - 1, z / 2, x / 2);
+                parent_iterator.begin(level - 1, z / 2, x / 2);
 
                 //dealing with boundary conditions
                 T scale_factor_xz =
-                        (((2 * parent_iterator.spatial_index_x_max(level - 1) != apr.spatial_index_x_max(level)) &&
-                          ((x / 2) == (parent_iterator.spatial_index_x_max(level - 1) - 1))) +
-                         ((2 * parent_iterator.spatial_index_z_max(level - 1) != apr.spatial_index_z_max(level)) &&
-                          (z / 2) == (parent_iterator.spatial_index_z_max(level - 1) - 1))) * 2;
+                        (((2 * parent_iterator.x_num(level - 1) != apr.x_num(level)) &&
+                          ((x / 2) == (parent_iterator.x_num(level - 1) - 1))) +
+                         ((2 * parent_iterator.z_num(level - 1) != apr.z_num(level)) &&
+                          (z / 2) == (parent_iterator.z_num(level - 1) - 1))) * 2;
 
                 if (scale_factor_xz == 0) {
                     scale_factor_xz = 1;
@@ -1235,26 +1127,24 @@ void PyAPRFiltering::fill_tree_mean_backward(APR &apr, APRIterator &apr_iterator
 
                 T scale_factor_yxz = scale_factor_xz;
 
-                if ((2 * parent_iterator.spatial_index_y_max(level - 1) != apr.spatial_index_y_max(level))) {
+                if ((2 * parent_iterator.y_num(level - 1) != apr.y_num(level))) {
                     scale_factor_yxz = scale_factor_xz * 2;
                 }
 
 
-                for (apr_iterator.set_new_lzx(level, z, x);
-                     apr_iterator.global_index() < apr_iterator.end_index;
-                     apr_iterator.set_iterator_to_particle_next_particle()) {
+                for (apr_iterator.begin(level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
                     while (parent_iterator.y() != (apr_iterator.y() / 2)) {
-                        parent_iterator.set_iterator_to_particle_next_particle();
+                        parent_iterator++;
                     }
 
 
-                    if (parent_iterator.y() == (parent_iterator.spatial_index_y_max(level - 1) - 1)) {
+                    if (parent_iterator.y() == (parent_iterator.y_num(level - 1) - 1)) {
                         //tree_data[parentIterator] =
                         //        scale_factor_yxz * input_ptr[in_offset + apr_iterator.global_index()] / 8.0f +
                         //        tree_data[parentIterator];
 
-                        grad_input_ptr[in_offset + apr_iterator.global_index()] +=
+                        grad_input_ptr[in_offset + apr_iterator] +=
                                 scale_factor_yxz * grad_tree_temp[parent_iterator] / 8.0f;
                     } else {
 
@@ -1262,7 +1152,7 @@ void PyAPRFiltering::fill_tree_mean_backward(APR &apr, APRIterator &apr_iterator
                         //        scale_factor_xz * input_ptr[in_offset + apr_iterator.global_index()] / 8.0f +
                         //        tree_data[parentIterator];
 
-                        grad_input_ptr[in_offset + apr_iterator.global_index()] +=
+                        grad_input_ptr[in_offset + apr_iterator] +=
                                 scale_factor_xz * grad_tree_temp[parent_iterator] / 8.0f;
                     }
 
@@ -1281,16 +1171,14 @@ void PyAPRFiltering::fill_tree_mean_backward(APR &apr, APRIterator &apr_iterator
 
         int64_t tree_offset_in  = compute_tree_offset(apr_iterator, tree_iterator, current_max_level);
 
-        //for (z = 0; z < treeIterator.spatial_index_z_max(current_max_level); z++) {
+        //for (z = 0; z < treeIterator.z_num(current_max_level); z++) {
 
-        for (x = 0; x < tree_iterator.spatial_index_x_max(current_max_level); ++x) {
-            for (tree_iterator.set_new_lzx(current_max_level, z, x);
-                 tree_iterator.global_index() < tree_iterator.end_index;
-                 tree_iterator.set_iterator_to_particle_next_particle()) {
+        for (x = 0; x < tree_iterator.x_num(current_max_level); ++x) {
+            for (tree_iterator.begin(current_max_level, z, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
 
                 //tree_data[treeIterator] = input_ptr[in_offset + treeIterator.global_index() + tree_offset_in];
 
-                grad_input_ptr[in_offset + tree_iterator.global_index() + tree_offset_in] += grad_tree_temp[tree_iterator];
+                grad_input_ptr[in_offset + tree_iterator + tree_offset_in] += grad_tree_temp[tree_iterator];
 
             }
         }//x
@@ -1303,29 +1191,24 @@ void PyAPRFiltering::fill_tree_mean_backward(APR &apr, APRIterator &apr_iterator
 //                              Forward 2x2 maxpooling
 //*****************************************************************************************************************
 template<typename T>
-void PyAPRFiltering::max_pool_2x2(APR &apr, T *input_ptr, T *output_ptr, int64_t *idx_ptr,
+void PyAPRFiltering::max_pool_2x2(APR &apr, T *input_ptr, T *output_ptr, uint64_t *idx_ptr,
                                   const uint64_t in_offset, const uint64_t out_offset, const int64_t tree_offset_in,
-                                  const int64_t tree_offset_out, APRIterator &apr_iterator,
-                                  APRTreeIterator &treeIterator, APRTreeIterator &parentIterator,
-                                  const unsigned int current_max_level){
+                                  const int64_t tree_offset_out, const unsigned int current_max_level){
 
-    //std::cout << "in_offset " << in_offset << " out_offset " << out_offset << " tree_in " << tree_offset_in << " tree_out " << tree_offset_out << std::endl;
+    auto apr_iterator = apr.iterator();
+    auto treeIterator = apr.tree_iterator();
+    auto parentIterator = apr.tree_iterator();
+
     /// Start by filling in the existing values up to and including current_max_level - 1, as they are unchanged
     for (unsigned int level = apr_iterator.level_min(); level < current_max_level; ++level) {
         int z = 0;
         int x = 0;
 
-        for (x = 0; x < apr_iterator.spatial_index_x_max(level); ++x) {
-            for (apr_iterator.set_new_lzx(level, z, x);
-                 apr_iterator.global_index() < apr_iterator.end_index;
-                 apr_iterator.set_iterator_to_particle_next_particle()) {
+        for (x = 0; x < apr_iterator.x_num(level); ++x) {
+            for (apr_iterator.begin(level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
-                if(apr_iterator.global_index() + in_offset > 500000) {
-                    std::cout << "existing part - gid = " << apr_iterator.global_index() << " in_offset = " << in_offset << std::endl;
-                }
-
-                output_ptr[apr_iterator.global_index() + out_offset] = input_ptr[apr_iterator.global_index() + in_offset];
-                idx_ptr[apr_iterator.global_index() + out_offset] = (int64_t) (apr_iterator.global_index() + in_offset);
+                output_ptr[apr_iterator + out_offset] = input_ptr[apr_iterator + in_offset];
+                idx_ptr[apr_iterator + out_offset] = apr_iterator + in_offset;
             }
         }
     }
@@ -1335,24 +1218,18 @@ void PyAPRFiltering::max_pool_2x2(APR &apr, T *input_ptr, T *output_ptr, int64_t
     int z = 0;
     unsigned int x;
 
-    for(x = 0; x < apr_iterator.spatial_index_x_max(current_max_level); ++x) {
+    for(x = 0; x < apr_iterator.x_num(current_max_level); ++x) {
 
-        parentIterator.set_new_lzx(current_max_level - 1, z / 2, x / 2);
+        parentIterator.begin(current_max_level - 1, z / 2, x / 2);
 
-        for (apr_iterator.set_new_lzx(current_max_level, z, x);
-             apr_iterator.global_index() < apr_iterator.end_index;
-             apr_iterator.set_iterator_to_particle_next_particle()) {
+        for (apr_iterator.begin(current_max_level, z, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
 
             while (parentIterator.y() != (apr_iterator.y() / 2)) {
-                parentIterator.set_iterator_to_particle_next_particle();
+                parentIterator++;
             }
 
-            uint64_t out_idx = out_offset + parentIterator.global_index() + tree_offset_out;
-            int64_t in_idx = (int64_t) (in_offset + apr_iterator.global_index());
-
-            if(in_idx < 0 || in_idx > 500000) {
-                std::cerr << "in_offset = " << in_offset << " gid = " << apr_iterator.global_index() << std::endl;
-            }
+            uint64_t out_idx = (parentIterator + out_offset) + tree_offset_out;
+            uint64_t in_idx = apr_iterator + in_offset;
 
             T tmp = input_ptr[in_idx];
 
@@ -1368,28 +1245,18 @@ void PyAPRFiltering::max_pool_2x2(APR &apr, T *input_ptr, T *output_ptr, int64_t
         //int z_d = 0;
         int z = 0;
 
-        for(x = 0; x < treeIterator.spatial_index_x_max(current_max_level); ++x) {
+        for(x = 0; x < treeIterator.x_num(current_max_level); ++x) {
 
-            parentIterator.set_new_lzx(current_max_level - 1, z / 2, x / 2);
+            parentIterator.begin(current_max_level - 1, z / 2, x / 2);
 
-            for (treeIterator.set_new_lzx(current_max_level, z, x);
-                 treeIterator.global_index() < treeIterator.end_index;
-                 treeIterator.set_iterator_to_particle_next_particle()) {
+            for (treeIterator.begin(current_max_level, z, x); treeIterator < treeIterator.end(); ++treeIterator) {
 
                 while (parentIterator.y() != (treeIterator.y() / 2)) {
-                    parentIterator.set_iterator_to_particle_next_particle();
+                    parentIterator++;
                 }
 
-                int64_t out_idx = (int64_t) out_offset + (int64_t) parentIterator.global_index() + tree_offset_out;
-                int64_t in_idx = (int64_t) in_offset + (int64_t) treeIterator.global_index() + tree_offset_in;
-
-                if(in_idx < 0 || in_idx > 500000) {
-                    std::cerr << "in_offset = " << in_offset << " gid = " << treeIterator.global_index() << " tree_offset = " << tree_offset_in << std::endl;
-                }
-
-                if(out_idx < 0 || out_idx > 500000) {
-                    std::cerr << "out_offset = " << out_offset << " gid = " << parentIterator.global_index() << " tree_offset = " << tree_offset_out << std::endl;
-                }
+                uint64_t out_idx = (parentIterator + out_offset) + tree_offset_out;
+                uint64_t in_idx = (treeIterator + in_offset) + tree_offset_in;
 
                 T tmp = input_ptr[in_idx];
 
@@ -1406,10 +1273,8 @@ void PyAPRFiltering::max_pool_2x2(APR &apr, T *input_ptr, T *output_ptr, int64_t
 //*****************************************************************************************************************
 //                              Compute APRTree index offset
 //*****************************************************************************************************************
-
-int64_t PyAPRFiltering::compute_tree_offset(APRIterator &apr_iterator, APRTreeIterator &tree_iterator, unsigned int level){
-
-    //if(init_tree) { apr.init_tree(); }
+template<typename APRIteratorType, typename APRTreeIteratorType>
+int64_t PyAPRFiltering::compute_tree_offset(APRIteratorType &apr_iterator, APRTreeIteratorType &tree_iterator, unsigned int level){
 
     int64_t number_parts;
     int64_t tree_start;
@@ -1421,7 +1286,7 @@ int64_t PyAPRFiltering::compute_tree_offset(APRIterator &apr_iterator, APRTreeIt
     }
 
     if(level > tree_iterator.level_min()) {
-        tree_start = (int64_t) tree_iterator.particles_level_begin(level)-1; //apr.apr_tree.tree_access.global_index_by_level_and_zx_end[level - 1].back();
+        tree_start = (int64_t) tree_iterator.particles_level_begin(level); //apr.apr_tree.tree_access.global_index_by_level_and_zx_end[level - 1].back();
     } else {
         tree_start = 0;
     }
@@ -1431,7 +1296,7 @@ int64_t PyAPRFiltering::compute_tree_offset(APRIterator &apr_iterator, APRTreeIt
 
 
 template<typename T>
-void PyAPRFiltering::max_pool_backward_stored_indices(T* grad_input_ptr, T* grad_output_ptr, int64_t* index_ptr, uint64_t in_size, uint64_t out_size) {
+void PyAPRFiltering::max_pool_backward_stored_indices(T* grad_input_ptr, T* grad_output_ptr, uint64_t* index_ptr, uint64_t in_size, uint64_t out_size) {
 
     size_t i;
 
@@ -1439,10 +1304,7 @@ void PyAPRFiltering::max_pool_backward_stored_indices(T* grad_input_ptr, T* grad
 #pragma omp parallel for schedule(static) private(i)
 #endif
     for (i = 0; i < out_size; ++i) {
-        int64_t idx = index_ptr[i];
-        if (idx >= 0 && idx < in_size) {
-            grad_input_ptr[idx] = grad_output_ptr[i];
-        }
+        grad_input_ptr[index_ptr[i]] = grad_output_ptr[i];
     }
 }
 
@@ -1451,7 +1313,8 @@ void PyAPRFiltering::max_pool_backward_stored_indices(T* grad_input_ptr, T* grad
 /**
 * Computes the required number of intensity values required to represent the image with a given maximum level.
 */
-uint64_t PyAPRFiltering::number_parts_at_level(APRIterator &apr_iterator, APRTreeIterator &tree_iterator, unsigned int max_level){
+template<typename APRIteratorType, typename APRTreeIteratorType>
+uint64_t PyAPRFiltering::number_parts_at_level(APRIteratorType &apr_iterator, APRTreeIteratorType &tree_iterator, unsigned int max_level){
 
     unsigned int number_parts;
     unsigned int tree_start;

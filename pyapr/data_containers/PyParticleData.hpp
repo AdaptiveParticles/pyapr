@@ -6,7 +6,7 @@
 #include <pybind11/numpy.h>
 
 #include "data_containers/PyAPR.hpp"
-#include "data_structures/APR/ParticleData.hpp"
+#include "data_structures/APR/particles/ParticleData.hpp"
 
 namespace py = pybind11;
 

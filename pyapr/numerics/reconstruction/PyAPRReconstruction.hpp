@@ -17,9 +17,9 @@ namespace py = pybind11;
 //template<typename DataType>
 PyPixelData<float> recon_pc(PyAPR &aPyAPR, PyParticleData<float> &intensities) {
 
-    PixelData<float> recon(aPyAPR.apr.spatial_index_y_max(aPyAPR.level_max()),
-                           aPyAPR.apr.spatial_index_x_max(aPyAPR.level_max()),
-                           aPyAPR.apr.spatial_index_z_max(aPyAPR.level_max()));
+    PixelData<float> recon(aPyAPR.apr.y_num(aPyAPR.level_max()),
+                           aPyAPR.apr.x_num(aPyAPR.level_max()),
+                           aPyAPR.apr.z_num(aPyAPR.level_max()));
 
     APRReconstruction::interp_img(aPyAPR.apr, recon, intensities.parts);
 

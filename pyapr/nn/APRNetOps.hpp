@@ -15,12 +15,12 @@
 #endif
 
 //#include "ConfigAPR.h"
-#include "data_structures/APR/APR.hpp"
-#include "data_structures/APR/ParticleData.hpp"
+//#include "data_structures/APR/APR.hpp"
+//#include "data_structures/APR/particles/ParticleData.hpp"
 
 //#include "PyPixelData.hpp"
 #include "PyAPRFiltering.hpp"
-#include "data_containers/PyAPR.hpp"
+//#include "data_containers/PyAPR.hpp"
 
 #include <typeinfo>
 
@@ -294,9 +294,6 @@ namespace APRNetOps {
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR.apr.level_max() - dlevel, aPyAPR.apr.level_min());
 
-            auto apr_iterator = aPyAPR.apr.iterator();
-            auto tree_iterator = aPyAPR.apr.tree_iterator();
-
             std::vector<float> stencil_vec;
             stencil_vec.resize(nstencils);
 
@@ -320,14 +317,14 @@ namespace APRNetOps {
                     if(type_string == "float"){
 
                         PyAPRFiltering::convolve_1x1<float>(aPyAPR.apr, (float *) input_ptr, stencil_vec, b, out, in,
-                                                            current_max_level, in_offset, apr_iterator, tree_iterator,
-                                                            number_in_channels, out_offset, (float *) output_ptr);
+                                                            current_max_level, in_offset, number_in_channels,
+                                                            out_offset, (float *) output_ptr);
 
                     } else if(type_string == "double"){
 
                         PyAPRFiltering::convolve_1x1<double>(aPyAPR.apr, (double *) input_ptr, stencil_vec, b, out, in,
-                                                             current_max_level, in_offset, apr_iterator, tree_iterator,
-                                                             number_in_channels, out_offset, (double *) output_ptr);
+                                                             current_max_level, in_offset, number_in_channels,
+                                                             out_offset, (double *) output_ptr);
                     }
                 }
             }
@@ -427,9 +424,6 @@ namespace APRNetOps {
             int dlevel = dlvl_ptr[bn];
             const unsigned int current_max_level = std::max(aPyAPR.apr.level_max() - dlevel, aPyAPR.apr.level_min());
 
-            auto apr_iterator = aPyAPR.apr.iterator();
-            auto tree_iterator = aPyAPR.apr.tree_iterator();
-
             for(in=0; in<in_channels; ++in) {
 
                 const uint64_t in_offset = bn * number_in_channels * nparticles + in * nparticles;
@@ -455,12 +449,12 @@ namespace APRNetOps {
 
                     }
                     if(type_string == "float") {
-                        PyAPRFiltering::convolve_1x1_backward<float>(aPyAPR.apr, apr_iterator, tree_iterator, (float *) input_ptr,
+                        PyAPRFiltering::convolve_1x1_backward<float>(aPyAPR.apr, (float *) input_ptr,
                                                                      in_offset, out_offset, stencil_vec, (float *) grad_output_ptr,
                                                                      (float *) grad_input_ptr, temp_vec_db, temp_vec_dw, dw_offset,
                                                                      db_offset, out, in, current_max_level);
                     } else if(type_string == "double") {
-                        PyAPRFiltering::convolve_1x1_backward<double>(aPyAPR.apr, apr_iterator, tree_iterator, (double *) input_ptr,
+                        PyAPRFiltering::convolve_1x1_backward<double>(aPyAPR.apr, (double *) input_ptr,
                                                                      in_offset, out_offset, stencil_vec, (double *) grad_output_ptr,
                                                                      (double *) grad_input_ptr, temp_vec_db, temp_vec_dw, dw_offset,
                                                                      db_offset, out, in, current_max_level);
@@ -508,10 +502,7 @@ namespace APRNetOps {
      * @param index_arr
      */
     void max_pool(py::array &apr_list, py::array &input_features, py::array &output,
-                  py::array_t<int32_t> &level_delta, py::array_t<int64_t> &index_arr) {
-
-        //APRTimer timer(false);
-        //timer.start_timer("max pool forward (store idx)");
+                  py::array_t<int32_t> &level_delta, py::array_t<uint64_t> &index_arr) {
 
         /// request buffers from python arrays
         auto apr_buf = apr_list.request();
@@ -542,7 +533,7 @@ namespace APRNetOps {
         auto input_ptr = input_buf.ptr;
         auto output_ptr = output_buf.ptr;
         auto dlvl_ptr = (int32_t *) dlvl_buf.ptr;
-        auto idx_ptr = (int64_t *) idx_buf.ptr;
+        auto idx_ptr = (uint64_t *) idx_buf.ptr;
 
         /// some important numbers implicit in array shapes
         const size_t batch_size = input_buf.shape[0];
@@ -564,7 +555,6 @@ namespace APRNetOps {
 
             auto apr_iterator = aPyAPR.apr.iterator();
             auto tree_iterator = aPyAPR.apr.tree_iterator();
-            auto parent_iterator = aPyAPR.apr.tree_iterator();
 
             const int64_t tree_offset_in  = PyAPRFiltering::compute_tree_offset(apr_iterator, tree_iterator, current_max_level);
             const int64_t tree_offset_out = PyAPRFiltering::compute_tree_offset(apr_iterator, tree_iterator, current_max_level-1);
@@ -576,14 +566,13 @@ namespace APRNetOps {
 
                 if(type_string == "float") {
                     PyAPRFiltering::max_pool_2x2<float>(aPyAPR.apr, (float*)input_ptr, (float*)output_ptr, idx_ptr, in_offset,
-                            out_offset, tree_offset_in, tree_offset_out, apr_iterator, tree_iterator, parent_iterator, current_max_level);
+                            out_offset, tree_offset_in, tree_offset_out, current_max_level);
                 } else if(type_string == "double") {
                     PyAPRFiltering::max_pool_2x2<double>(aPyAPR.apr, (double*)input_ptr, (double*)output_ptr, idx_ptr, in_offset,
-                            out_offset, tree_offset_in, tree_offset_out, apr_iterator, tree_iterator, parent_iterator, current_max_level);
+                            out_offset, tree_offset_in, tree_offset_out, current_max_level);
                 }
             }
         }
-        //timer.stop_timer();
     }
 
 
@@ -622,7 +611,7 @@ namespace APRNetOps {
         /// request pointers to data
         auto grad_output_ptr = grad_output_buf.ptr;
         auto grad_input_ptr = grad_input_buf.ptr;
-        auto index_ptr = (int64_t *) index_buf.ptr;
+        auto index_ptr = (uint64_t *) index_buf.ptr;
 
         if(type_string == "float"){
             PyAPRFiltering::max_pool_backward_stored_indices<float>((float*)grad_input_ptr, (float*)grad_output_ptr,
@@ -671,9 +660,6 @@ void APRNetOps::templated_convolve(py::buffer_info &apr_buf, py::buffer_info &in
         int dlevel = dlvl_ptr[bn];
         const unsigned int current_max_level = std::max(aPyAPR.apr.level_max() - dlevel, aPyAPR.apr.level_min());
 
-        auto apr_iterator = aPyAPR.apr.iterator();
-        auto tree_iterator = aPyAPR.apr.tree_iterator();
-
         for(in=0; in<in_channels; ++in) {
 
             const uint64_t in_offset = bn * number_in_channels * nparticles + in * nparticles;
@@ -681,8 +667,7 @@ void APRNetOps::templated_convolve(py::buffer_info &apr_buf, py::buffer_info &in
             /**** initialize and fill the apr tree ****/
             ParticleData<T> tree_data;
 
-            PyAPRFiltering::fill_tree_mean<T>(aPyAPR.apr, input_ptr, tree_data, apr_iterator,
-                                              tree_iterator, in_offset, current_max_level);
+            PyAPRFiltering::fill_tree_mean<T>(aPyAPR.apr, input_ptr, tree_data, in_offset, current_max_level);
 
             for (out = 0; out < out_channels; ++out) {
 
@@ -706,9 +691,8 @@ void APRNetOps::templated_convolve(py::buffer_info &apr_buf, py::buffer_info &in
                     }
                 }
 
-                PyAPRFiltering::convolve_generic<T>(aPyAPR.apr, input_ptr, stencil_vec, b, out, in,
-                                                    current_max_level, in_offset, tree_data, apr_iterator,
-                                                    tree_iterator, number_in_channels, out_offset, output_ptr);
+                PyAPRFiltering::convolve_generic<T>(aPyAPR.apr, input_ptr, stencil_vec, b, out, in, current_max_level,
+                                                    in_offset, tree_data, number_in_channels, out_offset, output_ptr);
             }
         }
     }
@@ -767,9 +751,6 @@ void APRNetOps::templated_convolve_backward(py::buffer_info &apr_buf, py::buffer
         int dlevel = dlvl_ptr[bn];
         const unsigned int current_max_level = std::max(aPyAPR.apr.level_max() - dlevel, aPyAPR.apr.level_min());
 
-        auto apr_iterator = aPyAPR.apr.iterator();
-        auto tree_iterator = aPyAPR.apr.tree_iterator();
-
         for(in=0; in<in_channels; ++in) {
 
             const uint64_t in_offset = bn * number_in_channels * nparticles + in * nparticles;
@@ -777,8 +758,7 @@ void APRNetOps::templated_convolve_backward(py::buffer_info &apr_buf, py::buffer
             /// initialize and fill the apr tree
 
             ParticleData<T> tree_data;
-            PyAPRFiltering::fill_tree_mean<T>(aPyAPR.apr, input_ptr, tree_data,
-                                              apr_iterator, tree_iterator, in_offset, current_max_level);
+            PyAPRFiltering::fill_tree_mean<T>(aPyAPR.apr, input_ptr, tree_data, in_offset, current_max_level);
 
             ParticleData<T> grad_tree_temp;
             grad_tree_temp.data.resize(tree_data.data.size(), 0.0f);
@@ -809,7 +789,7 @@ void APRNetOps::templated_convolve_backward(py::buffer_info &apr_buf, py::buffer
                     }
 
                 }
-                PyAPRFiltering::convolve_generic_backward<T>(aPyAPR.apr, apr_iterator, tree_iterator, input_ptr,
+                PyAPRFiltering::convolve_generic_backward<T>(aPyAPR.apr, input_ptr,
                                                              in_offset, out_offset, stencil_vec, grad_output_ptr,
                                                              grad_input_ptr, temp_vec_db, temp_vec_dw, dw_offset,
                                                              db_offset, grad_tree_temp, tree_data, out, in,
@@ -817,8 +797,7 @@ void APRNetOps::templated_convolve_backward(py::buffer_info &apr_buf, py::buffer
             }
 
             /// push grad_tree_temp to grad_input
-            PyAPRFiltering::fill_tree_mean_backward<T>(aPyAPR.apr, apr_iterator, tree_iterator,
-                                                       grad_input_ptr, grad_tree_temp, in_offset, current_max_level);
+            PyAPRFiltering::fill_tree_mean_backward<T>(aPyAPR.apr, grad_input_ptr, grad_tree_temp, in_offset, current_max_level);
         }
 
     }
@@ -892,9 +871,6 @@ void APRNetOps::templated_convolve3x3(py::buffer_info &apr_buf, py::buffer_info 
         int dlevel = dlvl_ptr[bn];
         const unsigned int current_max_level = std::max(aPyAPR.level_max() - dlevel, aPyAPR.level_min());
 
-        auto apr_iterator = aPyAPR.apr.iterator();
-        auto tree_iterator = aPyAPR.apr.tree_iterator();
-
         for(in=0; in<in_channels; ++in) {
 
             const uint64_t in_offset = bn * number_in_channels * nparticles + in * nparticles;
@@ -903,8 +879,7 @@ void APRNetOps::templated_convolve3x3(py::buffer_info &apr_buf, py::buffer_info 
 
             ParticleData<T> tree_data;
 
-            PyAPRFiltering::fill_tree_mean<T>(aPyAPR.apr, input_ptr, tree_data, apr_iterator,
-                                              tree_iterator, in_offset, current_max_level);
+            PyAPRFiltering::fill_tree_mean<T>(aPyAPR.apr, input_ptr, tree_data, in_offset, current_max_level);
 
             for (out = 0; out < out_channels; ++out) {
 
@@ -926,9 +901,8 @@ void APRNetOps::templated_convolve3x3(py::buffer_info &apr_buf, py::buffer_info 
                     }
                 }
 
-                PyAPRFiltering::convolve_3x3<T>(aPyAPR.apr, input_ptr, stencil_vec, b, out, in,
-                                                current_max_level, in_offset, tree_data, apr_iterator,
-                                                tree_iterator, number_in_channels, out_offset, output_ptr);
+                PyAPRFiltering::convolve_3x3<T>(aPyAPR.apr, input_ptr, stencil_vec, b, out, in, current_max_level,
+                                                in_offset, tree_data, number_in_channels, out_offset, output_ptr);
             }
         }
     }
@@ -955,8 +929,8 @@ void APRNetOps::templated_convolve3x3_backward(py::buffer_info &apr_buf, py::buf
     const size_t out_channels = weights_buf.shape[0];
     const size_t in_channels = weights_buf.shape[1];
     const size_t nstencils = weights_buf.shape[2];
-    const size_t height = weights_buf.shape[3];
-    const size_t width = weights_buf.shape[4];
+    //const size_t height = weights_buf.shape[3];
+    //const size_t width = weights_buf.shape[4];
 
     /// allocate temporary arrays to avoid race condition on the weight and bias gradients
 #ifdef PYAPR_HAVE_OPENMP
@@ -988,9 +962,6 @@ void APRNetOps::templated_convolve3x3_backward(py::buffer_info &apr_buf, py::buf
         int dlevel = dlvl_ptr[bn];
         const unsigned int current_max_level = std::max(aPyAPR.apr.level_max() - dlevel, aPyAPR.apr.level_min());
 
-        auto apr_iterator = aPyAPR.apr.iterator();
-        auto tree_iterator = aPyAPR.apr.tree_iterator();
-
         for(in=0; in<in_channels; ++in) {
 
             const uint64_t in_offset = bn * number_in_channels * nparticles + in * nparticles;
@@ -998,8 +969,7 @@ void APRNetOps::templated_convolve3x3_backward(py::buffer_info &apr_buf, py::buf
             /// initialize and fill the apr tree
 
             ParticleData<T> tree_data;
-            PyAPRFiltering::fill_tree_mean<T>(aPyAPR.apr, input_ptr, tree_data, apr_iterator,
-                                              tree_iterator, in_offset, current_max_level);
+            PyAPRFiltering::fill_tree_mean<T>(aPyAPR.apr, input_ptr, tree_data, in_offset, current_max_level);
 
             ParticleData<T> grad_tree_temp;
             grad_tree_temp.data.resize(tree_data.data.size(), 0);
@@ -1028,7 +998,7 @@ void APRNetOps::templated_convolve3x3_backward(py::buffer_info &apr_buf, py::buf
                     }
 
                 }
-                PyAPRFiltering::convolve_3x3_backward<T>(aPyAPR.apr, apr_iterator, tree_iterator, input_ptr,
+                PyAPRFiltering::convolve_3x3_backward<T>(aPyAPR.apr, input_ptr,
                                                          in_offset, out_offset, stencil_vec, grad_output_ptr,
                                                          grad_input_ptr, temp_vec_db, temp_vec_dw, dw_offset,
                                                          db_offset, grad_tree_temp, tree_data, out, in,
@@ -1036,7 +1006,7 @@ void APRNetOps::templated_convolve3x3_backward(py::buffer_info &apr_buf, py::buf
             }
 
             /// push grad_tree_temp to grad_input
-            PyAPRFiltering::fill_tree_mean_backward<T>(aPyAPR.apr, apr_iterator, tree_iterator, grad_input_ptr,
+            PyAPRFiltering::fill_tree_mean_backward<T>(aPyAPR.apr, grad_input_ptr,
                                                        grad_tree_temp, in_offset, current_max_level);
         }
     }

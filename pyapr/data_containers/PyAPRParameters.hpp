@@ -21,7 +21,6 @@ void AddPyAPRParameters(pybind11::module &m) {
         .def_readwrite("background_intensity_estimate", &APRParameters::background_intensity_estimate)
         .def_readwrite("auto_parameters", &APRParameters::auto_parameters)
         .def_readwrite("full_resolution", &APRParameters::full_resolution)
-        .def_readwrite("normalized_input", &APRParameters::normalized_input)
         .def_readwrite("neighborhood_optimization", &APRParameters::neighborhood_optimization)
         .def_readwrite("output_steps", &APRParameters::output_steps)
         .def_readwrite("name", &APRParameters::name)

@@ -38,7 +38,6 @@ class TestAPRNetModules(unittest.TestCase):
 
         # Compute APR and sample particle values
         converter.get_apr(apr, img)
-        apr.init_tree()
         parts.sample_image(apr, img)
 
         apr_arr = np.empty(1, dtype=object)
@@ -53,6 +52,10 @@ class TestAPRNetModules(unittest.TestCase):
         self.x = x
         self.dlvl = dlvl
 
+    def test_gradients_maxpool(self):
+        m = aprnn.APRMaxPool(increment_level_delta=False)
+        assert testing.gradcheck(m, (self.x, self.aprs, self.dlvl))
+
     def test_gradients_conv1x1(self):
         m = aprnn.APRConv(1, 4, 1, 2)
         assert testing.gradcheck(m, (self.x, self.aprs, self.dlvl))
@@ -63,10 +66,6 @@ class TestAPRNetModules(unittest.TestCase):
 
     def test_gradients_conv5x5(self):
         m = aprnn.APRConv(1, 4, 5, 2)
-        assert testing.gradcheck(m, (self.x, self.aprs, self.dlvl))
-
-    def test_gradients_maxpool(self):
-        m = aprnn.APRMaxPool(increment_level_delta=False)
         assert testing.gradcheck(m, (self.x, self.aprs, self.dlvl))
 
 

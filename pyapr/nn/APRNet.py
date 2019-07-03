@@ -11,7 +11,7 @@ from torch.nn import init
 import torch
 
 import _pyaprwrapper.nn as aprnn
-
+import time
 
 class APRInputLayer:
     def __call__(self, apr_arr, parts_arr, dtype=np.float32):
@@ -248,7 +248,7 @@ class APRMaxPoolFunction(Function):
             npartmax = max(npartmax, npart)
 
         output = -(np.finfo(np.float32).max / 2) * np.ones(shape=(intensities.shape[0], intensities.shape[1], npartmax), dtype=intensities.data.numpy().dtype)
-        index_arr = -np.ones(output.shape, dtype=np.int64)
+        index_arr = np.zeros(output.shape, dtype=np.uint64)
 
         aprnn.max_pool(apr, intensities.data.numpy(), output, dlevel, index_arr)
 
@@ -275,7 +275,7 @@ class APRMaxPool(nn.Module):
     def __init__(self, increment_level_delta=True):
         super(APRMaxPool, self).__init__()
 
-        self.increment_level_delta=increment_level_delta
+        self.increment_level_delta = increment_level_delta
 
     def forward(self, input_features, apr, level_deltas):
 
