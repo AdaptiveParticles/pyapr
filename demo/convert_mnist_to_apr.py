@@ -17,7 +17,6 @@ def convert_mnist_dataset(dataset, rootdir, converter, aprfile):
         apr = pyapr.APR()
         parts = pyapr.FloatParticles()
         converter.get_apr(apr, img)
-        apr.init_tree()
         parts.sample_image(apr, img)
 
         counts[target] += 1
@@ -26,7 +25,7 @@ def convert_mnist_dataset(dataset, rootdir, converter, aprfile):
 
         aprfile.open(fpath, 'WRITE')
         aprfile.write_apr(apr)
-        aprfile.write_particles(apr, 'particles', parts)
+        aprfile.write_particles('particles', parts)
         aprfile.close()
 
 
@@ -63,9 +62,6 @@ def main(loc):
 
     testdata = datasets.MNIST('../data', train=False, download=True, transform=None)
     convert_mnist_dataset(testdata, testdir, converter, aprfile)
-
-
-
 
 
 if __name__ == '__main__':

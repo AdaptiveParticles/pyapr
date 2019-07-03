@@ -55,7 +55,6 @@ def train(model, train_loader, loss_fn, optimizer, epoch, log_interval=10):
     acc_log = []
 
     for batch_idx, (aprs, parts, target) in enumerate(train_loader):
-        #with torch.autograd.set_detect_anomaly(True):
         optimizer.zero_grad()
         output = model(aprs, parts)
         loss = loss_fn(output, target)
@@ -122,8 +121,8 @@ def main(args):
     train_dir = os.path.join(data_dir, 'train')
     test_dir = os.path.join(data_dir, 'test')
 
-    train_data = datasets.DatasetFolder(train_dir, loader=APRLoader(), extensions=['apr'])
-    test_data = datasets.DatasetFolder(test_dir, loader=APRLoader(), extensions=['apr'])
+    train_data = datasets.DatasetFolder(train_dir, loader=APRLoader(), extensions='apr')
+    test_data = datasets.DatasetFolder(test_dir, loader=APRLoader(), extensions='apr')
 
     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, collate_fn=custom_collate_fn)
     test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=False, collate_fn=custom_collate_fn)
@@ -156,15 +155,16 @@ class APRConvNet(nn.Module):
 
         self.input_layer = pyapr.nn.APRInputLayer()
 
-        self.conv1 = pyapr.nn.APRConv(in_channels=1, out_channels=16, kernel_size=3, nstencils=2)
-        self.conv1_bn = nn.BatchNorm1d(16)
+        self.conv1 = pyapr.nn.APRConv(in_channels=1, out_channels=32, kernel_size=3, nstencils=2)
+        self.conv1_bn = nn.BatchNorm1d(32)
         self.pool1 = pyapr.nn.APRMaxPool()
 
-        self.conv2 = pyapr.nn.APRConv(in_channels=16, out_channels=32, kernel_size=3, nstencils=1)
-        self.conv2_bn = nn.BatchNorm1d(32)
+        self.conv2 = pyapr.nn.APRConv(in_channels=32, out_channels=64, kernel_size=3, nstencils=1)
+        self.conv2_bn = nn.BatchNorm1d(64)
         self.pool2 = pyapr.nn.APRMaxPool()
 
-        self.fc1 = pyapr.nn.APRConv(in_channels=32, out_channels=64, kernel_size=1, nstencils=1)
+        self.fc1 = pyapr.nn.APRConv(in_channels=64, out_channels=64, kernel_size=1, nstencils=1)
+        self.fc1_bn = nn.BatchNorm1d(64)
         self.fc2 = pyapr.nn.APRConv(in_channels=64, out_channels=10, kernel_size=1, nstencils=1)
 
         self.globavg = nn.AdaptiveAvgPool1d(1)
@@ -191,11 +191,13 @@ class APRConvNet(nn.Module):
         x = self.conv1_bn(x)
 
         x = self.conv2(x, apr_arr, level_deltas)
-        #x = self.pool2(x, apr_arr, level_deltas)  # FIXME
+        x = self.pool2(x, apr_arr, level_deltas)
         x = F.relu(x)
         x = self.conv2_bn(x)
 
         x = self.fc1(x, apr_arr, level_deltas)
+        x = F.relu(x)
+        x = self.fc1_bn(x)
         x = self.fc2(x, apr_arr, level_deltas)
 
         x = self.globavg(x).view(-1, 10)

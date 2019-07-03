@@ -49,7 +49,6 @@ def main(args):
     # Compute APR and sample particle values
     converter.get_apr(apr, img)
     parts.sample_image(apr, img)
-    apr.init_tree()
 
     fpath = os.path.join(args.location, args.name + '.h5')
 
@@ -60,7 +59,7 @@ def main(args):
     # Write APR and particles to file
     aprfile.open(fpath, 'WRITE')
     aprfile.write_apr(apr)
-    aprfile.write_particles(apr, 'particles', parts)
+    aprfile.write_particles('particles', parts)
     aprfile.close()
 
     # Initialize objects for reading in data

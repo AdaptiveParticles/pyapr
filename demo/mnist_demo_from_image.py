@@ -44,7 +44,6 @@ def mnist_apr_loader(train=True, batch_size=32, shuffle=True, transform=None):
 
         apr_list.append(pyapr.APR())
         conv.get_apr(apr_list[i], x)
-        apr_list[i].init_tree()
         part_list.append(pyapr.FloatParticles())
         part_list[i].sample_image(apr_list[i], x)
 
@@ -171,15 +170,16 @@ class APRConvNet(nn.Module):
 
         self.input_layer = pyapr.nn.APRInputLayer()
 
-        self.conv1 = pyapr.nn.APRConv(in_channels=1, out_channels=16, kernel_size=3, nstencils=2)
-        self.conv1_bn = nn.BatchNorm1d(16)
+        self.conv1 = pyapr.nn.APRConv(in_channels=1, out_channels=32, kernel_size=3, nstencils=2)
+        self.conv1_bn = nn.BatchNorm1d(32)
         self.pool1 = pyapr.nn.APRMaxPool()
 
-        self.conv2 = pyapr.nn.APRConv(in_channels=16, out_channels=32, kernel_size=3, nstencils=1)
-        self.conv2_bn = nn.BatchNorm1d(32)
+        self.conv2 = pyapr.nn.APRConv(in_channels=32, out_channels=64, kernel_size=3, nstencils=1)
+        self.conv2_bn = nn.BatchNorm1d(64)
         self.pool2 = pyapr.nn.APRMaxPool()
 
-        self.fc1 = pyapr.nn.APRConv(in_channels=32, out_channels=64, kernel_size=1, nstencils=1)
+        self.fc1 = pyapr.nn.APRConv(in_channels=64, out_channels=64, kernel_size=1, nstencils=1)
+        self.fc1_bn = nn.BatchNorm1d(64)
         self.fc2 = pyapr.nn.APRConv(in_channels=64, out_channels=10, kernel_size=1, nstencils=1)
 
         self.globavg = nn.AdaptiveAvgPool1d(1)
@@ -206,11 +206,13 @@ class APRConvNet(nn.Module):
         x = self.conv1_bn(x)
 
         x = self.conv2(x, apr_arr, level_deltas)
-        #x = self.pool2(x, apr_arr, level_deltas)  # FIXME
+        x = self.pool2(x, apr_arr, level_deltas)
         x = F.relu(x)
         x = self.conv2_bn(x)
 
         x = self.fc1(x, apr_arr, level_deltas)
+        x = F.relu(x)
+        x = self.fc1_bn(x)
         x = self.fc2(x, apr_arr, level_deltas)
 
         x = self.globavg(x).view(-1, 10)

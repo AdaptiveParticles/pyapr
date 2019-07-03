@@ -27,7 +27,6 @@ def main():
     # Compute APR and sample particle values
     converter.get_apr(apr, img)
     parts.sample_image(apr, img)
-    apr.init_tree()
 
     pyapr.viewer.parts_viewer(apr, parts)
 
