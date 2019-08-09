@@ -59,6 +59,10 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     nn.def("max_pool", &APRNetOps::max_pool, "max pooling of (current) max level particles");
     nn.def("max_pool_backward", &APRNetOps::max_pool_backward, "backpropagation through max_pool");
     nn.def("number_particles_after_pool", &APRNetOps::number_parts_after_pool, "compute number particles after downsampling");
+    nn.def("number_particles_after_upsample", &APRNetOps::number_parts_after_upsampling, "compute number particles after upsampling");
+    nn.def("transposed_conv_2x2", &APRNetOps::transposed_conv_2x2, "transposed 2x2 convolution");
+    nn.def("transposed_conv_2x2_backward", &APRNetOps::transposed_conv_2x2_backward, "backpropagation through transposed_conv_2x2");
+
 
     // wrap numerics module and submodules
     py::module numerics = m.def_submodule("numerics");

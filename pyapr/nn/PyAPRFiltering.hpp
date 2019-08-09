@@ -107,6 +107,19 @@ namespace PyAPRFiltering {
 
     template<typename APRIteratorType, typename APRTreeIteratorType>
     uint64_t number_parts_at_level(APRIteratorType &apr_iterator, APRTreeIteratorType &tree_iterator, unsigned int max_level);
+
+
+    template<typename T>
+    void transposed_conv_2x2(APR &apr, T *input_ptr, T *output_ptr, PixelData<T>& stencil_2x2, T weight_1x1, T bias,
+                             uint64_t in_offset, uint64_t out_offset, int64_t tree_offset_in,
+                             int64_t tree_offset_out, int current_max_level);
+
+    template<typename T>
+    void transposed_conv_2x2_backward(APR &apr, T *input_ptr, PixelData<T>& stencil_2x2, T weight_1x1,
+                                      T* grad_input_ptr, std::vector<float>& temp_dw_2x2, std::vector<float>& temp_dw_1x1,
+                                      std::vector<float>& temp_db, T* grad_output_ptr, size_t dw_2x2_offset, size_t dw_1x1_offset,
+                                      size_t db_offset, uint64_t in_offset, uint64_t out_offset,
+                                      int64_t tree_offset_in, int64_t tree_offset_out, int current_max_level);
 }
 
 //*****************************************************************************************************************
@@ -1345,5 +1358,149 @@ uint64_t PyAPRFiltering::number_parts_at_level(APRIteratorType &apr_iterator, AP
     return number_parts_out;
 }
 
+
+//*****************************************************************************************************************
+//                              Forward 2x2 transposed convolution
+//*****************************************************************************************************************
+template<typename T>
+void PyAPRFiltering::transposed_conv_2x2(APR &apr, T *input_ptr, T *output_ptr, PixelData<T>& stencil_2x2, T weight_1x1,
+                                         const T bias, const uint64_t in_offset, const uint64_t out_offset, const int64_t tree_offset_in,
+                                         const int64_t tree_offset_out, const int current_max_level){
+
+    auto apr_iterator = apr.iterator();
+    auto tree_iterator = apr.tree_iterator();
+    auto parent_iterator = apr.tree_iterator();
+
+    /// APR particles at or below current_max_level undergo a 1x1 convolution
+
+    for (int level = apr_iterator.level_min(); level <= current_max_level; ++level) {
+        for (int x = 0; x < apr_iterator.x_num(level); ++x) {
+            for (apr_iterator.begin(level, 0, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
+
+                output_ptr[apr_iterator + out_offset] += input_ptr[apr_iterator + in_offset] * weight_1x1 + bias;
+
+            }
+        }
+    }
+
+    /// Upsampling is performed for all tree (!) particles at current_max_level.
+    /// The output particles can belong to the APR or the tree.
+
+    //loop over output APR particles
+    for(int x = 0; x < apr_iterator.x_num(current_max_level + 1); ++x) {
+
+        parent_iterator.begin(current_max_level, 0, x / 2);
+
+        for (apr_iterator.begin(current_max_level + 1, 0, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
+
+            while (parent_iterator.y() != (apr_iterator.y() / 2)) {
+                parent_iterator++;
+            }
+
+            output_ptr[out_offset + apr_iterator] += stencil_2x2.mesh[(x & 1) * 2 + (apr_iterator.y() & 1)] *
+                                                     input_ptr[in_offset + tree_offset_in + parent_iterator] +
+                                                     bias;
+        }
+    }
+
+    //loop over output tree particles
+    if(current_max_level < tree_iterator.level_max()) { //tree_iterator.max_level() = apr_iterator.max_level() - 1
+
+        for(int x = 0; x < tree_iterator.x_num(current_max_level + 1); ++x) {
+
+        parent_iterator.begin(current_max_level, 0, x / 2);
+
+            for (tree_iterator.begin(current_max_level + 1, 0, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
+
+                while (parent_iterator.y() != (tree_iterator.y() / 2)) {
+                    parent_iterator++;
+                }
+
+                output_ptr[out_offset + tree_offset_out + tree_iterator] += stencil_2x2.mesh[(x & 1) * 2 + (tree_iterator.y() & 1)] *
+                                                                            input_ptr[in_offset + tree_offset_in + parent_iterator] +
+                                                                            bias;
+            }
+        }
+    }
+}
+
+
+//*****************************************************************************************************************
+//                              Backward 2x2 transposed convolution
+//*****************************************************************************************************************
+template<typename T>
+void PyAPRFiltering::transposed_conv_2x2_backward(APR &apr, T *input_ptr, PixelData<T>& stencil_2x2, T weight_1x1,
+                        T* grad_input_ptr, std::vector<float>& temp_dw_2x2, std::vector<float>& temp_dw_1x1,
+                        std::vector<float>& temp_db, T* grad_output_ptr, const size_t dw_2x2_offset, const size_t dw_1x1_offset,
+                        const size_t db_offset, const uint64_t in_offset, const uint64_t out_offset,
+                        const int64_t tree_offset_in, const int64_t tree_offset_out, const int current_max_level){
+
+    auto apr_iterator = apr.iterator();
+    auto tree_iterator = apr.tree_iterator();
+    auto parent_iterator = apr.tree_iterator();
+
+    T d_bias = 0;
+
+    /// APR particles at or below current_max_level undergo a 1x1 convolution
+
+    for (int level = apr_iterator.level_min(); level <= current_max_level; ++level) {
+        for (int x = 0; x < apr_iterator.x_num(level); ++x) {
+            for (apr_iterator.begin(level, 0, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
+
+                const T dO = grad_output_ptr[apr_iterator + out_offset];
+
+                d_bias += dO;
+                temp_dw_1x1[dw_1x1_offset] += dO * input_ptr[apr_iterator + in_offset];
+                grad_input_ptr[apr_iterator + in_offset] += dO * weight_1x1;
+            }
+        }
+    }
+
+    /// Upsampling is performed for all tree (!) particles at current_max_level.
+    /// The output particles can belong to the APR or the tree.
+
+    //loop over output APR particles
+    for(int x = 0; x < apr_iterator.x_num(current_max_level + 1); ++x) {
+
+        parent_iterator.begin(current_max_level, 0, x / 2);
+
+        for (apr_iterator.begin(current_max_level + 1, 0, x); apr_iterator < apr_iterator.end(); ++apr_iterator) {
+
+            while (parent_iterator.y() != (apr_iterator.y() / 2)) {
+                parent_iterator++;
+            }
+
+            const T dO = grad_output_ptr[out_offset + apr_iterator];
+
+            d_bias += dO;
+            grad_input_ptr[in_offset + tree_offset_in + parent_iterator] += dO * stencil_2x2.mesh[(x & 1) * 2 + (apr_iterator.y() & 1)];
+            temp_dw_2x2[dw_2x2_offset + (x & 1) * 2 + (apr_iterator.y() & 1)] += dO * input_ptr[in_offset + tree_offset_in + parent_iterator];
+        }
+    }
+
+    //loop over output tree particles
+    if(current_max_level < tree_iterator.level_max()) { //tree_iterator.max_level() = apr_iterator.max_level() - 1
+
+        for(int x = 0; x < tree_iterator.x_num(current_max_level + 1); ++x) {
+
+            parent_iterator.begin(current_max_level, 0, x / 2);
+
+            for (tree_iterator.begin(current_max_level + 1, 0, x); tree_iterator < tree_iterator.end(); ++tree_iterator) {
+
+                while (parent_iterator.y() != (tree_iterator.y() / 2)) {
+                    parent_iterator++;
+                }
+
+                const T dO = grad_output_ptr[out_offset + tree_offset_out + tree_iterator];
+
+                d_bias += dO;
+                grad_input_ptr[in_offset + tree_offset_in + parent_iterator] += dO * stencil_2x2.mesh[(x & 1) * 2 + (tree_iterator.y() & 1)];
+                temp_dw_2x2[dw_2x2_offset + (x & 1) * 2 + (tree_iterator.y() & 1)] += dO * input_ptr[in_offset + tree_offset_in + parent_iterator];
+            }
+        }
+    }
+
+    temp_db[db_offset] += d_bias;
+}
 
 #endif //PYLIBAPR_PYAPRFILTERING_HPP

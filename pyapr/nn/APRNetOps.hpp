@@ -46,6 +46,18 @@ namespace APRNetOps {
                                         py::buffer_info &grad_input_buf, py::buffer_info &grad_weights_buf,
                                         py::buffer_info &grad_bias_buf, py::buffer_info &grad_output_buf, py::buffer_info &dlvl_buf);
 
+    template<typename T>
+    void templated_transposed_conv_2x2(py::buffer_info &apr_buf, py::buffer_info &weights_2x2_buf, py::buffer_info &weights_1x1_buf,
+                    py::buffer_info &bias_buf, py::buffer_info &output_buf, py::buffer_info &input_buf, py::buffer_info &dlvl_buf);
+
+    template<typename T>
+    void templated_transposed_conv_2x2_backward(py::buffer_info &apr_buf, py::buffer_info &input_buf,
+                                                py::buffer_info &weights_2x2_buf, py::buffer_info &weights_1x1_buf,
+                                                py::buffer_info &grad_input_buf, py::buffer_info &grad_weights_2x2_buf,
+                                                py::buffer_info &grad_weights_1x1_buf, py::buffer_info &grad_bias_buf,
+                                                py::buffer_info &grad_output_buf, py::buffer_info &dlvl_buf);
+
+
     uint64_t number_parts_after_pool(PyAPR &aPyAPR, int level_delta) {
 
         unsigned int current_max_level = std::max(aPyAPR.level_max()-level_delta, aPyAPR.level_min());
@@ -56,6 +68,23 @@ namespace APRNetOps {
         return PyAPRFiltering::number_parts_at_level(apr_iterator, tree_iterator, current_max_level-1);
     }
 
+    uint64_t number_parts_after_upsampling(PyAPR &aPyAPR, int level_delta) {
+
+        unsigned int current_max_level = std::max(aPyAPR.level_max()-level_delta, aPyAPR.level_min());
+
+        auto apr_iterator = aPyAPR.apr.iterator();
+        auto tree_iterator = aPyAPR.apr.tree_iterator();
+
+        uint64_t apr_parts = apr_iterator.total_number_particles(current_max_level + 1);
+        uint64_t tree_parts = 0;
+
+        if(current_max_level < tree_iterator.level_max()) {
+            tree_parts = tree_iterator.total_number_particles(current_max_level + 1) - tree_iterator.total_number_particles(current_max_level);
+        }
+
+        return apr_parts + tree_parts;
+
+    }
 
     void convolve(py::array &apr_list, py::array &input_features, py::array_t<float> &weights, py::array_t<float> &bias,
                   py::array &output, py::array_t<int32_t> &level_delta) {
@@ -622,6 +651,80 @@ namespace APRNetOps {
                                                                     index_ptr, grad_input_buf.size, index_buf.size);
         }
     }
+
+
+    void transposed_conv_2x2(py::array &apr_list, py::array &input_features, py::array_t<float> &weights_2x2,
+                             py::array_t<float> &weights_1x1, py::array_t<float> &bias, py::array &output,
+                             py::array_t<int32_t> &level_delta) {
+
+        /// requesting buffers from python arrays
+        auto apr_buf = apr_list.request();
+        auto input_buf = input_features.request();
+        auto weights_2x2_buf = weights_2x2.request();
+        auto weights_1x1_buf = weights_1x1.request();
+        auto bias_buf = bias.request();
+        auto output_buf = output.request(true);
+        auto dlvl_buf = level_delta.request();
+
+        /// check input/output data type and call templated convolution function if correct
+        if(py::isinstance<py::array_t<float>>(input_features)) {
+            if(!py::isinstance<py::array_t<float>>(output)) {
+                throw std::invalid_argument("input and output arrays passed to transposed_conv_2x2 must have matching data types");
+            }
+
+            templated_transposed_conv_2x2<float>(apr_buf, input_buf, weights_2x2_buf, weights_1x1_buf, bias_buf, output_buf, dlvl_buf);
+
+        } else if(py::isinstance<py::array_t<double>>(input_features)) {
+            if(!py::isinstance<py::array_t<double>>(output)) {
+                throw std::invalid_argument("input and output arrays passed to transposed_conv_2x2 must have matching data types");
+            }
+
+            templated_transposed_conv_2x2<double>(apr_buf, input_buf, weights_2x2_buf, weights_1x1_buf, bias_buf, output_buf, dlvl_buf);
+
+        } else {
+            throw std::invalid_argument("input and output arrays passed to transposed_conv_2x2 must be of type float (float32) or double (float64)");
+        }
+    }
+
+
+    void transposed_conv_2x2_backward(py::array &apr_list, py::array &input_features, py::array_t<float> &weights_2x2,
+                                      py::array_t<float> &weights_1x1, py::array &grad_input, py::array_t<float>& grad_weights_2x2,
+                                      py::array_t<float>& grad_weights_1x1, py::array_t<float> &grad_bias, py::array &grad_output,
+                                      py::array_t<int32_t> &level_delta) {
+
+        /// requesting buffers from python arrays
+        auto apr_buf = apr_list.request();
+        auto input_buf = input_features.request();
+        auto weights_2x2_buf = weights_2x2.request();
+        auto weights_1x1_buf = weights_1x1.request();
+        auto grad_input_buf = grad_input.request();
+        auto grad_weights_2x2_buf = grad_weights_2x2.request();
+        auto grad_weights_1x1_buf = grad_weights_1x1.request();
+        auto grad_bias_buf = grad_bias.request();
+        auto grad_output_buf = grad_output.request(true);
+        auto dlvl_buf = level_delta.request();
+
+        /// check input/output data type and call templated convolution function if correct
+        if(py::isinstance<py::array_t<float>>(input_features)) {
+            if(!py::isinstance<py::array_t<float>>(grad_input) || !py::isinstance<py::array_t<float>>(grad_output)) {
+                throw std::invalid_argument("input, grad_input and grad_output arrays passed to transposed_conv_2x2_backward must have matching data types");
+            }
+
+            templated_transposed_conv_2x2_backward<float>(apr_buf, input_buf, weights_2x2_buf, weights_1x1_buf, grad_input_buf,
+                                       grad_weights_2x2_buf, grad_weights_1x1_buf, grad_bias_buf, grad_output_buf, dlvl_buf);
+
+
+        } else if(py::isinstance<py::array_t<double>>(input_features)) {
+            if(!py::isinstance<py::array_t<double>>(grad_input) || !py::isinstance<py::array_t<double>>(grad_output)) {
+                throw std::invalid_argument("input, grad_input and grad_output arrays passed to transposed_conv_2x2_backward must have matching data types");
+            }
+
+            templated_transposed_conv_2x2_backward<double>(apr_buf, input_buf, weights_2x2_buf, weights_1x1_buf, grad_input_buf,
+                                                          grad_weights_2x2_buf, grad_weights_1x1_buf, grad_bias_buf, grad_output_buf, dlvl_buf);
+        } else {
+            throw std::invalid_argument("input and output arrays passed to transposed_conv_2x2_backward must be of type float (float32) or double (float64)");
+        }
+    }
 }
 
 
@@ -1025,6 +1128,226 @@ void APRNetOps::templated_convolve3x3_backward(py::buffer_info &apr_buf, py::buf
             val += temp_vec_dw[thd*num_weights + w];
         }
         grad_weights_ptr[w] = (float) (val / batch_size);
+    }
+
+    /// collect bias gradients from temp_vec_db
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(static) private(w, thd)
+#endif
+    for(w = 0; w < out_channels; ++w) {
+        float val = 0;
+        for(thd = 0; thd < num_threads; ++thd) {
+            val += temp_vec_db[thd*out_channels + w];
+        }
+        grad_bias_ptr[w] = val / batch_size;
+    }
+}
+
+
+template<typename T>
+void APRNetOps::templated_transposed_conv_2x2(py::buffer_info &apr_buf, py::buffer_info &input_buf, py::buffer_info &weights_2x2_buf,
+                                              py::buffer_info &weights_1x1_buf, py::buffer_info &bias_buf, py::buffer_info &output_buf,
+                                              py::buffer_info &dlvl_buf) {
+
+    /// pointers to python array data
+    auto apr_ptr = (py::object *) apr_buf.ptr;
+    auto weights_2x2_ptr = (float *) weights_2x2_buf.ptr;
+    auto weights_1x1_ptr = (float *) weights_1x1_buf.ptr;
+    auto bias_ptr = (float *) bias_buf.ptr;
+    auto output_ptr = (T *) output_buf.ptr;
+    auto input_ptr = (T *) input_buf.ptr;
+    auto dlvl_ptr = (int32_t *) dlvl_buf.ptr;
+
+    /// some important numbers implicit in array shapes
+    const int out_channels = weights_2x2_buf.shape[0];
+    const int in_channels = weights_2x2_buf.shape[1];
+    const int height = weights_2x2_buf.shape[2];
+    const int width = weights_2x2_buf.shape[3];
+
+    const size_t nparticles = input_buf.shape[2];
+
+    if(height !=2 || width != 2) {
+        std::cerr << "This function assumes a kernel of shape (2, 2) but was given shape (" << height << ", " << width << ")" << std::endl;
+        return;
+    }
+
+    const int batch_size = apr_buf.size;
+    int in, out, bn;
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) private(in, out, bn)
+#endif
+    for(bn = 0; bn < batch_size; ++bn) {
+
+        PyAPR aPyAPR = apr_ptr[bn].cast<PyAPR>();
+
+        int dlevel = dlvl_ptr[bn];
+
+        if( dlevel == 0 ) {
+            throw std::invalid_argument("Received level_delta = 0 in transposed_conv_2x2, but currently cannot go beyond the APR max level");
+        }
+
+        const unsigned int current_max_level = std::max(aPyAPR.level_max() - dlevel, aPyAPR.level_min());
+
+        auto apr_it = aPyAPR.apr.iterator();
+        auto tree_it = aPyAPR.apr.tree_iterator();
+
+        const int64_t tree_offset_in = PyAPRFiltering::compute_tree_offset(apr_it, tree_it, current_max_level);
+        const int64_t tree_offset_out = PyAPRFiltering::compute_tree_offset(apr_it, tree_it, current_max_level + 1);
+
+        for(in=0; in<in_channels; ++in) {
+
+            const uint64_t in_offset = bn * in_channels * nparticles + in * nparticles;
+
+            /**** initialize and fill the apr tree ****/
+
+            for (out = 0; out < out_channels; ++out) {
+
+                const T b = (in == (in_channels-1)) ? bias_ptr[out] : 0;
+
+                const uint64_t out_offset = bn * out_channels * nparticles + out * nparticles;
+
+                PixelData<T> stencil_2x2(2, 2, 1);
+
+                size_t offset = out * in_channels * 4 + in * 4;
+
+                for(int idx=0; idx < 4; ++idx) {
+                    stencil_2x2.mesh[idx] = weights_2x2_ptr[offset + idx];
+                }
+
+                const T weight_1x1 = weights_1x1_ptr[out * in_channels + in];
+
+                PyAPRFiltering::transposed_conv_2x2<T>(aPyAPR.apr, input_ptr, output_ptr, stencil_2x2, weight_1x1,
+                        b, in_offset, out_offset, tree_offset_in, tree_offset_out, current_max_level);
+
+            }
+        }
+    }
+}
+
+
+template<typename T>
+void APRNetOps::templated_transposed_conv_2x2_backward(py::buffer_info &apr_buf, py::buffer_info &input_buf,
+                                                       py::buffer_info &weights_2x2_buf, py::buffer_info &weights_1x1_buf,
+                                                       py::buffer_info &grad_input_buf, py::buffer_info &grad_weights_2x2_buf,
+                                                       py::buffer_info &grad_weights_1x1_buf, py::buffer_info &grad_bias_buf,
+                                                       py::buffer_info &grad_output_buf, py::buffer_info &dlvl_buf){
+
+    /// pointers to python array data
+    auto apr_ptr = (py::object *) apr_buf.ptr;
+    auto input_ptr = (T *) input_buf.ptr;
+    auto weights_2x2_ptr = (float *) weights_2x2_buf.ptr;
+    auto weights_1x1_ptr = (float *) weights_1x1_buf.ptr;
+    auto grad_input_ptr = (T *) grad_input_buf.ptr;
+    auto grad_weights_2x2_ptr = (float *) grad_weights_2x2_buf.ptr;
+    auto grad_weights_1x1_ptr = (float *) grad_weights_1x1_buf.ptr;
+    auto grad_bias_ptr = (float *) grad_bias_buf.ptr;
+    auto grad_output_ptr = (T *) grad_output_buf.ptr;
+    auto dlvl_ptr = (int32_t *) dlvl_buf.ptr;
+
+    /// some important numbers implicit in array shapes
+    const int out_channels = weights_2x2_buf.shape[0];
+    const int in_channels = weights_2x2_buf.shape[1];
+    //const int height = weights_2x2_buf.shape[2];
+    //const int width = weights_2x2_buf.shape[3];
+
+    const size_t nparticles = input_buf.shape[2];
+
+    /// allocate temporary arrays to avoid race condition on the weight and bias gradients
+#ifdef PYAPR_HAVE_OPENMP
+    const size_t num_threads = omp_get_max_threads();
+#else
+    const size_t num_threads = 1;
+#endif
+
+    std::vector<float> temp_vec_dw_2x2(num_threads*out_channels*in_channels*4, 0.0f);
+    std::vector<float> temp_vec_dw_1x1(num_threads*out_channels*in_channels, 0.0f);
+    std::vector<float> temp_vec_db(out_channels*num_threads, 0.0f);
+
+    const int batch_size = apr_buf.size;
+    int in, out, bn;
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) private(in, out, bn)
+#endif
+    for(bn = 0; bn < batch_size; ++bn) {
+
+#ifdef PYAPR_HAVE_OPENMP
+        const size_t thread_id = omp_get_thread_num();
+#else
+        const size_t thread_id = 0;
+#endif
+        PyAPR aPyAPR = apr_ptr[bn].cast<PyAPR>();
+
+        int dlevel = dlvl_ptr[bn];
+        const unsigned int current_max_level = std::max(aPyAPR.apr.level_max() - dlevel, aPyAPR.apr.level_min());
+
+        auto apr_it = aPyAPR.apr.iterator();
+        auto tree_it = aPyAPR.apr.tree_iterator();
+
+        const int64_t tree_offset_in = PyAPRFiltering::compute_tree_offset(apr_it, tree_it, current_max_level);
+        const int64_t tree_offset_out = PyAPRFiltering::compute_tree_offset(apr_it, tree_it, current_max_level + 1);
+
+        for(in=0; in<in_channels; ++in) {
+
+            const uint64_t in_offset = bn * in_channels * nparticles + in * nparticles;
+
+            for (out = 0; out < out_channels; ++out) {
+
+                const uint64_t out_offset = bn * out_channels * nparticles + out * nparticles;
+
+                const size_t dw_2x2_offset = thread_id * out_channels * in_channels * 4 +
+                                             out * in_channels * 4 +
+                                             in * 4;
+
+                const size_t dw_1x1_offset = thread_id * out_channels * in_channels + out * in_channels + in;
+
+                const size_t db_offset = thread_id * out_channels + out;
+
+                PixelData<T> stencil_2x2(2, 2, 1);
+
+                size_t offset = out * in_channels * 4 + in * 4;
+
+                for(int idx=0; idx < 4; ++idx) {
+                    stencil_2x2.mesh[idx] = weights_2x2_ptr[offset + idx];
+                }
+
+                const T weight_1x1 = weights_1x1_ptr[out * in_channels + in];
+
+                PyAPRFiltering::transposed_conv_2x2_backward(aPyAPR.apr, input_ptr, stencil_2x2, weight_1x1, grad_input_ptr,
+                                                             temp_vec_dw_2x2, temp_vec_dw_1x1, temp_vec_db, grad_output_ptr,
+                                                             dw_2x2_offset, dw_1x1_offset, db_offset, in_offset, out_offset,
+                                                             tree_offset_in, tree_offset_out, current_max_level);
+            }
+        }
+    }
+
+    /// collect weight gradients from temp_vec_dw
+    const int num_weights_2x2 = out_channels * in_channels * 4;
+    int w, thd;
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(static) private(w, thd)
+#endif
+    for(w = 0; w < num_weights_2x2; ++w) {
+        float val = 0;
+        for(thd = 0; thd < num_threads; ++thd) {
+            val += temp_vec_dw_2x2[thd*num_weights_2x2 + w];
+        }
+        grad_weights_2x2_ptr[w] = val / batch_size;
+    }
+
+    const int num_weights_1x1 = out_channels * in_channels;
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(static) private(w, thd)
+#endif
+    for(w = 0; w < num_weights_1x1; ++w) {
+        float val = 0;
+        for(thd = 0; thd < num_threads; ++thd) {
+            val += temp_vec_dw_1x1[thd*num_weights_1x1 + w];
+        }
+        grad_weights_1x1_ptr[w] = val / batch_size;
     }
 
     /// collect bias gradients from temp_vec_db

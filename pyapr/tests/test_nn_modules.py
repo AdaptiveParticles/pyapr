@@ -68,6 +68,15 @@ class TestAPRNetModules(unittest.TestCase):
         m = aprnn.APRConv(1, 4, 5, 2)
         assert testing.gradcheck(m, (self.x, self.aprs, self.dlvl))
 
+    def test_gradients_deconv(self):
+
+        self.x.requires_grad = False
+        ds = aprnn.APRMaxPool()
+        ds_x = ds(self.x, self.aprs, self.dlvl)
+        ds_x.requires_grad = True
+
+        m = aprnn.APRTransposedConv2x2(1, 4, decrement_level_delta=False)
+        assert testing.gradcheck(m, (ds_x, self.aprs, self.dlvl))
 
 if __name__ == '__main__':
     unittest.main()

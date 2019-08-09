@@ -280,3 +280,73 @@ class APRMaxPool(nn.Module):
     def forward(self, input_features, apr, level_deltas):
 
         return APRMaxPoolFunction.apply(input_features, apr, level_deltas, self.increment_level_delta)
+
+
+class APRTransposedConv2x2Function(Function):
+    @staticmethod
+    def forward(ctx, intensities, weights2x2, weights1x1, bias, aprs, level_deltas, dec_dlvl):
+
+        ctx.apr = aprs
+
+        dlevel = level_deltas.data.numpy()
+
+        ctx.save_for_backward(intensities, weights2x2, weights1x1, torch.from_numpy(np.copy(dlevel)))
+
+        npartmax = 0
+        for i in range(len(aprs)):
+            #assert(dlevel[i] > 0)
+            npart = aprnn.number_particles_after_upsample(aprs[i], dlevel[i])
+            npartmax = max(npartmax, npart)
+
+        output = np.zeros(shape=(intensities.shape[0], weights2x2.shape[0], npartmax), dtype=intensities.data.numpy().dtype)
+
+        aprnn.transposed_conv_2x2(aprs, intensities.data.numpy(), weights2x2.data.numpy(), weights1x1.data.numpy(), bias.data.numpy(), output, dlevel)
+
+        if dec_dlvl:
+            for i in range(level_deltas.shape[0]):
+                level_deltas[i] -= 1
+
+        return torch.from_numpy(output)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+
+        input_features, weights2x2, weights1x1, level_deltas = ctx.saved_tensors
+        aprs = ctx.apr
+
+        dlevel = level_deltas.data.numpy()
+
+        d_input = np.zeros(input_features.shape, dtype=input_features.data.numpy().dtype)
+        d_weights_2x2 = np.empty(weights2x2.shape, dtype=np.float32)
+        d_weights_1x1 = np.empty(weights1x1.shape, dtype=np.float32)
+        d_bias = np.empty(weights2x2.shape[0], dtype=np.float32)
+
+        aprnn.transposed_conv_2x2_backward(aprs, input_features.data.numpy(), weights2x2.data.numpy(), weights1x1.data.numpy(),
+                                           d_input, d_weights_2x2, d_weights_1x1, d_bias, grad_output.data.numpy(), dlevel)
+
+        return torch.from_numpy(d_input), torch.from_numpy(d_weights_2x2), torch.from_numpy(d_weights_1x1), torch.from_numpy(d_bias), None, None, None
+
+
+class APRTransposedConv2x2(nn.Module):
+    def __init__(self, in_channels, out_channels, decrement_level_delta=True):
+        super(APRTransposedConv2x2, self).__init__()
+
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.decrement_level_delta = decrement_level_delta
+
+        self.weight_2x2 = nn.Parameter(torch.Tensor(out_channels, in_channels, 2, 2))
+        self.weight_1x1 = nn.Parameter(torch.Tensor(out_channels, in_channels))
+        self.bias = nn.Parameter(torch.Tensor(out_channels))
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        init.kaiming_uniform_(self.weight_2x2, a=math.sqrt(5))
+        init.kaiming_uniform_(self.weight_1x1, a=math.sqrt(5))
+        if self.bias is not None:
+            fan_in, _ = init._calculate_fan_in_and_fan_out(self.weight_2x2)
+            bound = 1 / math.sqrt(fan_in)
+            init.uniform_(self.bias, -bound, bound)
+
+    def forward(self, input_features, apr, level_deltas):
+        return APRTransposedConv2x2Function.apply(input_features, self.weight_2x2, self.weight_1x1, self.bias, apr, level_deltas, self.decrement_level_delta)
