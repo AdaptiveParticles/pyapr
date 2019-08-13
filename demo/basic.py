@@ -24,9 +24,14 @@ def read_tiff(filename):
 
 def main():
 
+    io_int = pyapr.filegui.InteractiveIO()
+
+    fpath = io_int.get_tiff_file_name()
+
     # Read in an image
-    fpath = '../LibAPR/test/files/Apr/sphere_120/sphere_original.tif'
     img = read_tiff(fpath).astype(np.float32)
+
+    print(fpath)
 
     # Initialize objects
     apr = pyapr.APR()
@@ -45,15 +50,20 @@ def main():
     converter.set_verbose(True)
 
     # Compute APR and sample particle values
-    converter.get_apr(apr, img)
-    parts.sample_image(apr, img)
+    #converter.get_apr_interactive(apr, img)
 
-    # Reconstruct pixel image
-    tmp = pyapr.numerics.reconstruction.recon_pc(apr, parts)
-    recon = np.array(tmp, copy=False)
+    io_int.interactive_apr(converter, apr, img)
 
-    # Compare reconstruction to original
-    print('mean absolute relative error: {}'.format(np.mean(np.abs(img-recon) / img)))
+
+    #converter.get_apr(apr, img)
+    # parts.sample_image(apr, img)
+    #
+    # # Reconstruct pixel image
+    # tmp = pyapr.numerics.reconstruction.recon_pc(apr, parts)
+    # recon = np.array(tmp, copy=False)
+    #
+    # # Compare reconstruction to original
+    # print('mean absolute relative error: {}'.format(np.mean(np.abs(img-recon) / img)))
 
 
 if __name__ == '__main__':

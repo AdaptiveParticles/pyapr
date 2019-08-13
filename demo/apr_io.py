@@ -27,7 +27,13 @@ def read_tiff(filename):
 def main(args):
 
     # Read in an image
-    fpath = '../LibAPR/test/files/Apr/sphere_120/sphere_original.tif'
+
+    io_int = pyapr.filegui.InteractiveIO()
+
+    fpath = io_int.get_tiff_file_name()
+
+
+
     img = read_tiff(fpath).astype(np.float32)
 
     # Initialize objects
@@ -50,14 +56,15 @@ def main(args):
     converter.get_apr(apr, img)
     parts.sample_image(apr, img)
 
-    fpath = os.path.join(args.location, args.name + '.h5')
+    fpath_apr = io_int.save_apr_file_name()
+
 
     # Initialize APRFile for I/O
     aprfile = pyapr.io.APRFile()
     aprfile.set_read_write_tree(True)
 
     # Write APR and particles to file
-    aprfile.open(fpath, 'WRITE')
+    aprfile.open(fpath_apr, 'WRITE')
     aprfile.write_apr(apr)
     aprfile.write_particles('particles', parts)
     aprfile.close()
@@ -67,7 +74,7 @@ def main(args):
     parts2 = pyapr.FloatParticles()
 
     # Read from APR file
-    aprfile.open(fpath, 'READ')
+    aprfile.open(fpath_apr, 'READ')
     aprfile.read_apr(apr2)
     aprfile.read_particles(apr2, 'particles', parts2)
     aprfile.close()

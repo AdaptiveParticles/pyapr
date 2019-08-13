@@ -73,6 +73,42 @@ public:
 
         converter.get_apr(aPyAPR.apr, pd);
     }
+
+    void get_apr_interactive(PyAPR &aPyAPR, py::array &img){
+
+        auto buf = img.request(false);
+
+        unsigned int y_num, x_num, z_num;
+
+        std::vector<ssize_t> shape = buf.shape;
+
+        if(buf.ndim == 3) {
+            y_num = shape[2];
+            x_num = shape[1];
+            z_num = shape[0];
+        } else if (buf.ndim == 2) {
+            y_num = shape[1];
+            x_num = shape[0];
+            z_num = 1;
+        } else if (buf.ndim == 1) {
+            y_num = shape[0];
+            x_num = 1;
+            z_num = 1;
+        } else {
+            throw std::invalid_argument("input array must be of dimension at most 3");
+        }
+
+        auto ptr = (T*) buf.ptr;
+
+        PixelData<T> pd;
+        pd.init_from_mesh(y_num, x_num, z_num, ptr);
+
+        converter.get_lrf(aPyAPR.apr, pd);
+        //converter.get_apr(aPyAPR.apr, pd);
+        //converter.get_ds(aPyAPR.apr);
+
+    }
+
 };
 
 template<typename DataType>
@@ -84,7 +120,10 @@ void AddPyAPRConverter(pybind11::module &m, const std::string &aTypeString) {
             .def("get_apr", &converter::get_apr, "compute APR from an image (input as a numpy array)")
             .def("set_parameters", &converter::set_parameters, "set parameters")
             .def("set_verbose", &converter::set_verbose,
-                 "should timings and additional information be printed during conversion?");
+                 "should timings and additional information be printed during conversion?")
+            .def("get_apr_interactive", &converter::get_apr_interactive,
+                 "Interactive APR generation");
+
 }
 
 
