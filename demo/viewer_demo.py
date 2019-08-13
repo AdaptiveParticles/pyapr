@@ -1,12 +1,16 @@
 import pyapr
 import numpy as np
-from demo.io import read_tiff
+import argparse
+from skimage import io as skio
 
 
-def main():
+def main(args):
     # Read in an image
     fpath = '../LibAPR/test/files/Apr/sphere_120/sphere_original.tif'
-    img = read_tiff(fpath).astype(np.uint16)
+    if args.input:
+        fpath = args.input
+
+    img = np.array(skio.imread(fpath)).astype(np.uint16)
 
     # Initialize objects
     apr = pyapr.APR()
@@ -18,9 +22,9 @@ def main():
     par.auto_parameters = False
     par.rel_error = 0.1
     par.Ip_th = 0
-    par.gradient_smoothing = 2
-    par.sigma_th = 50
-    par.sigma_th_max = 20
+    par.gradient_smoothing = 3
+    par.sigma_th = 20
+    par.sigma_th_max = 5
     converter.set_parameters(par)
     converter.set_verbose(True)
 
@@ -32,4 +36,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', type=str, default="")
+    args = parser.parse_args()
+
+    main(args)
