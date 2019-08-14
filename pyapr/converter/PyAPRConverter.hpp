@@ -145,7 +145,7 @@ public:
 
                auto grad_temp = grad_.at(y,x,z_slice);
                auto lis_temp = lis_.at(y,x,z_slice);
-               auto intensity = smooth_image_.at(x,y,z_slice);
+               auto intensity = smooth_image_.at(y,x,z_slice);
 
                if(grad_temp < par.grad_th){
                     grad_temp = 0;

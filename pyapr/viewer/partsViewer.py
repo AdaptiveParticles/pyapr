@@ -325,7 +325,7 @@ def parts_viewer(aAPR, Parts):
     ## Create window with GraphicsView widget
     win = MainWindow()
 
-    win.init_APR(aAPR,Parts)
+    win.init_APR(aAPR, Parts)
 
     win.show()
 

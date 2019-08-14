@@ -7,7 +7,7 @@ from pyqtgraph.Qt import QtCore, QtGui
 from PyQt5.QtCore import *
 
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QGridLayout, QGroupBox,
-                             QMenu, QPushButton, QRadioButton, QVBoxLayout, QWidget, QSlider, QLabel, QComboBox)
+                             QMenu, QPushButton, QRadioButton, QVBoxLayout, QWidget, QSlider, QLabel, QComboBox, QSpinBox)
 
 import pyqtgraph as pg
 
@@ -16,6 +16,53 @@ import pyapr
 import matplotlib.pyplot as plt
 
 import numpy as np
+
+class customSlider():
+    def __init__(self, window, label_name):
+
+        self.slider = QSlider(Qt.Horizontal, window)
+        self.label = QLabel(window)
+        self.maxBox = QSpinBox(window)
+
+        self.maxBox.setMaximum(64000)
+        self.maxBox.setValue(100)
+
+        self.win_ref = window
+        self.label_name = label_name
+
+        self.maxBox.valueChanged.connect(self.updateRange)
+        self.slider.valueChanged.connect(self.updateText)
+
+        self.slider.setValue(1)
+
+    sz_label = 100
+    sz_slider = 200
+    sz_box = 75
+
+    def move(self, loc1, loc2):
+
+        self.label.move(loc1, loc2-5)
+        self.label.setFixedWidth(self.sz_label)
+
+        self.slider.move(loc1 + self.sz_label, loc2)
+        self.slider.setFixedWidth(self.sz_slider)
+        self.maxBox.move(loc1 + self.sz_slider + self.sz_label + 5, loc2-5)
+        self.maxBox.setFixedWidth(self.sz_box)
+
+    def updateRange(self):
+        max = self.maxBox.value()
+        self.slider.setMaximum(max)
+        self.slider.setTickInterval(1)
+
+    def connectSlider(self, function):
+        self.slider.valueChanged.connect(function)
+
+    def updateText(self):
+        text_str = self.label_name + ": " + str(self.slider.value())
+        self.label.setText(text_str)
+
+
+
 
 class MainWindowImage(QtGui.QMainWindow):
 
@@ -52,28 +99,10 @@ class MainWindowImage(QtGui.QMainWindow):
 
         self.hist.item.sigLevelsChanged.connect(self.histogram_updated)
 
-        # add a drop box for LUT selection
-
-        self.comboBox = QtGui.QComboBox(self)
-        self.comboBox.move(20, 20)
-        self.comboBox.addItem('viridis')
-        self.comboBox.addItem('plasma')
-        self.comboBox.addItem('inferno')
-        self.comboBox.addItem('magma')
-        self.comboBox.addItem('cividis')
-        self.comboBox.addItem('Greys')
-        self.comboBox.addItem('Greens')
-        self.comboBox.addItem('Oranges')
-        self.comboBox.addItem('Reds')
-        self.comboBox.addItem('bone')
-        self.comboBox.addItem('Pastel1')
-
-        self.comboBox.currentTextChanged.connect(self.updatedLUT)
-
         # add a QLabel giving information on the current slice and the APR
         self.slice_info = QtGui.QLabel(self)
 
-        self.slice_info.move(130, 20)
+        self.slice_info.move(10, 20)
         self.slice_info.setFixedWidth(200)
 
         # add a label for the current cursor position
@@ -85,37 +114,27 @@ class MainWindowImage(QtGui.QMainWindow):
 
         # add parameter tuning
 
-        # add a slider
-        self.slider_grad = QSlider(Qt.Horizontal, self)
-
-        self.slider_grad.valueChanged.connect(self.valuechangeGrad)
-
-        self.slider_grad.move(200, 40)
-        self.slider_grad.setFixedWidth(500)
-
-        # sigma_slider
-
-        self.slider_sigma = QSlider(Qt.Horizontal, self)
-
-        self.slider_sigma.valueChanged.connect(self.valuechangeSigma)
-
-        self.slider_sigma.move(200, 60)
-        self.slider_sigma.setFixedWidth(500)
-
-        # Ipth_slider
-
-        self.slider_Ith = QSlider(Qt.Horizontal, self)
-
-        self.slider_Ith.valueChanged.connect(self.valuechangeIth)
-
-        self.slider_Ith.move(200, 80)
-        self.slider_Ith.setFixedWidth(500)
-
         # create push button
         self.exit_button = QPushButton('Use Parameters', self)
         self.exit_button.setFixedWidth(300)
         self.exit_button.move(300, 10)
         self.exit_button.clicked.connect(self.exitPressed)
+
+        self.max_label = QLabel(self)
+        self.max_label.setText("Slider Max")
+        self.max_label.move(505, 50)
+
+        self.slider_grad = customSlider(self, "grad_th")
+        self.slider_grad.move(200, 80)
+        self.slider_grad.connectSlider(self.valuechangeGrad)
+
+        self.slider_sigma = customSlider(self, "sigma_th")
+        self.slider_sigma.move(200, 110)
+        self.slider_sigma.connectSlider(self.valuechangeSigma)
+
+        self.slider_Ith = customSlider(self, "Ip_th")
+        self.slider_Ith.move(200, 140)
+        self.slider_Ith.connectSlider(self.valuechangeIth)
 
 
 
@@ -231,17 +250,17 @@ class MainWindowImage(QtGui.QMainWindow):
         self.update_slice(size)
 
     def valuechangeGrad(self):
-        size = self.slider_grad.value()*4
+        size = self.slider_grad.slider.value()
         self.par_ref.grad_th = size
         self.update_slice(self.current_view)
 
     def valuechangeSigma(self):
-        size = self.slider_sigma.value()*4
+        size = self.slider_sigma.slider.value()
         self.par_ref.sigma_th = size
         self.update_slice(self.current_view)
 
     def valuechangeIth(self):
-        size = self.slider_Ith.value() * 40
+        size = self.slider_Ith.slider.value()
         self.par_ref.Ip_th = size
         self.update_slice(self.current_view)
 
@@ -321,7 +340,7 @@ class InteractiveIO():
 
         app = qtgui.QApplication([])
 
-        file_name = qtgui.QFileDialog.getOpenFileName(None, "Open APR", "~", "(*.apr *.h5)")
+        file_name = qtgui.QFileDialog.getOpenFileName(None, "Open APR", "", "(*.apr *.h5)")
 
         return file_name[0]
 
@@ -330,7 +349,7 @@ class InteractiveIO():
 
         app = qtgui.QApplication([])
 
-        file_name = qtgui.QFileDialog.getSaveFileName(None, "Save APR", "~", "(*.apr *.h5)")
+        file_name = qtgui.QFileDialog.getSaveFileName(None, "Save APR", "name", "(*.apr *.h5)")
 
         return file_name[0]
 
@@ -356,6 +375,8 @@ class InteractiveIO():
         win.set_image(img, converter)
 
         QtGui.QApplication.instance().exec_()
+
+        win.close()
 
         #now compute the APR
 

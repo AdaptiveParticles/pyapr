@@ -28,6 +28,7 @@ def main():
     io_int = pyapr.filegui.InteractiveIO()
 
     fpath = io_int.get_tiff_file_name()
+    #fpath = "/Users/cheesema/PhD/PostDoc/PyAPR/demo_files/sphere_long.tif"
 
     # Read in an image
     img = skio.imread(fpath)
@@ -72,11 +73,15 @@ def main():
     aprfile.write_particles('particles', parts)
 
     file_sz = aprfile.current_file_size_MB()
-    print("APR File Size: {:7.2f} MB".format(file_sz))
+    print("APR File Size: {:7.2f} MB \n".format(file_sz))
+
+    mcr = (img.size*2*pow(10, -6))/file_sz
+    cr = img.size/apr.total_number_particles()
+
+    print("Memory Compression Ratio: {:7.2f}".format(mcr))
+    print("Compuational Ratio: {:7.2f}".format(cr))
 
     aprfile.close()
-
-
 
     print("Done. \n")
 
