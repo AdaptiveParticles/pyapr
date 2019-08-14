@@ -29,23 +29,21 @@ def main():
     fpath = io_int.get_tiff_file_name()
 
     # Read in an image
-    img = read_tiff(fpath).astype(np.float32)
+    img = read_tiff(fpath)
 
     print(fpath)
 
     # Initialize objects
     apr = pyapr.APR()
-    parts = pyapr.FloatParticles()
+    parts = pyapr.ShortParticles()
     par = pyapr.APRParameters()
-    converter = pyapr.converter.FloatConverter()
+    converter = pyapr.converter.ShortConverter()
 
     # Set some parameters
     par.auto_parameters = False
     par.rel_error = 0.1
     par.Ip_th = 0
-    par.gradient_smoothing = 2
-    par.sigma_th = 50
-    par.sigma_th_max = 20
+    par.gradient_smoothing = 4
     converter.set_parameters(par)
     converter.set_verbose(True)
 
@@ -54,6 +52,7 @@ def main():
 
     io_int.interactive_apr(converter, apr, img)
 
+    print(apr.total_number_particles())
 
     #converter.get_apr(apr, img)
     # parts.sample_image(apr, img)

@@ -74,7 +74,7 @@ public:
         converter.get_apr(aPyAPR.apr, pd);
     }
 
-    void get_apr_interactive(PyAPR &aPyAPR, py::array &img){
+    void get_apr_step1(PyAPR &aPyAPR, py::array &img){
 
         auto buf = img.request(false);
 
@@ -103,11 +103,77 @@ public:
         PixelData<T> pd;
         pd.init_from_mesh(y_num, x_num, z_num, ptr);
 
+        converter.par.output_steps = true;
+
+        converter.par.grad_th = 20;
+
         converter.get_lrf(aPyAPR.apr, pd);
         //converter.get_apr(aPyAPR.apr, pd);
         //converter.get_ds(aPyAPR.apr);
 
     }
+
+    void get_apr_step2(PyAPR &aPyAPR, APRParameters& par){
+
+        converter.par = par;
+
+        converter.get_ds(aPyAPR.apr);
+
+    }
+
+     static inline uint32_t asmlog_2(const uint32_t x) {
+        if (x == 0) return 0;
+        return (31 - __builtin_clz (x));
+    }
+
+    void get_level_slice(int z_slice, py::array &input, APRParameters& par,PyAPR &aPyAPR){
+
+        PixelData<T>& grad_ = converter.grad_temp;
+        PixelData<float>& lis_ = converter.local_scale_temp;
+        PixelData<float>& smooth_image_ = converter.local_scale_temp2;
+
+        converter.par = par;
+
+        auto buf = input.request();
+        auto *ptr = static_cast<float*>(buf.ptr);
+        PixelData<float> level_output;
+        level_output.init_from_mesh(buf.shape[1], buf.shape[0], 1, ptr); // may lead to memory issues
+
+        const float scale_factor = pow(2,aPyAPR.apr.level_max())/par.rel_error;
+
+        const uint32_t l_max = aPyAPR.apr.level_max();
+
+        for(int x = 0; x < level_output.x_num; x++){
+            for(int y = 0;y < level_output.y_num; y++){
+
+               auto grad_temp = grad_.at(y,x,z_slice);
+               auto lis_temp = lis_.at(y,x,z_slice);
+               auto intensity = smooth_image_.at(y,x,z_slice);
+
+               if(grad_temp < par.grad_th){
+                    grad_temp = 0;
+               }
+
+               if(lis_temp < par.sigma_th){
+                    lis_temp = par.sigma_th;
+               }
+
+               if(intensity < par.Ip_th){
+                    grad_temp = 0;
+               }
+
+               auto level = std::min(asmlog_2(scale_factor*grad_temp/lis_temp),l_max);
+               if(level < (l_max-1)){
+                    level = l_max - 2;
+               }
+
+               level_output.at(y,x,0) = level;
+
+            }
+        }
+
+    }
+
 
 };
 
@@ -121,9 +187,12 @@ void AddPyAPRConverter(pybind11::module &m, const std::string &aTypeString) {
             .def("set_parameters", &converter::set_parameters, "set parameters")
             .def("set_verbose", &converter::set_verbose,
                  "should timings and additional information be printed during conversion?")
-            .def("get_apr_interactive", &converter::get_apr_interactive,
+            .def("get_level_slice", &converter::get_level_slice,
+                 "gets the current level slice for the applied parameters")
+            .def("get_apr_step1", &converter::get_apr_step1,
+                 "Interactive APR generation")
+            .def("get_apr_step2", &converter::get_apr_step2,
                  "Interactive APR generation");
-
 }
 
 

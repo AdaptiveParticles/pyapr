@@ -27,5 +27,6 @@ void AddPyAPRParameters(pybind11::module &m) {
         .def_readwrite("output_dir", &APRParameters::output_dir)
         .def_readwrite("input_image_name", &APRParameters::input_image_name)
         .def_readwrite("input_dir", &APRParameters::input_dir)
-        .def_readwrite("mask_file", &APRParameters::mask_file);
+        .def_readwrite("mask_file", &APRParameters::mask_file)
+        .def_readwrite("grad_th", &APRParameters::grad_th);
 }
