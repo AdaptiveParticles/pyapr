@@ -83,14 +83,17 @@ public:
         std::vector<ssize_t> shape = buf.shape;
 
         if(buf.ndim == 3) {
+
             y_num = shape[2];
             x_num = shape[1];
             z_num = shape[0];
         } else if (buf.ndim == 2) {
+
             y_num = shape[1];
             x_num = shape[0];
             z_num = 1;
         } else if (buf.ndim == 1) {
+
             y_num = shape[0];
             x_num = 1;
             z_num = 1;
@@ -103,13 +106,7 @@ public:
         PixelData<T> pd;
         pd.init_from_mesh(y_num, x_num, z_num, ptr);
 
-        converter.par.output_steps = true;
-
-        converter.par.grad_th = 20;
-
         converter.get_lrf(aPyAPR.apr, pd);
-        //converter.get_apr(aPyAPR.apr, pd);
-        //converter.get_ds(aPyAPR.apr);
 
     }
 
@@ -148,7 +145,7 @@ public:
 
                auto grad_temp = grad_.at(y,x,z_slice);
                auto lis_temp = lis_.at(y,x,z_slice);
-               auto intensity = smooth_image_.at(y,x,z_slice);
+               auto intensity = smooth_image_.at(x,y,z_slice);
 
                if(grad_temp < par.grad_th){
                     grad_temp = 0;

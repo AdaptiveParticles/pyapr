@@ -59,6 +59,15 @@ public:
         file.read_particles(aPyAPR.apr, particles_name, particles.parts, apr_or_tree, t, channel_name);
     }
 
+    float current_file_size_MB(){
+        return file.current_file_size_MB();
+    }
+
+    float current_file_size_GB(){
+        return file.current_file_size_GB();
+    }
+
+
 };
 
 // -------- wrapper -------------------------------------------------
@@ -82,7 +91,9 @@ void AddPyAPRFile(pybind11::module &m, const std::string &modulename) {
             .def("read_particles", &PyAPRFile::read_particles<uint16_t>, py::arg("aPyAPR"), py::arg("particles_name"), py::arg("particles"),
                  py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t", "read particles from file")
             .def("read_particles", &PyAPRFile::read_particles<float>, py::arg("aPyAPR"), py::arg("particles_name"), py::arg("particles"),
-                 py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t", "read particles from file");
+                 py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t", "read particles from file")
+            .def("current_file_size_GB", &PyAPRFile::current_file_size_GB, "get current file size in GB")
+            .def("current_file_size_MB", &PyAPRFile::current_file_size_MB, "get current file size in MB");
 }
 
 #endif //PYLIBAPR_PYAPRFILE_HPP

@@ -276,7 +276,7 @@ class MainWindowImage(QtGui.QMainWindow):
         self.y_num_ds = int((img.shape[1]+1) / 2)
         self.x_num_ds = int((img.shape[2]+1) / 2)
 
-        self.img_ds = np.zeros((self.x_num_ds, self.y_num_ds), dtype=np.float32)
+        self.img_ds = np.zeros((self.y_num_ds, self.x_num_ds), dtype=np.float32)
 
         self.par_ref = pyapr.APRParameters()
 
@@ -287,12 +287,10 @@ class MainWindowImage(QtGui.QMainWindow):
         self.img_I_ds = pg.ImageItem(self.img_ds)
         self.view.addItem(self.img_I_ds)
 
-
-
         self.hist.setImageItem(self.img_I)
 
-        self.img_I_ds.setRect(QtCore.QRectF(self.min_x, self.min_y, self.x_num_ds*2, self.y_num_ds*2))
-        self.img_I.setRect(QtCore.QRectF(self.min_x, self.min_y, self.x_num, self.y_num))
+        self.img_I_ds.setRect(QtCore.QRectF(self.min_x, self.min_y, self.y_num_ds*2, self.x_num_ds*2))
+        self.img_I.setRect(QtCore.QRectF(self.min_x, self.min_y, self.y_num, self.x_num))
 
         ## Set up the slide
         self.slider.setMinimum(0)
@@ -360,6 +358,12 @@ class InteractiveIO():
         QtGui.QApplication.instance().exec_()
 
         #now compute the APR
+
+        print("\n---------------------------------\n")
+        print("Using the following parameters:\n")
+        print("grad_th = {}, Ip_th = {}, sigma_th = {} \n".format(win.par_ref.grad_th,
+                                                               win.par_ref.sigma_th, win.par_ref.Ip_th))
+        print("---------------------------------\n \n")
 
         converter.get_apr_step2(apr, win.par_ref)
 

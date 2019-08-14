@@ -40,9 +40,6 @@ void fill_slice(PyAPR &aPyAPR, PyParticleData<uint16_t> &particles,py::array &in
 
         auto apr_it = aPyAPR.apr.iterator();
 
-        int x_num = apr_it.x_num(level);
-        int y_num = apr_it.y_num(level);
-
         std::fill(input_img.mesh.begin(),input_img.mesh.end(),min_val);
 
         int x;

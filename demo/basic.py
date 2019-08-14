@@ -1,6 +1,7 @@
 import pyapr
 from libtiff import TIFFfile
 import numpy as np
+from skimage import io as skio
 
 
 def read_tiff(filename):
@@ -29,7 +30,7 @@ def main():
     fpath = io_int.get_tiff_file_name()
 
     # Read in an image
-    img = read_tiff(fpath)
+    img = skio.imread(fpath)
 
     print(fpath)
 
@@ -42,27 +43,45 @@ def main():
     # Set some parameters
     par.auto_parameters = False
     par.rel_error = 0.1
-    par.Ip_th = 0
-    par.gradient_smoothing = 4
+    par.gradient_smoothing = 2
     converter.set_parameters(par)
     converter.set_verbose(True)
 
     # Compute APR and sample particle values
-    #converter.get_apr_interactive(apr, img)
 
     io_int.interactive_apr(converter, apr, img)
 
-    print(apr.total_number_particles())
+    print("Total number of particles: {} \n".format(apr.total_number_particles()))
 
-    #converter.get_apr(apr, img)
-    # parts.sample_image(apr, img)
-    #
-    # # Reconstruct pixel image
-    # tmp = pyapr.numerics.reconstruction.recon_pc(apr, parts)
-    # recon = np.array(tmp, copy=False)
-    #
-    # # Compare reconstruction to original
-    # print('mean absolute relative error: {}'.format(np.mean(np.abs(img-recon) / img)))
+    print("Sampling particles ... \n")
+
+    parts.sample_image(apr, img)
+
+    print("Done. \n")
+
+    print("Writing file to disk ... \n")
+
+    fpath_apr = io_int.save_apr_file_name() #get path through gui
+    # Initialize APRFile for I/O
+    aprfile = pyapr.io.APRFile()
+    aprfile.set_read_write_tree(True)
+
+    # Write APR and particles to file
+    aprfile.open(fpath_apr, 'WRITE')
+    aprfile.write_apr(apr)
+    aprfile.write_particles('particles', parts)
+
+    file_sz = aprfile.current_file_size_MB()
+    print("APR File Size: {:7.2f} MB".format(file_sz))
+
+    aprfile.close()
+
+
+
+    print("Done. \n")
+
+    pyapr.viewer.parts_viewer(apr, parts)
+
 
 
 if __name__ == '__main__':
