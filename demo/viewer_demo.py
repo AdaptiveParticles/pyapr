@@ -1,32 +1,26 @@
 import pyapr
 import numpy as np
-from demo.io import read_tiff
 
 
 def main():
     # Read in an image
-    fpath = '../LibAPR/test/files/Apr/sphere_120/sphere_original.tif'
-    img = read_tiff(fpath).astype(np.uint16)
 
-    # Initialize objects
+    io_int = pyapr.filegui.InteractiveIO()
+
     apr = pyapr.APR()
     parts = pyapr.ShortParticles()
-    par = pyapr.APRParameters()
-    converter = pyapr.converter.ShortConverter()
 
-    # Set some parameters
-    par.auto_parameters = False
-    par.rel_error = 0.1
-    par.Ip_th = 0
-    par.gradient_smoothing = 2
-    par.sigma_th = 50
-    par.sigma_th_max = 20
-    converter.set_parameters(par)
-    converter.set_verbose(True)
+    # Initialize APRFile for I/O
+    aprfile = pyapr.io.APRFile()
+    aprfile.set_read_write_tree(True)
 
-    # Compute APR and sample particle values
-    converter.get_apr(apr, img)
-    parts.sample_image(apr, img)
+    fpath_apr = io_int.get_apr_file_name()
+
+    # Write APR and particles to file
+    aprfile.open(fpath_apr, 'READ')
+    aprfile.read_apr(apr)
+    aprfile.read_particles(apr, 'particles', parts)
+    aprfile.close()
 
     pyapr.viewer.parts_viewer(apr, parts)
 
