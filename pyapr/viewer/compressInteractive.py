@@ -142,8 +142,8 @@ class CompressWindow(partsViewer.MainWindow):
 
                     self.img_list[l].setImage(self.array_list[l], False)
 
-                    img_sz_x = self.scale_sc * self.array_list[l].shape[0] * sz
-                    img_sz_y = self.scale_sc * self.array_list[l].shape[1] * sz
+                    img_sz_x = self.scale_sc * self.array_list[l].shape[1] * sz
+                    img_sz_y = self.scale_sc * self.array_list[l].shape[0] * sz
 
                     self.img_list[l].setRect(QtCore.QRectF(self.min_x, self.min_y, img_sz_x, img_sz_y))
 
@@ -157,6 +157,8 @@ def interactive_compression(apr, parts):
 
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
+
+    pg.setConfigOption('imageAxisOrder', 'row-major')
 
     app = QtGui.QApplication([])
 

@@ -308,8 +308,8 @@ class MainWindowImage(QtGui.QMainWindow):
 
         self.hist.setImageItem(self.img_I)
 
-        self.img_I_ds.setRect(QtCore.QRectF(self.min_x, self.min_y, self.y_num_ds*2, self.x_num_ds*2))
-        self.img_I.setRect(QtCore.QRectF(self.min_x, self.min_y, self.y_num, self.x_num))
+        self.img_I_ds.setRect(QtCore.QRectF(self.min_x, self.min_y, self.x_num_ds*2, self.y_num_ds*2))
+        self.img_I.setRect(QtCore.QRectF(self.min_x, self.min_y, self.x_num, self.y_num))
 
         ## Set up the slide
         self.slider.setMinimum(0)
@@ -360,6 +360,7 @@ class InteractiveIO():
 
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
+        pg.setConfigOption('imageAxisOrder', 'row-major')
 
         app = QtGui.QApplication([])
 

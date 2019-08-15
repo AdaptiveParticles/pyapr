@@ -92,10 +92,12 @@ class MainWindow(QtGui.QMainWindow):
         self.current_view = -1
 
         if self.level_toggle.isChecked():
+            self.hist_on = False
             for l in range(self.level_min, self.level_max + 1):
                 self.img_list[l].setLevels([self.level_min, self.level_max], True)
                 self.zero_img.setLevels([0, 1], True)
         else:
+            self.hist_on = True
             self.histogram_updated()
 
         self.update_slice(force_update)
@@ -128,6 +130,8 @@ class MainWindow(QtGui.QMainWindow):
 
     lut = 0
     lut_back = 0
+
+    hist_on = True
 
     def updateSliceText(self, slice):
 
@@ -214,8 +218,8 @@ class MainWindow(QtGui.QMainWindow):
 
         for l in range(self.level_min, self.level_max + 1):
             sz = pow(2, self.level_max - l)
-            img_sz_x = self.array_list[l].shape[0] * sz
-            img_sz_y = self.array_list[l].shape[1] * sz
+            img_sz_x = self.array_list[l].shape[1] * sz
+            img_sz_y = self.array_list[l].shape[0] * sz
             max_x = max(max_x, img_sz_x)
             max_y = max(max_y, img_sz_y)
 
@@ -277,8 +281,8 @@ class MainWindow(QtGui.QMainWindow):
 
                     self.img_list[l].setImage(self.array_list[l], False)
 
-                    img_sz_x = self.scale_sc * self.array_list[l].shape[0] * sz
-                    img_sz_y = self.scale_sc * self.array_list[l].shape[1] * sz
+                    img_sz_x = self.scale_sc * self.array_list[l].shape[1] * sz
+                    img_sz_y = self.scale_sc * self.array_list[l].shape[0] * sz
 
                     self.img_list[l].setRect(QtCore.QRectF(self.min_x, self.min_y, img_sz_x, img_sz_y))
 
@@ -302,7 +306,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def histogram_updated(self):
 
-        if self.level_toggle.isChecked() == False:
+        if self.hist_on:
             hist_range = self.hist.item.getLevels()
 
             self.hist_min = hist_range[0]
@@ -351,6 +355,8 @@ def parts_viewer(aAPR, Parts):
 
     app = QtGui.QApplication([])
 
+
+    pg.setConfigOption('imageAxisOrder', 'row-major')
 
     ## Create window with GraphicsView widget
     win = MainWindow()
