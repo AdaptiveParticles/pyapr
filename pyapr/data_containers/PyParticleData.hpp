@@ -38,6 +38,39 @@ public:
     uint64_t size() const { return parts.data.size(); }
 
 
+    //
+    //  Particle compression settings
+    //
+
+    /**
+     * Set the quantization factor for lossy compression step
+     *
+     * @param q  float compression quantization factor, larger -> more loss
+     */
+    void set_quantization_factor(float q){
+        parts.compressor.set_quantization_factor(q);
+    }
+
+    /**
+     * Set the background offset and threshold for lossy compression transform (values below this will be ignored
+     * and set to the value of bkgrd.
+     *
+     * @param bkgrd  lower truncation value of the lossy sqrt transform
+     */
+    void set_background(float bkgrd){
+        parts.compressor.set_background(bkgrd);
+    }
+
+    /**
+     * Turns compression on and off.
+     *
+     * @param type  int (1 turns lossy compresison on, 0 should be off)
+     */
+    void set_compression_type(bool type){
+        parts.compressor.set_compression_type(type);
+    }
+
+
     /**
      * Sample the particle values from an image (numpy array) for a given APR (computed from the same image).
      *
@@ -112,6 +145,9 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
             .def("sample_image", &TypeParticles::sample_image, "sample particle values from an image (numpy array)")
             .def("fill_with_levels", &TypeParticles::fill_with_levels, "fill particle values with levels")
+            .def("set_quantization_factor", &TypeParticles::set_quantization_factor, "set lossy quantization factor")
+            .def("set_background", &TypeParticles::set_background, "set lossy background cut off")
+            .def("set_compression_type", &TypeParticles::set_compression_type, "turn lossy compression on and off")
             .def_buffer([](TypeParticles &p) -> py::buffer_info{
                 return py::buffer_info(
                         p.data(),

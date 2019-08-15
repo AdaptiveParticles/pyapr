@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 
 class MainWindow(QtGui.QMainWindow):
 
+
     def __init__(self):
         super(MainWindow, self).__init__()
 
@@ -75,6 +76,29 @@ class MainWindow(QtGui.QMainWindow):
 
         self.cursor.move(300, 20)
         self.cursor.setFixedWidth(200)
+
+
+    def add_level_toggle(self):
+        self.level_toggle = QCheckBox(self)
+        self.level_toggle.setText("View Level")
+        self.level_toggle.move(605, 20)
+
+        self.level_toggle.setChecked(False)
+
+        self.level_toggle.stateChanged.connect(self.toggleLevel)
+
+    def toggleLevel(self):
+        force_update = self.current_view
+        self.current_view = -1
+
+        if self.level_toggle.isChecked():
+            for l in range(self.level_min, self.level_max + 1):
+                self.img_list[l].setLevels([self.level_min, self.level_max], True)
+                self.zero_img.setLevels([0, 1], True)
+        else:
+            self.histogram_updated()
+
+        self.update_slice(force_update)
 
     img_list = []
 
@@ -245,7 +269,11 @@ class MainWindow(QtGui.QMainWindow):
                 prev_z = int(self.current_view/sz)
 
                 if prev_z != curr_z:
-                    pyapr.viewer.fill_slice(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
+
+                    if self.level_toggle.isChecked():
+                        pyapr.viewer.fill_slice_level(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
+                    else:
+                        pyapr.viewer.fill_slice(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
 
                     self.img_list[l].setImage(self.array_list[l], False)
 
@@ -274,15 +302,16 @@ class MainWindow(QtGui.QMainWindow):
 
     def histogram_updated(self):
 
-        hist_range = self.hist.item.getLevels()
+        if self.level_toggle.isChecked() == False:
+            hist_range = self.hist.item.getLevels()
 
-        self.hist_min = hist_range[0]
-        self.hist_max = hist_range[1]
+            self.hist_min = hist_range[0]
+            self.hist_max = hist_range[1]
 
-        for l in range(self.level_min, self.level_max + 1):
-            self.img_list[l].setLevels([self.hist_min,  self.hist_max], True)
+            for l in range(self.level_min, self.level_max + 1):
+                self.img_list[l].setLevels([self.hist_min,  self.hist_max], True)
 
-        self.zero_img.setLevels([0,  1], True)
+                self.zero_img.setLevels([0,  1], True)
 
     def imageHoverEvent(self, event):
         """Show the position, pixel, and value under the mouse cursor.
@@ -315,6 +344,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.cursor.setText(text_string)
 
+
 def parts_viewer(aAPR, Parts):
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
@@ -324,6 +354,8 @@ def parts_viewer(aAPR, Parts):
 
     ## Create window with GraphicsView widget
     win = MainWindow()
+
+    win.add_level_toggle()
 
     win.init_APR(aAPR, Parts)
 
