@@ -72,6 +72,8 @@ class MainWindowImage(QtGui.QMainWindow):
         cw = QtGui.QWidget()
         self.setCentralWidget(cw)
 
+        cw.setMouseTracking(True)
+
         self.layout = QtGui.QGridLayout()
         cw.setLayout(self.layout)
         self.layout.setSpacing(0)
@@ -109,7 +111,7 @@ class MainWindowImage(QtGui.QMainWindow):
 
         self.cursor = QtGui.QLabel(self)
 
-        self.cursor.move(300, 20)
+        self.cursor.move(20, 40)
         self.cursor.setFixedWidth(200)
 
         # add parameter tuning
@@ -136,6 +138,8 @@ class MainWindowImage(QtGui.QMainWindow):
         self.slider_Ith.move(200, 140)
         self.slider_Ith.connectSlider(self.valuechangeIth)
 
+        # add a label for the current cursor position
+
 
 
     current_view = 0
@@ -149,7 +153,7 @@ class MainWindowImage(QtGui.QMainWindow):
     z_num = 0
     y_num = 0
 
-    full_size = 900
+    full_size = 1000
     scale_sc = 10
 
     min_x = 0
@@ -165,6 +169,26 @@ class MainWindowImage(QtGui.QMainWindow):
     grad_th = 0
 
     app_ref = 0
+
+    def imageHoverEvent(self, event):
+        """Show the position, pixel, and value under the mouse cursor.
+        """
+
+        if event.isExit():
+            return
+
+        data = self.img_ref[self.current_view, :, :]
+
+        pos = event.pos()
+        i, j = pos.y(), pos.x()
+        i = int(np.clip(i, 0, data.shape[1] - 1))
+        j = int(np.clip(j, 0, data.shape[0] - 1))
+        val = data[j, i]
+
+        text_string = "(y: " + str(i) + ",x: " + str(j) + ") val; " + str(val) + "\n"
+
+        self.cursor.setText(text_string)
+
 
     def exitPressed(self):
         self.app_ref.exit()
@@ -318,6 +342,11 @@ class MainWindowImage(QtGui.QMainWindow):
         self.slider.setGeometry(0.05 * self.full_size, 0.97 * self.full_size, 0.95 * self.full_size, 40)
 
         self.setLUT('viridis')
+
+        ## Image hover event
+        self.img_I.hoverEvent = self.imageHoverEvent
+
+        self.update_slice(int(self.z_num/2))
 
 
 
