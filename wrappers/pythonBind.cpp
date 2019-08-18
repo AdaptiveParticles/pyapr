@@ -19,6 +19,7 @@
 #include "converter/PyAPRConverter.hpp"
 #include "io/PyAPRFile.hpp"
 #include "viewer/ViewerHelpers.hpp"
+#include "viewer/PyAPRRaycaster.hpp"
 
 namespace py = pybind11;
 
@@ -44,6 +45,8 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     // wrap the APRParameters class
     AddPyAPRParameters(data_containers);
 
+
+
     // wrap the PyParticleData class for different data types
     AddPyParticleData<float>(data_containers, "Float");
     AddPyParticleData<uint16_t>(data_containers, "Short");
@@ -68,6 +71,8 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     py::module numerics = m.def_submodule("numerics");
     AddPyAPRReconstruction(numerics, "reconstruction");
 
+
+
     // wrap APRConverter for different data types
     py::module converter = m.def_submodule("converter");
     AddPyAPRConverter<float>(converter, "Float");
@@ -78,5 +83,6 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
 
     py::module viewer = m.def_submodule("viewer");
     AddViewerHelpers(viewer,"viewerHelp");
+    AddPyAPRRaycaster(viewer,"raycaster");
 
 }

@@ -3,6 +3,8 @@
 #include "data_containers/PyAPR.hpp"
 #include "numerics/APRReconstruction.hpp"
 #include "numerics/APRCompress.hpp"
+#include "numerics/APRRaycaster.hpp"
+#include "numerics/APRTreeNumerics.hpp"
 
 namespace py = pybind11;
 
@@ -18,6 +20,21 @@ namespace py = pybind11;
 
     return 0;
  }
+
+
+/**
+ *
+ * @param aPyAPR       a PyAPR object
+ * @param particles    a PyParticleData object
+ * @param particles_tree    a PyParticleData object
+ * @type       std::string Type of downsampling
+ */
+void get_down_sample_parts(PyAPR &aPyAPR, PyParticleData<uint16_t> &particles,PyParticleData<float> &tree_particles){
+
+   APRTreeNumerics::fill_tree_max(aPyAPR.apr, particles.parts,tree_particles.parts);
+
+};
+
 
 /**
  *
@@ -156,4 +173,5 @@ void AddViewerHelpers(py::module &m, const std::string &modulename) {
     m2.def("fill_slice_level", &fill_slice_level, "fills an array particle level at that location");
     m2.def("min_occupied_level", &min_occupied_level, "Returns the minimum occupied level in the APR");
     m2.def("compress_and_fill_slice", &compress_and_fill_slice, "compresses and fills the slice");
+    m2.def("get_down_sample_parts", &get_down_sample_parts, "creates down-sampled tree particles");
 }
