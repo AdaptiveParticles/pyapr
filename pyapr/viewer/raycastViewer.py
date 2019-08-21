@@ -3,10 +3,13 @@ import PyQt5.QtGui as qtgui
 
 from pyqtgraph.Qt import QtCore, QtGui
 
+import pyqtgraph.opengl as gl
+
 from PyQt5.QtCore import *
 
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QGridLayout, QGroupBox,
                              QMenu, QPushButton, QRadioButton, QVBoxLayout, QWidget, QSlider, QLabel, QComboBox, QSpinBox)
+
 
 import timeit
 
@@ -79,8 +82,68 @@ class MainWindowImage(QtGui.QMainWindow):
 
         self.comboBox.currentTextChanged.connect(self.updatedLUT)
 
+        self.view.mousePressEvent = self.MousePress
+
+        self.view.mouseMoveEvent = self.MouseMove
+
+        self.view.mouseReleaseEvent = self.MouseRelease
+
+        #self.view.wheelEvent = self.WheelEvent
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Up:
+            # back a frame
+            new_radius = self.raycaster_ref.get_radius() + 0.01
+            self.raycaster_ref.set_radius(new_radius)
+            self.update_slice(self.apr_ref.level_max() - 1)
+
+
+        if event.key() == QtCore.Qt.Key_Down:
+            # forward a frame
+            new_radius = self.raycaster_ref.get_radius() - 0.01
+            self.raycaster_ref.set_radius(new_radius)
+            self.update_slice(self.apr_ref.level_max() - 1)
+
+
+    def WheelEvent(self,event):
+        new_radius = self.raycaster_ref.get_radius() + event.delta()
+        self.raycaster_ref.set_radius(new_radius)
+
+
+
+    def MousePress(self, event):
+        self.org_pos = event.pos()
+
+    def MouseMove(self, event):
+        # pos = self.w.cameraPosition()
+        diff = self.org_pos - event.pos()
+        self.org_pos = event.pos()
+
+        print(diff)
+
+        #self.current_theta += diff.x()/self.angle_scale
+
+        self.raycaster_ref.increment_angle(diff.x()/self.angle_scale)
+        self.raycaster_ref.increment_phi(diff.y()/self.angle_scale)
+
+        self.update_slice(self.apr_ref.level_max() - 1)
+
+    def MouseRelease(self, event):
+
+        diff = self.org_pos - event.pos()
+        self.org_pos = event.pos()
+
+        self.raycaster_ref.increment_angle(diff.x()/self.angle_scale)
+        self.raycaster_ref.increment_phi(diff.y() / self.angle_scale)
+
+
+
+        self.update_slice(self.apr_ref.level_max())
+
     number_angles = 100
     current_view = 0
+
+    angle_scale = 200
 
     array_int = np.array(1)
     img_ref = 0
@@ -109,6 +172,10 @@ class MainWindowImage(QtGui.QMainWindow):
     grad_th = 0
 
     app_ref = 0
+
+    org_pos = 0
+    current_phi = 0
+    current_theta = 0
 
     def updatedLUT(self):
         # monitors the event of the drop box being manipulated
@@ -141,14 +208,14 @@ class MainWindowImage(QtGui.QMainWindow):
 
     def valuechange(self):
         size = self.slider.value()
-        self.raycaster_ref.set_angle(-3.14 + size*3.14/self.number_angles)
+        self.raycaster_ref.set_phi(-3.14 + 2*size*3.14/self.number_angles)
         #for i in range(self.apr_ref.level_max()-4, self.apr_ref.level_max()-3):
-        self.update_slice(self.apr_ref.level_max()-2)
+        self.update_slice(self.apr_ref.level_max()-1)
 
     def sliderReleased(self):
         size = self.slider.value()
-        self.raycaster_ref.set_angle(-3.14 + size*3.14/self.number_angles)
-        for i in range(self.apr_ref.level_max()-2, self.apr_ref.level_max()+1):
+        self.raycaster_ref.set_phi(-3.14 + 2*size*3.14/self.number_angles)
+        for i in range(self.apr_ref.level_max()-1, self.apr_ref.level_max()+1):
             self.update_slice(i)
 
 
@@ -161,7 +228,6 @@ class MainWindowImage(QtGui.QMainWindow):
         self.img_list[0].setLevels([self.hist_min, self.hist_max], True)
 
     def update_slice(self, level):
-
 
         sz = pow(2, self.apr_ref.level_max() - level)
         self.raycaster_ref.set_level_delta(level - self.apr_ref.level_max())
@@ -235,10 +301,15 @@ def raycast_viewer(apr, parts):
 
     raycaster = pyapr.viewer.raycaster()
 
-    raycaster.set_z_anisotropy(3)
+    raycaster.set_z_anisotropy(1)
     raycaster.set_radius(0.7)
 
+    win.view.setMouseEnabled(False, False)
+
     win.raycaster_ref = raycaster
+
+    win.raycaster_ref.set_angle(win.current_theta)
+    win.raycaster_ref.set_phi(win.current_phi)
 
     tree_parts = pyapr.FloatParticles()
 

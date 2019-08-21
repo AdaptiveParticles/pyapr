@@ -32,7 +32,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/LibA
 
 add_subdirectory("LibAPR")
 include_directories(LibAPR/src)
-
+include_directories("LibAPR/external/glm")
 
 ###############################################################################
 # Handle OpenMP
@@ -41,8 +41,8 @@ find_package(OpenMP)
 if(NOT OPENMP_FOUND OR NOT PYAPR_USE_OPENMP)
     message(WARNING "OpenMP support not found or disabled with current compiler. While PyAPR can compile like this, performance might not be optimal. Please see README.md for instructions.")
 else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPYAPR_HAVE_OPENMP ${OpenMP_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPYAPR_HAVE_OPENMP ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPYAPR_HAVE_OPENMP -DHAVE_OPENMP ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPYAPR_HAVE_OPENMP -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}")
 endif()
 
 

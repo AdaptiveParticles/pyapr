@@ -19,9 +19,11 @@ class PyAPRRaycaster {
 
     APRRaycaster apr_raycaster;
 
-    float current_angle = -3.14;
+    float current_angle = 0;
 
     ReconPatch rp;
+
+    float z = 0;
 
 
 public:
@@ -32,6 +34,52 @@ public:
 
     void set_angle(float angle){
         current_angle = angle;
+    }
+
+    void set_phi(float angle){
+        //apr_raycaster.phi = -3.14/2 + fmod(angle-3.14f/2.0f,(3.14f));
+        apr_raycaster.phi = angle;
+    }
+
+    void increment_angle(float angle){
+        current_angle += angle;
+    }
+
+    void increment_phi(float angle){
+        // this is required due to the fixed domain of phi (from -pi/2 to pi/2) I used a cos instead of sin.
+
+        //float curr_x =
+        //float curr_y =
+        //float curr_x =
+
+        float new_angle = apr_raycaster.phi_s + angle;
+        if(new_angle > 3.14/2){
+            float diff = new_angle - 3.14/2;
+            diff = std::min(diff,3.13f);
+            apr_raycaster.phi_s = -3.14/2 + diff;
+            apr_raycaster.phi += angle;
+            //current_angle += 3.14;
+        } else if (new_angle < -3.14/2){
+
+            float diff =   - new_angle - 3.14/2;
+            std::cout << "minus" << std::endl;
+            std::cout << "na: " <<new_angle << std::endl;
+            std::cout << "dff: " << diff << std::endl;
+            diff = std::min(diff,3.14f);
+            std::cout << "dff2: " << diff << std::endl;
+            apr_raycaster.phi = 3.14/2 - diff;
+            std::cout << apr_raycaster.phi << std::endl;
+
+            apr_raycaster.phi_s =  3.14/2 - diff;
+            apr_raycaster.phi += angle;
+
+            //current_angle += 3.14;
+        } else {
+             apr_raycaster.phi_s +=  angle;
+            apr_raycaster.phi += angle;
+        }
+
+       // apr_raycaster.phi = new_angle;
     }
 
     void set_level_delta(int level_delta){
@@ -46,8 +94,14 @@ public:
         apr_raycaster.radius_factor = radius;
     }
 
+    float get_radius(){
+        return apr_raycaster.radius_factor;
+    }
+
 
     void get_view(PyAPR &aPyAPR, PyParticleData<uint16_t> &particles,PyParticleData<float> &particles_tree,py::array &input) {
+
+        py::gil_scoped_acquire acquire;
 
         auto buf = input.request();
 
@@ -55,16 +109,20 @@ public:
 
         PixelData<uint16_t> input_img;
 
+        std::cout << apr_raycaster.phi << std::endl;
+        std::cout << current_angle << std::endl;
+
         input_img.init_from_mesh(buf.shape[0], buf.shape[1], 1, ptr); // may lead to memory issues
 
         apr_raycaster.theta_0 = current_angle; //start
-        apr_raycaster.theta_final = 0.001; //stop radians
+        apr_raycaster.theta_final = 0; //stop radians
         apr_raycaster.theta_delta = (apr_raycaster.theta_final - apr_raycaster.theta_0); //steps
-
 
         apr_raycaster.scale_down = pow(2,rp.level_delta);
 
         apr_raycaster.perform_raycast_patch(aPyAPR.apr,particles.parts,particles_tree.parts,input_img,rp,[] (const uint16_t& a,const uint16_t& b) {return std::max(a,b);});
+
+        py::gil_scoped_release release;
 
         //apr_raycaster.perform_raycast(aPyAPR.apr,particles.parts,input_img,[] (const uint16_t& a,const uint16_t& b) {return std::max(a,b);});
     }
@@ -80,6 +138,10 @@ void AddPyAPRRaycaster(pybind11::module &m,  const std::string &modulename) {
         .def("set_level_delta",&PyAPRRaycaster::set_level_delta, "demo")
         .def("set_z_anisotropy",&PyAPRRaycaster::set_z_anisotropy, "demo")
         .def("set_radius",&PyAPRRaycaster::set_radius, "demo")
+        .def("set_phi",&PyAPRRaycaster::set_phi, "demo")
+        .def("get_radius",&PyAPRRaycaster::get_radius, "demo")
+        .def("increment_phi",&PyAPRRaycaster::increment_phi, "demo")
+        .def("increment_angle",&PyAPRRaycaster::increment_angle, "demo")
         .def("get_view", &PyAPRRaycaster::get_view, "demo");
 }
 
