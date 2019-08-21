@@ -88,7 +88,7 @@ class MainWindowImage(QtGui.QMainWindow):
 
         self.view.mouseReleaseEvent = self.MouseRelease
 
-        #self.view.wheelEvent = self.WheelEvent
+        self.view.wheelEvent = self.WheelEvent
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Up:
@@ -104,10 +104,21 @@ class MainWindowImage(QtGui.QMainWindow):
             self.raycaster_ref.set_radius(new_radius)
             self.update_slice(self.apr_ref.level_max() - 1)
 
+        if event.key() == QtCore.Qt.Key_R:
+            # forward a frame
+            if self.fix:
+                self.fix = False
+            else:
+                self.fix = True
+
+            self.view.setMouseEnabled(self.fix, self.fix)
+            print(self.fix)
+
 
     def WheelEvent(self,event):
-        new_radius = self.raycaster_ref.get_radius() + event.delta()
+        new_radius = max(self.raycaster_ref.get_radius() + event.delta()/1000, 0.1)
         self.raycaster_ref.set_radius(new_radius)
+        self.update_slice(self.apr_ref.level_max())
 
 
 
@@ -139,6 +150,8 @@ class MainWindowImage(QtGui.QMainWindow):
 
 
         self.update_slice(self.apr_ref.level_max())
+
+    fix = False
 
     number_angles = 100
     current_view = 0
@@ -301,7 +314,7 @@ def raycast_viewer(apr, parts):
 
     raycaster = pyapr.viewer.raycaster()
 
-    raycaster.set_z_anisotropy(1)
+    raycaster.set_z_anisotropy(3)
     raycaster.set_radius(0.7)
 
     win.view.setMouseEnabled(False, False)

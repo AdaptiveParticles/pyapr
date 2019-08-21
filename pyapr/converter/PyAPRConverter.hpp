@@ -106,7 +106,16 @@ public:
         PixelData<T> pd;
         pd.init_from_mesh(y_num, x_num, z_num, ptr);
 
+        APRTimer timer(true);
+
+
+        std::cout << "Computing filtering steps of APR" << std::endl;
+
+        timer.start_timer("Compute step");
+
         converter.get_lrf(aPyAPR.apr, pd);
+
+        timer.stop_timer();
 
     }
 

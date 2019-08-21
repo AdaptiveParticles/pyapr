@@ -62,13 +62,9 @@ public:
         } else if (new_angle < -3.14/2){
 
             float diff =   - new_angle - 3.14/2;
-            std::cout << "minus" << std::endl;
-            std::cout << "na: " <<new_angle << std::endl;
-            std::cout << "dff: " << diff << std::endl;
             diff = std::min(diff,3.14f);
-            std::cout << "dff2: " << diff << std::endl;
+
             apr_raycaster.phi = 3.14/2 - diff;
-            std::cout << apr_raycaster.phi << std::endl;
 
             apr_raycaster.phi_s =  3.14/2 - diff;
             apr_raycaster.phi += angle;
@@ -109,8 +105,8 @@ public:
 
         PixelData<uint16_t> input_img;
 
-        std::cout << apr_raycaster.phi << std::endl;
-        std::cout << current_angle << std::endl;
+//        std::cout << apr_raycaster.phi << std::endl;
+//        std::cout << current_angle << std::endl;
 
         input_img.init_from_mesh(buf.shape[0], buf.shape[1], 1, ptr); // may lead to memory issues
 
