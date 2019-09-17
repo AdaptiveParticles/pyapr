@@ -1,39 +1,14 @@
 import pyapr
-from libtiff import TIFFfile
 import numpy as np
 from skimage import io as skio
 
 
-def read_tiff(filename):
-    """
-    Read a tiff file into a numpy array
-    Usage: zstack = readTiff(inFileName)
-    """
-    tiff = TIFFfile(filename)
-    samples, sample_names = tiff.get_samples()
-
-    out_list = []
-    for sample in samples:
-        out_list.append(np.copy(sample))
-
-    out = np.concatenate(out_list, axis=-1)
-
-    tiff.close()
-
-    return out
-
-
 def main():
 
-    io_int = pyapr.filegui.InteractiveIO()
-
-    fpath = io_int.get_tiff_file_name()
-    #fpath = "/Users/cheesema/PhD/PostDoc/PyAPR/demo_files/sphere_long.tif"
-
     # Read in an image
-    img = skio.imread(fpath)
-
-    print(fpath)
+    io_int = pyapr.filegui.InteractiveIO()
+    fpath = io_int.get_tiff_file_name()
+    img = skio.imread(fpath).astype(np.uint16)
 
     # Initialize objects
     apr = pyapr.APR()
@@ -88,8 +63,6 @@ def main():
     pyapr.viewer.parts_viewer(apr, parts)
 
 
-
 if __name__ == '__main__':
-
     main()
 
