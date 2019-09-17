@@ -355,24 +355,23 @@ class InteractiveIO():
     def __init__(self):
         super(InteractiveIO, self).__init__()
 
-
     def get_tiff_file_name(self):
 
         app = qtgui.QApplication([])
 
+        print("Please select an input image file (TIFF)")
         file_name = qtgui.QFileDialog.getOpenFileName(None, "Open Tiff", "~", "(*.tif *.tiff)")
 
         return file_name[0]
-
 
     def get_apr_file_name(self):
 
         app = qtgui.QApplication([])
 
+        print("Please select an input APR file (HDF5)")
         file_name = qtgui.QFileDialog.getOpenFileName(None, "Open APR", "", "(*.apr *.h5)")
 
         return file_name[0]
-
 
     def save_apr_file_name(self):
 
@@ -381,7 +380,6 @@ class InteractiveIO():
         file_name = qtgui.QFileDialog.getSaveFileName(None, "Save APR", "name", "(*.apr *.h5)")
 
         return file_name[0]
-
 
     def interactive_apr(self, converter, apr, img):
 

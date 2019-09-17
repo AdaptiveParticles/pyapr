@@ -14,9 +14,6 @@ converter
 io
     reading and writing APRs from/to file
 
-nn
-    pytorch modules for APR based neural networks
-
 numerics
     subpackage for processing using APRs
 
@@ -30,4 +27,4 @@ from .io import *
 from .numerics import *
 from .viewer import *
 
-__all__ = ['data_containers', 'io', 'nn', 'viewer', 'converter', 'numerics', 'tests']
+__all__ = ['data_containers', 'io', 'viewer', 'converter', 'numerics', 'tests']
