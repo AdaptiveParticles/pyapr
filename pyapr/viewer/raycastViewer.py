@@ -1,26 +1,10 @@
-import PyQt5.QtCore as qtcore
-import PyQt5.QtGui as qtgui
-
-from pyqtgraph.Qt import QtCore, QtGui
-
+from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import pyqtgraph.opengl as gl
-
-from PyQt5.QtCore import *
-
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QGridLayout, QGroupBox,
-                             QMenu, QPushButton, QRadioButton, QVBoxLayout, QWidget, QSlider, QLabel, QComboBox, QSpinBox)
-
-
 import timeit
-
 import pyqtgraph as pg
-
 import pyapr
-
 import math
-
 import matplotlib.pyplot as plt
-
 import numpy as np
 
 class MainWindowImage(QtGui.QMainWindow):
@@ -44,7 +28,7 @@ class MainWindowImage(QtGui.QMainWindow):
         self.layout.addWidget(self.pg_win, 0, 0, 3, 1)
 
         # add a slider
-        self.slider = QSlider(Qt.Horizontal, self)
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
 
         self.slider.valueChanged.connect(self.valuechange)
 
