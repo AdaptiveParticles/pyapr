@@ -1,13 +1,13 @@
-from pyqtgraph.Qt import QtCore, QtGui
+from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import numpy as np
 import pyqtgraph as pg
 import sys
 import pyapr
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QGridLayout, QGroupBox,
-                             QMenu, QPushButton, QRadioButton, QVBoxLayout, QWidget, QSlider, QLabel, QComboBox)
+# from PyQt5.QtCore import *
+# from PyQt5.QtGui import *
+# from PyQt5.QtWidgets import (QApplication, QCheckBox, QGridLayout, QGroupBox,
+#                              QMenu, QPushButton, QRadioButton, QVBoxLayout, QWidget, QSlider, QLabel, QComboBox)
 import matplotlib.pyplot as plt
 
 class MainWindow(QtGui.QMainWindow):
@@ -30,7 +30,7 @@ class MainWindow(QtGui.QMainWindow):
         self.layout.addWidget(self.pg_win, 0, 0, 3, 1)
 
         # add a slider
-        self.slider = QSlider(Qt.Horizontal, self)
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
 
         self.slider.valueChanged.connect(self.valuechange)
 
@@ -79,7 +79,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def add_level_toggle(self):
-        self.level_toggle = QCheckBox(self)
+        self.level_toggle = QtWidgets.QCheckBox(self)
         self.level_toggle.setText("View Level")
         self.level_toggle.move(605, 20)
 
@@ -190,7 +190,7 @@ class MainWindow(QtGui.QMainWindow):
         ## Set up the slide
         self.slider.setMinimum(0)
         self.slider.setMaximum(self.z_num-1)
-        self.slider.setTickPosition(QSlider.TicksBothSides)
+        self.slider.setTickPosition(QtWidgets.QSlider.TicksBothSides)
         self.slider.setGeometry(0.05*self.full_size, 0.97*self.full_size, 0.95*self.full_size, 40)
 
         ## Viewer elements

@@ -1,28 +1,16 @@
-
-import PyQt5.QtCore as qtcore
-import PyQt5.QtGui as qtgui
-
-from pyqtgraph.Qt import QtCore, QtGui
-
-from PyQt5.QtCore import *
-
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QGridLayout, QGroupBox,
-                             QMenu, QPushButton, QRadioButton, QVBoxLayout, QWidget, QSlider, QLabel, QComboBox, QSpinBox)
-
+from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import pyqtgraph as pg
-
 import pyapr
-
 import matplotlib.pyplot as plt
-
 import numpy as np
+
 
 class customSlider():
     def __init__(self, window, label_name):
 
-        self.slider = QSlider(Qt.Horizontal, window)
-        self.label = QLabel(window)
-        self.maxBox = QSpinBox(window)
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, window)
+        self.label = QtWidgets.QLabel(window)
+        self.maxBox = QtWidgets.QSpinBox(window)
 
         self.maxBox.setMaximum(64000)
         self.maxBox.setValue(100)
@@ -85,7 +73,7 @@ class MainWindowImage(QtGui.QMainWindow):
         self.layout.addWidget(self.pg_win, 0, 0, 3, 1)
 
         # add a slider
-        self.slider = QSlider(Qt.Horizontal, self)
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
 
         self.slider.valueChanged.connect(self.valuechange)
 
@@ -117,12 +105,12 @@ class MainWindowImage(QtGui.QMainWindow):
         # add parameter tuning
 
         # create push button
-        self.exit_button = QPushButton('Use Parameters', self)
+        self.exit_button = QtWidgets.QPushButton('Use Parameters', self)
         self.exit_button.setFixedWidth(300)
         self.exit_button.move(300, 10)
         self.exit_button.clicked.connect(self.exitPressed)
 
-        self.max_label = QLabel(self)
+        self.max_label = QtWidgets.QLabel(self)
         self.max_label.setText("Slider Max")
         self.max_label.move(505, 50)
 
@@ -338,7 +326,7 @@ class MainWindowImage(QtGui.QMainWindow):
         ## Set up the slide
         self.slider.setMinimum(0)
         self.slider.setMaximum(self.z_num - 1)
-        self.slider.setTickPosition(QSlider.TicksBothSides)
+        self.slider.setTickPosition(QtWidgets.QSlider.TicksBothSides)
         self.slider.setGeometry(0.05 * self.full_size, 0.97 * self.full_size, 0.95 * self.full_size, 40)
 
         self.setLUT('viridis')
@@ -357,27 +345,27 @@ class InteractiveIO():
 
     def get_tiff_file_name(self):
 
-        app = qtgui.QApplication([])
+        app = QtGui.QApplication([])
 
         print("Please select an input image file (TIFF)")
-        file_name = qtgui.QFileDialog.getOpenFileName(None, "Open Tiff", "~", "(*.tif *.tiff)")
+        file_name = QtGui.QFileDialog.getOpenFileName(None, "Open Tiff", "~", "(*.tif *.tiff)")
 
         return file_name[0]
 
     def get_apr_file_name(self):
 
-        app = qtgui.QApplication([])
+        app = QtGui.QApplication([])
 
         print("Please select an input APR file (HDF5)")
-        file_name = qtgui.QFileDialog.getOpenFileName(None, "Open APR", "", "(*.apr *.h5)")
+        file_name = QtGui.QFileDialog.getOpenFileName(None, "Open APR", "", "(*.apr *.h5)")
 
         return file_name[0]
 
     def save_apr_file_name(self):
 
-        app = qtgui.QApplication([])
+        app = QtGui.QApplication([])
 
-        file_name = qtgui.QFileDialog.getSaveFileName(None, "Save APR", "name", "(*.apr *.h5)")
+        file_name = QtGui.QFileDialog.getSaveFileName(None, "Save APR", "output.apr", "(*.apr *.h5)")
 
         return file_name[0]
 

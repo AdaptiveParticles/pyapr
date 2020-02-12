@@ -1,25 +1,18 @@
-from pyqtgraph.Qt import QtCore, QtGui
+from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import numpy as np
 import pyqtgraph as pg
 import sys
-
 from . import partsViewer
-
 import pyapr
-
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QGridLayout, QGroupBox,
-                             QMenu, QPushButton, QRadioButton, QVBoxLayout, QWidget, QSlider, QLabel, QComboBox, QSpinBox)
 import matplotlib.pyplot as plt
 
 
 class customSlider():
     def __init__(self, window, label_name):
 
-        self.slider = QSlider(Qt.Horizontal, window)
-        self.label = QLabel(window)
-        self.maxBox = QSpinBox(window)
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, window)
+        self.label = QtWidgets.QLabel(window)
+        self.maxBox = QtWidgets.QSpinBox(window)
 
         self.maxBox.setMaximum(64000)
         self.maxBox.setValue(100)
@@ -66,12 +59,12 @@ class CompressWindow(partsViewer.MainWindow):
     def __init__(self):
         super(CompressWindow, self).__init__()
 
-        self.exit_button = QPushButton('Use Parameters', self)
+        self.exit_button = QtWidgets.QPushButton('Use Parameters', self)
         self.exit_button.setFixedWidth(300)
         self.exit_button.move(500, 10)
         self.exit_button.clicked.connect(self.exitPressed)
 
-        self.max_label = QLabel(self)
+        self.max_label = QtWidgets.QLabel(self)
         self.max_label.setText("Slider Max")
         self.max_label.move(520, 40)
 
@@ -89,7 +82,7 @@ class CompressWindow(partsViewer.MainWindow):
 
         self.slider_B.maxBox.setValue(1000)
 
-        self.toggle_on = QCheckBox(self)
+        self.toggle_on = QtWidgets.QCheckBox(self)
         self.toggle_on.setText("Compress")
         self.toggle_on.move(605, 65)
 
