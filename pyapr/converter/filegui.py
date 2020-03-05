@@ -1,4 +1,4 @@
-from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
+import pyqtgraph.Qt as Qt
 import pyqtgraph as pg
 import pyapr
 import matplotlib.pyplot as plt
@@ -8,9 +8,9 @@ import numpy as np
 class customSlider():
     def __init__(self, window, label_name):
 
-        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, window)
-        self.label = QtWidgets.QLabel(window)
-        self.maxBox = QtWidgets.QSpinBox(window)
+        self.slider = Qt.QtWidgets.QSlider(Qt.QtCore.Qt.Horizontal, window)
+        self.label = Qt.QtWidgets.QLabel(window)
+        self.maxBox = Qt.QtWidgets.QSpinBox(window)
 
         self.maxBox.setMaximum(64000)
         self.maxBox.setValue(100)
@@ -50,20 +50,15 @@ class customSlider():
         self.label.setText(text_str)
 
 
-
-
-class MainWindowImage(QtGui.QMainWindow):
+class MainWindowImage(Qt.QtGui.QWidget):
 
     def __init__(self):
         super(MainWindowImage, self).__init__()
 
-        cw = QtGui.QWidget()
-        self.setCentralWidget(cw)
+        self.setMouseTracking(True)
 
-        cw.setMouseTracking(True)
-
-        self.layout = QtGui.QGridLayout()
-        cw.setLayout(self.layout)
+        self.layout = Qt.QtGui.QGridLayout()
+        self.setLayout(self.layout)
         self.layout.setSpacing(0)
 
         self.pg_win = pg.GraphicsView()
@@ -73,7 +68,7 @@ class MainWindowImage(QtGui.QMainWindow):
         self.layout.addWidget(self.pg_win, 0, 0, 3, 1)
 
         # add a slider
-        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
+        self.slider = Qt.QtWidgets.QSlider(Qt.QtCore.Qt.Horizontal, self)
 
         self.slider.valueChanged.connect(self.valuechange)
 
@@ -90,14 +85,14 @@ class MainWindowImage(QtGui.QMainWindow):
         self.hist.item.sigLevelsChanged.connect(self.histogram_updated)
 
         # add a QLabel giving information on the current slice and the APR
-        self.slice_info = QtGui.QLabel(self)
+        self.slice_info = Qt.QtGui.QLabel(self)
 
         self.slice_info.move(10, 20)
         self.slice_info.setFixedWidth(200)
 
         # add a label for the current cursor position
 
-        self.cursor = QtGui.QLabel(self)
+        self.cursor = Qt.QtGui.QLabel(self)
 
         self.cursor.move(20, 40)
         self.cursor.setFixedWidth(200)
@@ -105,12 +100,12 @@ class MainWindowImage(QtGui.QMainWindow):
         # add parameter tuning
 
         # create push button
-        self.exit_button = QtWidgets.QPushButton('Use Parameters', self)
+        self.exit_button = Qt.QtWidgets.QPushButton('Use Parameters', self)
         self.exit_button.setFixedWidth(300)
         self.exit_button.move(300, 10)
         self.exit_button.clicked.connect(self.exitPressed)
 
-        self.max_label = QtWidgets.QLabel(self)
+        self.max_label = Qt.QtWidgets.QLabel(self)
         self.max_label.setText("Slider Max")
         self.max_label.move(505, 50)
 
@@ -249,11 +244,11 @@ class MainWindowImage(QtGui.QMainWindow):
             self.updateSliceText(new_view)
 
     def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_Left:
+        if event.key() == Qt.QtCore.Qt.Key_Left:
             # back a frame
             self.update_slice(self.current_view - 1)
 
-        if event.key() == QtCore.Qt.Key_Right:
+        if event.key() == Qt.QtCore.Qt.Key_Right:
             # forward a frame
             self.update_slice(self.current_view + 1)
 
@@ -287,8 +282,6 @@ class MainWindowImage(QtGui.QMainWindow):
         #self.img_I.setLevels([self.hist_min,  self.hist_max], True)
 
 
-
-
     def set_image(self, img, converter):
 
         self.img_I = pg.ImageItem(img[0, :, :])
@@ -320,13 +313,13 @@ class MainWindowImage(QtGui.QMainWindow):
 
         self.hist.setImageItem(self.img_I)
 
-        self.img_I_ds.setRect(QtCore.QRectF(self.min_x, self.min_y, self.x_num_ds*2, self.y_num_ds*2))
-        self.img_I.setRect(QtCore.QRectF(self.min_x, self.min_y, self.x_num, self.y_num))
+        self.img_I_ds.setRect(Qt.QtCore.QRectF(self.min_x, self.min_y, self.x_num_ds*2, self.y_num_ds*2))
+        self.img_I.setRect(Qt.QtCore.QRectF(self.min_x, self.min_y, self.x_num, self.y_num))
 
         ## Set up the slide
         self.slider.setMinimum(0)
         self.slider.setMaximum(self.z_num - 1)
-        self.slider.setTickPosition(QtWidgets.QSlider.TicksBothSides)
+        self.slider.setTickPosition(Qt.QtWidgets.QSlider.TicksBothSides)
         self.slider.setGeometry(0.05 * self.full_size, 0.97 * self.full_size, 0.95 * self.full_size, 40)
 
         self.setLUT('viridis')
@@ -336,36 +329,35 @@ class MainWindowImage(QtGui.QMainWindow):
 
         self.update_slice(int(self.z_num/2))
 
+    def closeEvent(self, event):
+        self.pg_win.close()
 
 
 class InteractiveIO():
-
     def __init__(self):
-        super(InteractiveIO, self).__init__()
+
+        # class methods require a QApplication instance - this helps to avoid multiple instances...
+        self.app = Qt.QtGui.QApplication.instance()
+        if self.app is None:
+            self.app = Qt.QtGui.QApplication([])
 
     def get_tiff_file_name(self):
 
-        app = QtGui.QApplication([])
-
         print("Please select an input image file (TIFF)")
-        file_name = QtGui.QFileDialog.getOpenFileName(None, "Open Tiff", "~", "(*.tif *.tiff)")
+        file_name = Qt.QtGui.QFileDialog.getOpenFileName(None, "Open Tiff", "~", "(*.tif *.tiff)")
 
         return file_name[0]
 
     def get_apr_file_name(self):
 
-        app = QtGui.QApplication([])
-
         print("Please select an input APR file (HDF5)")
-        file_name = QtGui.QFileDialog.getOpenFileName(None, "Open APR", "", "(*.apr *.h5)")
+        file_name = Qt.QtGui.QFileDialog.getOpenFileName(None, "Open APR", "", "(*.apr *.h5)")
 
         return file_name[0]
 
     def save_apr_file_name(self):
 
-        app = QtGui.QApplication([])
-
-        file_name = QtGui.QFileDialog.getSaveFileName(None, "Save APR", "output.apr", "(*.apr *.h5)")
+        file_name = Qt.QtGui.QFileDialog.getSaveFileName(None, "Save APR", "output.apr", "(*.apr *.h5)")
 
         return file_name[0]
 
@@ -377,24 +369,22 @@ class InteractiveIO():
         pg.setConfigOption('foreground', 'k')
         pg.setConfigOption('imageAxisOrder', 'row-major')
 
-        app = QtGui.QApplication([])
-
-        ## Create window with GraphicsView widget
+        # Create window with GraphicsView widget
         win = MainWindowImage()
 
         win.show()
 
         win.apr_ref = apr
 
-        win.app_ref = app
+        win.app_ref = self.app
 
         win.set_image(img, converter)
 
-        QtGui.QApplication.instance().exec_()
+        self.app.exec_()
 
         win.close()
 
-        #now compute the APR
+        # now compute the APR
 
         print("\n---------------------------------\n")
         print("Using the following parameters:\n")

@@ -23,7 +23,7 @@ set(APR_TESTS OFF CACHE BOOL "" FORCE)
 set(APR_BUILD_STATIC_LIB ON CACHE BOOL "" FORCE)
 set(APR_BUILD_SHARED_LIB OFF CACHE BOOL "" FORCE)
 set(APR_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(APR_USE_CUDA OFF CACHE BOOL "" FORCE)
+set(APR_USE_CUDA ON CACHE BOOL "" FORCE)
 set(APR_BUILD_PYTHON_WRAPPERS OFF CACHE BOOL "" FORCE)
 set(APR_USE_LIBTIFF ON CACHE BOOL "" FORCE)
 set(APR_USE_OPENMP ON CACHE BOOL "" FORCE)
@@ -46,6 +46,20 @@ else()
 endif()
 
 
+###############################################################################
+# Handle CUDA
+###############################################################################
+if(APR_USE_CUDA)
+    message(STATUS "APR: Building CUDA for APR")
+    set(CMAKE_CUDA_STANDARD 14)
+    set(CMAKE_CUDA_FLAGS "--default-stream per-thread --cudart shared -g -lineinfo -Xptxas -O3,-v -use_fast_math -DAPR_USE_CUDA")
+
+    enable_language(CUDA)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DAPR_USE_CUDA")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DAPR_USE_CUDA")
+    include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+
+endif()
 
 ###############################################################################
 # Configure compiler options
