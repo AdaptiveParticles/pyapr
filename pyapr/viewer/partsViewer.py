@@ -3,25 +3,17 @@ import numpy as np
 import pyqtgraph as pg
 import sys
 import pyapr
-
-# from PyQt5.QtCore import *
-# from PyQt5.QtGui import *
-# from PyQt5.QtWidgets import (QApplication, QCheckBox, QGridLayout, QGroupBox,
-#                              QMenu, QPushButton, QRadioButton, QVBoxLayout, QWidget, QSlider, QLabel, QComboBox)
 import matplotlib.pyplot as plt
 
-class MainWindow(QtGui.QMainWindow):
 
+class MainWindow(QtGui.QWidget):
 
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        cw = QtGui.QWidget()
-        self.setCentralWidget(cw)
-
         self.layout = QtGui.QGridLayout()
-        cw.setLayout(self.layout)
         self.layout.setSpacing(0)
+        self.setLayout(self.layout)
 
         self.pg_win = pg.GraphicsView()
         self.view = pg.ViewBox()
@@ -76,7 +68,6 @@ class MainWindow(QtGui.QMainWindow):
 
         self.cursor.move(300, 20)
         self.cursor.setFixedWidth(200)
-
 
     def add_level_toggle(self):
         self.level_toggle = QtWidgets.QCheckBox(self)
@@ -241,7 +232,7 @@ class MainWindow(QtGui.QMainWindow):
         for l in range(self.level_min, self.level_max + 1):
             self.view.addItem(self.img_list[l])
 
-        self.setLUT('viridis')
+        self.setLUT('bone')
 
         self.current_view = 10000
         self.update_slice(int(self.z_num*0.5))
@@ -332,7 +323,7 @@ class MainWindow(QtGui.QMainWindow):
         i, j = pos.y(), pos.x()
         i = int(np.clip(i, 0, data.shape[1] - 1))
         j = int(np.clip(j, 0, data.shape[0] - 1))
-        val = data[j, i]
+        val = data[i, j]
 
         i_l = i
         j_l = j
@@ -341,9 +332,9 @@ class MainWindow(QtGui.QMainWindow):
             current_level -= 1
             i_l = int(i_l/2)
             j_l = int(j_l/2)
-            val = self.array_list[current_level][j_l,i_l]
+            val = self.array_list[current_level][i_l, j_l]
 
-        text_string = "(y: " + str(i) + ",x: " + str(j) + ") val; " + str(val) +  "\n"
+        text_string = "(y: " + str(i) + ",x: " + str(j) + ") val; " + str(val) + "\n"
         text_string += "(y_l: " + str(i_l) + ",x_l: " + str(j_l) + ",l: " + str(current_level) + ")"
 
         self.cursor.setText(text_string)
@@ -353,8 +344,9 @@ def parts_viewer(aAPR, Parts):
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
 
-    app = QtGui.QApplication([])
-
+    app = QtGui.QApplication.instance()
+    if app is None:
+        app = QtGui.QApplication([])
 
     pg.setConfigOption('imageAxisOrder', 'row-major')
 
@@ -367,7 +359,7 @@ def parts_viewer(aAPR, Parts):
 
     win.show()
 
-    QtGui.QApplication.instance().exec_()
+    app.exec_()
 
     return None
 

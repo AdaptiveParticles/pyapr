@@ -7,18 +7,15 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-class MainWindowImage(QtGui.QMainWindow):
 
+class MainWindowImage(QtGui.QWidget):
     def __init__(self):
         super(MainWindowImage, self).__init__()
 
-        cw = QtGui.QWidget()
-        self.setCentralWidget(cw)
-
-        cw.setMouseTracking(True)
+        self.setMouseTracking(True)
 
         self.layout = QtGui.QGridLayout()
-        cw.setLayout(self.layout)
+        self.setLayout(self.layout)
         self.layout.setSpacing(0)
 
         self.pg_win = pg.GraphicsView()
@@ -74,13 +71,16 @@ class MainWindowImage(QtGui.QMainWindow):
 
         self.view.wheelEvent = self.WheelEvent
 
+        self.apr_ref = None
+        self.parts_ref = None
+        self.tree_parts_ref = None
+
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Up:
             # back a frame
             new_radius = self.raycaster_ref.get_radius() + 0.01
             self.raycaster_ref.set_radius(new_radius)
             self.update_slice(self.apr_ref.level_max() - 1)
-
 
         if event.key() == QtCore.Qt.Key_Down:
             # forward a frame
@@ -98,13 +98,10 @@ class MainWindowImage(QtGui.QMainWindow):
             self.view.setMouseEnabled(self.fix, self.fix)
             print(self.fix)
 
-
     def WheelEvent(self,event):
         new_radius = max(self.raycaster_ref.get_radius() + event.delta()/1000, 0.1)
         self.raycaster_ref.set_radius(new_radius)
         self.update_slice(self.apr_ref.level_max())
-
-
 
     def MousePress(self, event):
         self.org_pos = event.pos()
@@ -130,8 +127,6 @@ class MainWindowImage(QtGui.QMainWindow):
 
         self.raycaster_ref.increment_angle(diff.x()/self.angle_scale)
         self.raycaster_ref.increment_phi(diff.y() / self.angle_scale)
-
-
 
         self.update_slice(self.apr_ref.level_max())
 
@@ -278,14 +273,15 @@ class MainWindowImage(QtGui.QMainWindow):
         self.tree_parts_ref = tree_parts
 
 
-
 def raycast_viewer(apr, parts):
 
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
     pg.setConfigOption('imageAxisOrder', 'row-major')
 
-    app = QtGui.QApplication([])
+    app = QtGui.QApplication.instance()
+    if app is None:
+        app = QtGui.QApplication([])
 
     ## Create window with GraphicsView widget
     win = MainWindowImage()
@@ -299,7 +295,7 @@ def raycast_viewer(apr, parts):
     raycaster = pyapr.viewer.raycaster()
 
     raycaster.set_z_anisotropy(3)
-    raycaster.set_radius(0.7)
+    raycaster.set_radius(0.1)
 
     win.view.setMouseEnabled(False, False)
 
@@ -314,4 +310,4 @@ def raycast_viewer(apr, parts):
 
     win.set_image(apr, parts, tree_parts)
 
-    QtGui.QApplication.instance().exec_()
+    app.exec_()

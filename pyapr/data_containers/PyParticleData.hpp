@@ -27,6 +27,10 @@ public:
         parts.swap(aInput);
     }
 
+    void copy(PyAPR& apr, PyParticleData<float>& partsToCopy){
+        parts.copy_parts(apr.apr, partsToCopy.parts);
+    }
+
     /**
      * @return pointer to the data
      */
@@ -143,6 +147,7 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
     py::class_<TypeParticles>(m, typeStr.c_str(), py::buffer_protocol())
             .def(py::init())
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
+            .def("copy", &TypeParticles::copy, "copy particles from another PyParticleData object")
             .def("sample_image", &TypeParticles::sample_image, "sample particle values from an image (numpy array)")
             .def("fill_with_levels", &TypeParticles::fill_with_levels, "fill particle values with levels")
             .def("set_quantization_factor", &TypeParticles::set_quantization_factor, "set lossy quantization factor")

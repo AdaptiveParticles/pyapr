@@ -62,9 +62,9 @@ void fill_slice(PyAPR &aPyAPR, PyParticleData<uint16_t> &particles,py::array &in
 
         int x;
 
-//#ifdef PYAPR_HAVE_OPENMP
+#ifdef PYAPR_HAVE_OPENMP
 #pragma omp parallel for schedule(dynamic) private(x) firstprivate(apr_it)
-//#endif
+#endif
     for(x = 0;x < apr_it.x_num(level);++x){
         for(apr_it.begin(level,z,x);apr_it < apr_it.end();apr_it++){
 

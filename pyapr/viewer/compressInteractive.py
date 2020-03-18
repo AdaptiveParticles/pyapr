@@ -153,7 +153,9 @@ def interactive_compression(apr, parts):
 
     pg.setConfigOption('imageAxisOrder', 'row-major')
 
-    app = QtGui.QApplication([])
+    app = QtGui.QApplication.instance()
+    if app is None:
+        app = QtGui.QApplication([])
 
     ## Create window with GraphicsView widget
     win = CompressWindow()
@@ -164,7 +166,7 @@ def interactive_compression(apr, parts):
 
     win.show()
 
-    QtGui.QApplication.instance().exec_()
+    app.exec_()
 
     #turn on
     parts.set_compression_type(1)
