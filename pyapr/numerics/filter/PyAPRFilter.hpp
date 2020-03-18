@@ -84,8 +84,6 @@ void convolve_cuda(PyAPR& apr, PyParticleData<float>& input_parts, PyParticleDat
 
 void richardson_lucy_cuda(PyAPR& apr, PyParticleData<float>& input_parts, PyParticleData<float>& output_parts,
                           py::array_t<float>& stencil, int niter, bool downsample_stencil, bool normalize_stencil) {
-    APRTimer timer(true);
-    timer.start_timer("prep");
 
     auto stencil_buf = stencil.request();
 
@@ -121,21 +119,12 @@ void richardson_lucy_cuda(PyAPR& apr, PyParticleData<float>& input_parts, PyPart
 
     input_gpu.copyH2D();
     cudaDeviceSynchronize();
-    timer.stop_timer();
-
-    timer.start_timer("deconv");
 
     richardson_lucy(access, tree_access, input_gpu.get(), output_gpu.get(), pd_stencil, niter, downsample_stencil, normalize_stencil);
     cudaDeviceSynchronize();
 
-    timer.stop_timer();
-
-    timer.start_timer("copy D2H");
-
     output_gpu.copyD2H();
     cudaDeviceSynchronize();
-
-    timer.stop_timer();
 }
 
 
