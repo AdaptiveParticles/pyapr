@@ -15,6 +15,7 @@
 #include "data_containers/PyAPRParameters.hpp"
 #include "data_containers/PyParticleData.hpp"
 #include "numerics/reconstruction/PyAPRReconstruction.hpp"
+#include "numerics/filter/PyAPRFilter.hpp"
 #include "converter/PyAPRConverter.hpp"
 #include "io/PyAPRFile.hpp"
 #include "viewer/ViewerHelpers.hpp"
@@ -45,17 +46,21 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     AddPyAPRParameters(data_containers);
 
     // wrap the PyParticleData class for different data types
+//    AddPyParticleData<uint8_t>(data_containers, "Byte");
     AddPyParticleData<float>(data_containers, "Float");
     AddPyParticleData<uint16_t>(data_containers, "Short");
 
     // wrap numerics module and submodules
     py::module numerics = m.def_submodule("numerics");
     AddPyAPRReconstruction(numerics, "reconstruction");
+    AddPyAPRFilter(numerics, "filter");
 
     // wrap APRConverter for different data types
     py::module converter = m.def_submodule("converter");
     AddPyAPRConverter<float>(converter, "Float");
     AddPyAPRConverter<uint16_t>(converter, "Short");
+//    AddPyAPRConverter<uint8_t>(converter, "Byte");
+
 
     py::module io = m.def_submodule("io");
     AddPyAPRFile(io, "APRFile");
