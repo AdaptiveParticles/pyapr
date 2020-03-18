@@ -1,20 +1,31 @@
+import os
 import pyapr
 import numpy as np
 from skimage import io as skio
+import argparse
 
 
-def main():
-
-    # Read in an image
-    io_int = pyapr.filegui.InteractiveIO()
-    fpath = io_int.get_tiff_file_name()
-    img = skio.imread(fpath).astype(np.uint16)
+def main(args):
 
     # Initialize objects
     apr = pyapr.APR()
-    parts = pyapr.ShortParticles()
     par = pyapr.APRParameters()
-    converter = pyapr.converter.ShortConverter()
+
+    if args.data_type == 'short':
+        dtype = np.uint16
+        parts = pyapr.ShortParticles()
+        converter = pyapr.converter.ShortConverter()
+    elif args.data_type == 'float':
+        dtype = np.float32
+        parts = pyapr.FloatParticles()
+        converter = pyapr.converter.FloatConverter()
+    else:
+        raise Exception('currently the only supported data types are float and short')
+
+    # Read in an image (and convert if necessary)
+    io_int = pyapr.filegui.InteractiveIO()
+    fpath = io_int.get_tiff_file_name()
+    img = skio.imread(fpath).astype(dtype)
 
     # Set some parameters
     par.auto_parameters = False
@@ -38,6 +49,7 @@ def main():
     print("Writing file to disk ... \n")
 
     fpath_apr = io_int.save_apr_file_name() #get path through gui
+
     # Initialize APRFile for I/O
     aprfile = pyapr.io.APRFile()
     aprfile.set_read_write_tree(True)
@@ -50,7 +62,7 @@ def main():
     file_sz = aprfile.current_file_size_MB()
     print("APR File Size: {:7.2f} MB \n".format(file_sz))
 
-    mcr = (img.size*2*pow(10, -6))/file_sz
+    mcr = (os.path.getsize(fpath) * 1e-6)/file_sz
     cr = img.size/apr.total_number_particles()
 
     print("Memory Compression Ratio: {:7.2f}".format(mcr))
@@ -60,9 +72,11 @@ def main():
 
     print("Done. \n")
 
-    pyapr.viewer.parts_viewer(apr, parts)
-
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser("interactive APR conversion")
+    parser.add_argument('--data-type', '-d', type=str, default='short',
+                        help='data type of the particles: short or float. default: short')
+    args = parser.parse_args()
 
+    main(args)

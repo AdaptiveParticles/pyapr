@@ -13,7 +13,7 @@ class customSlider():
         self.maxBox = Qt.QtWidgets.QSpinBox(window)
 
         self.maxBox.setMaximum(64000)
-        self.maxBox.setValue(100)
+        self.maxBox.setValue(300)
 
         self.win_ref = window
         self.label_name = label_name
@@ -22,6 +22,7 @@ class customSlider():
         self.slider.valueChanged.connect(self.updateText)
 
         self.slider.setValue(1)
+        self.slider.setMaximum(self.maxBox.value())
 
     sz_label = 100
     sz_slider = 200
@@ -122,8 +123,6 @@ class MainWindowImage(Qt.QtGui.QWidget):
         self.slider_Ith.connectSlider(self.valuechangeIth)
 
         # add a label for the current cursor position
-
-
 
     current_view = 0
 
@@ -388,7 +387,7 @@ class InteractiveIO():
 
         print("\n---------------------------------\n")
         print("Using the following parameters:\n")
-        print("grad_th = {}, Ip_th = {}, sigma_th = {} \n".format(win.par_ref.grad_th,
+        print("grad_th = {}, sigma_th = {}, Ip_th = {} \n".format(win.par_ref.grad_th,
                                                                win.par_ref.sigma_th, win.par_ref.Ip_th))
         print("---------------------------------\n \n")
 
