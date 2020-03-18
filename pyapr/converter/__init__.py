@@ -1,2 +1,3 @@
-from _pyaprwrapper import converter
+from _pyaprwrapper.converter import *
 from .filegui import *
+from .converter_methods import *
