@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 # APR build options:
 option(PYAPR_USE_OPENMP "Use OpenMP for PyAPR functionality" ON)
+option(PYAPR_USE_CUDA "Use CUDA for PyAPR functionality" OFF)
 
 ##------------- Required libraries -------------##
 find_package(HDF5 REQUIRED)
@@ -23,10 +24,10 @@ set(APR_TESTS OFF CACHE BOOL "" FORCE)
 set(APR_BUILD_STATIC_LIB ON CACHE BOOL "" FORCE)
 set(APR_BUILD_SHARED_LIB OFF CACHE BOOL "" FORCE)
 set(APR_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(APR_USE_CUDA ON CACHE BOOL "" FORCE)
 set(APR_BUILD_PYTHON_WRAPPERS OFF CACHE BOOL "" FORCE)
 set(APR_USE_LIBTIFF ON CACHE BOOL "" FORCE)
-set(APR_USE_OPENMP ON CACHE BOOL "" FORCE)
+set(APR_USE_OPENMP ${PYAPR_USE_OPENMP} CACHE BOOL "" FORCE)
+set(APR_USE_CUDA ${PYAPR_USE_CUDA} CACHE BOOL "" FORCE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/LibAPR ${HDF5_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${TIFF_INCLUDE_DIR})
 
@@ -49,14 +50,14 @@ endif()
 ###############################################################################
 # Handle CUDA
 ###############################################################################
-if(APR_USE_CUDA)
-    message(STATUS "APR: Building CUDA for APR")
+if(PYAPR_USE_CUDA)
+    message(STATUS "APR: Building CUDA for PYAPR")
     set(CMAKE_CUDA_STANDARD 14)
-    set(CMAKE_CUDA_FLAGS "--default-stream per-thread --cudart shared -g -lineinfo -Xptxas -O3,-v -use_fast_math -DAPR_USE_CUDA -DPYAPR_USE_CUDA")
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --default-stream per-thread --cudart shared -g -lineinfo -Xptxas -O3,-v -use_fast_math -DPYAPR_USE_CUDA -DAPR_USE_CUDA")
 
     enable_language(CUDA)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DAPR_USE_CUDA -DPYAPR_USE_CUDA")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DAPR_USE_CUDA -DPYAPR_USE_CUDA")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPYAPR_USE_CUDA -DAPR_USE_CUDA")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPYAPR_USE_CUDA -DAPR_USE_CUDA")
     include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
 endif()

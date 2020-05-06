@@ -2,6 +2,7 @@
 #include "data_containers/PyAPR.hpp"
 #include "numerics/APRReconstruction.hpp"
 #include "numerics/APRFilter.hpp"
+#include "numerics/APRStencilFunctions.hpp"
 
 #ifdef PYAPR_USE_CUDA
 #include "numerics/APRNumericsGPU.hpp"
