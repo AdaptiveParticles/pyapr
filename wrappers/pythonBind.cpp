@@ -46,7 +46,7 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     AddPyAPRParameters(data_containers);
 
     // wrap the PyParticleData class for different data types
-//    AddPyParticleData<uint8_t>(data_containers, "Byte");
+    AddPyParticleData<uint8_t>(data_containers, "Byte");
     AddPyParticleData<float>(data_containers, "Float");
     AddPyParticleData<uint16_t>(data_containers, "Short");
 

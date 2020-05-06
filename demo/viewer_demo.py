@@ -28,11 +28,6 @@ def main(args):
     aprfile.read_particles(apr, 'particles', parts)
     aprfile.close()
 
-    if not isinstance(parts, pyapr.ShortParticles):
-        sparts = pyapr.ShortParticles()
-        sparts.copy(apr, parts)
-        parts = sparts
-
     pyapr.viewer.parts_viewer(apr, parts)
 
 

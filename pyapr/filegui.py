@@ -163,18 +163,16 @@ class MainWindowImage(Qt.QtGui.QWidget):
 
         pos = event.pos()
         i, j = pos.y(), pos.x()
-        i = int(np.clip(i, 0, data.shape[1] - 1))
-        j = int(np.clip(j, 0, data.shape[0] - 1))
-        val = data[j, i]
+        i = int(np.clip(i, 0, data.shape[0] - 1))
+        j = int(np.clip(j, 0, data.shape[1] - 1))
+        val = data[i, j]
 
         text_string = "(y: " + str(i) + ",x: " + str(j) + ") val; " + str(val) + "\n"
 
         self.cursor.setText(text_string)
 
-
     def exitPressed(self):
         self.app_ref.exit()
-
 
     def updateSliceText(self, slice):
 
@@ -223,7 +221,7 @@ class MainWindowImage(Qt.QtGui.QWidget):
 
         self.img_I_ds.setLookupTable(self.lut_mask, True)
 
-        self.img_I_ds.setImage(None, (self.apr_ref.level_max()-2, self.apr_ref.level_max()), opacity=0.5)
+        self.img_I_ds.setImage(None, levels=(self.apr_ref.level_max()-2, self.apr_ref.level_max()), opacity=0.5)
 
 
     def update_slice(self, new_view):

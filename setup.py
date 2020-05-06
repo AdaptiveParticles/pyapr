@@ -15,8 +15,6 @@ setup(
     packages=find_packages(),
     install_requires=[
         'numpy',
-        'torch',
-        'torchvision',
     ],
     description='Python wrappers for LibAPR',
     long_description=long_description,

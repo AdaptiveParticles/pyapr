@@ -101,6 +101,8 @@ class MainWindow(QtGui.QWidget):
     aAPR_ref = 0
     parts_ref = 0
 
+    dtype = 0
+
     x_num = 0
     z_num = 0
     y_num = 0
@@ -172,6 +174,13 @@ class MainWindow(QtGui.QWidget):
         self.aAPR_ref = aAPR
         self.parts_ref = parts
 
+        if isinstance(parts, pyapr.FloatParticles):
+            self.dtype = np.float32
+        elif isinstance(parts, pyapr.ShortParticles):
+            self.dtype = np.uint16
+        else:
+            raise Exception("APR viewer is currently only implemented for particles of type Float or Short")
+
         self.z_num = aAPR.z_num(aAPR.level_max())
         self.x_num = aAPR.x_num(aAPR.level_max())
         self.y_num = aAPR.y_num(aAPR.level_max())
@@ -197,7 +206,7 @@ class MainWindow(QtGui.QWidget):
             xl = aAPR.x_num(i)
             yl = aAPR.y_num(i)
 
-            self.array_list.append(np.zeros([xl, yl], dtype=np.uint16))
+            self.array_list.append(np.zeros([xl, yl], dtype=self.dtype))
             self.img_list.append(pg.ImageItem())
 
         #
@@ -223,7 +232,7 @@ class MainWindow(QtGui.QWidget):
         max_x = max_x*self.scale_sc
         max_y = max_y*self.scale_sc
 
-        self.zero_array = np.zeros([1, 1], dtype=np.uint16)
+        self.zero_array = np.zeros([1, 1], dtype=self.dtype)
         self.zero_array[0, 0] = 0
         self.zero_img = pg.ImageItem(self.zero_array)
         self.view.addItem(self.zero_img)
