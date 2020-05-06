@@ -59,7 +59,7 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     py::module converter = m.def_submodule("converter");
     AddPyAPRConverter<float>(converter, "Float");
     AddPyAPRConverter<uint16_t>(converter, "Short");
-//    AddPyAPRConverter<uint8_t>(converter, "Byte");
+    AddPyAPRConverter<uint8_t>(converter, "Byte");
 
 
     py::module io = m.def_submodule("io");

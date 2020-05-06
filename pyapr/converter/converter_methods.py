@@ -1,5 +1,6 @@
 import pyapr
 
+
 def get_apr_interactive(image, dtype='float', rel_error=0.1, gradient_smoothing=2, verbose=True):
     # Initialize objects
     io_int = pyapr.filegui.InteractiveIO()
