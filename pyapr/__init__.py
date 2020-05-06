@@ -22,9 +22,9 @@ viewer
 """
 
 from .data_containers import *
-from .converter import *
-from .io import *
-from .numerics import *
-from .viewer import *
+from . import converter
+from . import io
+from . import numerics
+from . import viewer
 
 __all__ = ['data_containers', 'io', 'viewer', 'converter', 'numerics', 'tests']

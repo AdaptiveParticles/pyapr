@@ -1,3 +1,1 @@
-from _pyaprwrapper.numerics import filter
-
-__all__ = ['filter']
+from _pyaprwrapper.numerics.filter import *
