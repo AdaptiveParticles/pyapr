@@ -1,11 +1,11 @@
 import pyapr
-import numpy as np
 
 
 def main():
-    # Read in an image
 
+    # Read in an APR
     io_int = pyapr.filegui.InteractiveIO()
+    fpath_apr = io_int.get_apr_file_name()  # get APR file path from gui
 
     apr = pyapr.APR()
     parts = pyapr.ShortParticles()
@@ -14,11 +14,7 @@ def main():
     aprfile = pyapr.io.APRFile()
     aprfile.set_read_write_tree(True)
 
-    fpath_apr = io_int.get_apr_file_name()
-
-    #fpath_apr = "/Users/cheesema/PhD/PostDoc/PyAPR/demo_files/fish.apr"
-
-    # Write APR and particles to file
+    # Read APR and particles from file
     aprfile.open(fpath_apr, 'READ')
     aprfile.read_apr(apr)
     aprfile.read_particles(apr, 'particles', parts)
