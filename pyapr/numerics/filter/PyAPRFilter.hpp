@@ -1,29 +1,43 @@
 #include "data_structures/APR/APR.hpp"
 #include "data_containers/PyAPR.hpp"
 #include "numerics/APRReconstruction.hpp"
-#include "numerics/APRIsoConvGPU.hpp"
+#include "numerics/APRFilter.hpp"
+
+#ifdef PYAPR_USE_CUDA
+#include "numerics/APRNumericsGPU.hpp"
+#include "numerics/PixelNumericsGPU.hpp"
+#endif
 
 namespace py = pybind11;
 
+template<typename T>
+void get_ds_stencil_vec(py::buffer_info& stencil_buf, VectorData<T>& stencil_vec, int num_levels, bool normalize = false) {
 
-void get_ds_stencil_vec(py::buffer_info& stencil_buf, VectorData<float>& stencil_vec, int num_levels, bool normalize = false) {
+    auto* stencil_ptr = static_cast<T*>(stencil_buf.ptr);
 
-    float* stencil_ptr = (float*) stencil_buf.ptr;
+    PixelData<T> stencil;
+    stencil.init_from_mesh(stencil_buf.shape[0], stencil_buf.shape[1], stencil_buf.shape[2], stencil_ptr); // may lead to memory issues
 
-    PixelData<float> stencil(stencil_buf.shape[0], stencil_buf.shape[1], stencil_buf.shape[2]);
+    get_downsampled_stencils(stencil, stencil_vec, num_levels, normalize);
+}
 
-    for(int i = 0; i < stencil.mesh.size(); ++i) {
-        stencil.mesh[i] = stencil_ptr[i];
-    }
+template<typename T>
+void get_ds_stencil_vec(py::buffer_info& stencil_buf, std::vector<PixelData<T>>& stencil_vec, int num_levels, bool normalize = false) {
+
+    auto* stencil_ptr = static_cast<T*>(stencil_buf.ptr);
+
+    PixelData<T> stencil;
+    stencil.init_from_mesh(stencil_buf.shape[0], stencil_buf.shape[1], stencil_buf.shape[2], stencil_ptr); // may lead to memory issues
 
     get_downsampled_stencils(stencil, stencil_vec, num_levels, normalize);
 }
 
 
-void convolve_cuda(PyAPR& apr, PyParticleData<float>& input_parts, PyParticleData<float>& output_parts, py::array_t<float>& stencil, bool downsample_stencil, bool normalize_stencil) {
+template<typename inputType, typename stencilType>
+void convolve(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParticleData<stencilType>& output_parts,
+                  py::array_t<stencilType>& stencil, bool use_stencil_downsample, bool normalize_stencil, bool use_reflective_boundary) {
 
     auto stencil_buf = stencil.request();
-
     int stencil_size;
 
     if( stencil_buf.ndim == 3 ) {
@@ -35,58 +49,85 @@ void convolve_cuda(PyAPR& apr, PyParticleData<float>& input_parts, PyParticleDat
         throw std::invalid_argument("stencil must have 3 dimensions");
     }
 
-    const int nelements = stencil_size * stencil_size * stencil_size;
+    std::vector<PixelData<stencilType>> stencil_vec;
+    int nlevels = use_stencil_downsample ? apr.level_max() - apr.level_min() : 1;
+    get_ds_stencil_vec(stencil_buf, stencil_vec, nlevels, normalize_stencil);
 
-    auto access = apr.apr.gpuAPRHelper();
-    auto tree_access = apr.apr.gpuTreeHelper();
+    APRFilter filter_fns;
+    filter_fns.boundary_cond = use_reflective_boundary;
+    filter_fns.convolve(apr.apr, stencil_vec, input_parts.parts, output_parts.parts);
+}
 
-    tree_access.init_gpu();
-    access.init_gpu(access.total_number_particles(tree_access.level_max()), tree_access);
 
-    output_parts.parts.init(access.total_number_particles());
+void convolve_pencil(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParticleData<stencilType>& output_parts,
+                     py::array_t<stencilType>& stencil, bool use_stencil_downsample, bool normalize_stencil, bool use_reflective_boundary) {
 
-    VectorData<float> stencil_vec;
+    auto stencil_buf = stencil.request();
+    int stencil_size;
 
-    if(downsample_stencil) {
-        get_ds_stencil_vec(stencil_buf, stencil_vec, access.level_max()-access.level_min(), false);
+    if( stencil_buf.ndim == 3 ) {
+        stencil_size = stencil_buf.shape[0];
+        if( ((stencil_size != 3) && (stencil_size != 5)) || (stencil_buf.shape[1] != stencil_size) || (stencil_buf.shape[2] != stencil_size) ) {
+            throw std::invalid_argument("stencil must have shape (3, 3, 3) or (5, 5, 5)");
+        }
     } else {
-        stencil_vec.resize(nelements);
-        float* ptr = (float*)stencil_buf.ptr;
-        std::copy(ptr, ptr+nelements, stencil_vec.begin());
+        throw std::invalid_argument("stencil must have 3 dimensions");
     }
 
-    ScopedCudaMemHandler<float*, JUST_ALLOC> stencil_gpu(stencil_vec.data(), stencil_vec.size());
-    ScopedCudaMemHandler<float*, JUST_ALLOC> input_gpu(input_parts.data(), input_parts.size());
-    ScopedCudaMemHandler<float*, JUST_ALLOC> output_gpu(output_parts.data(), output_parts.size());
-    ScopedCudaMemHandler<float*, JUST_ALLOC> tree_data_gpu(NULL, tree_access.total_number_particles());
+    std::vector<PixelData<stencilType>> stencil_vec;
+    int nlevels = use_stencil_downsample ? apr.level_max() - apr.level_min() : 1;
+    get_ds_stencil_vec(stencil_buf, stencil_vec, nlevels, normalize_stencil);
 
-    input_gpu.copyH2D();
-    stencil_gpu.copyH2D();
+    APRFilter filter_fns;
+    filter_fns.boundary_cond = use_reflective_boundary;
+    filter_fns.convolve_pencil(apr.apr, stencil_vec, input_parts.parts, output_parts.parts);
+}
 
-    downsample_avg_alt(access, tree_access, input_gpu.get(), tree_data_gpu.get());
-    cudaDeviceSynchronize();
+
+#ifdef PYAPR_USE_CUDA
+
+template<typename inputType, typename stencilType>
+void convolve_cuda(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParticleData<stencilType>& output_parts,
+                   py::array_t<stencilType>& stencil, bool use_stencil_downsample, bool normalize_stencil, bool use_reflective_boundary) {
+
+    auto stencil_buf = stencil.request();
+    int stencil_size;
+
+    if( stencil_buf.ndim == 3 ) {
+        stencil_size = stencil_buf.shape[0];
+        if( ((stencil_size != 3) && (stencil_size != 5)) || (stencil_buf.shape[1] != stencil_size) || (stencil_buf.shape[2] != stencil_size) ) {
+            throw std::invalid_argument("stencil must have shape (3, 3, 3) or (5, 5, 5)");
+        }
+    } else {
+        throw std::invalid_argument("stencil must have 3 dimensions");
+    }
+
+    // copy stencil to VectorData TODO: add a copy-free option
+    int num_stencil_elements = stencil_size * stencil_size * stencil_size;
+    VectorData<stencilType> stencil_vec;
+    stencil_vec.resize(num_stencil_elements);
+    auto* stencil_ptr = static_cast<stencilType*>(stencil_buf.ptr);
+    std::copy(stencil_ptr, stencil_ptr+num_stencil_elements, stencil_vec.begin());
+
+    VectorData<stencilType> tree_data;
+    auto access = apr.apr.gpuAPRHelper();
+    auto tree_access = apr.apr.gpuTreeHelper();
 
     if(stencil_size == 3) {
-        isotropic_convolve_333(access, tree_access, input_gpu.get(), output_gpu.get(), stencil_gpu.get(), tree_data_gpu.get(), downsample_stencil);
+        isotropic_convolve_333(access, tree_access, input_parts.parts.data, output_parts.parts.data, stencil_vec,
+                               tree_data, use_reflective_boundary, use_stencil_downsample, normalize_stencil);
     } else {
-        if(downsample_stencil) {
-            isotropic_convolve_555_ds(access, tree_access, input_gpu.get(), output_gpu.get(), stencil_gpu.get(), tree_data_gpu.get());
-        } else {
-            isotropic_convolve_555(access, tree_access, input_gpu.get(), output_gpu.get(), stencil_gpu.get(), tree_data_gpu.get());
-        }
+        isotropic_convolve_555(access, tree_access, input_parts.parts.data, output_parts.parts.data, stencil_vec,
+                               tree_data, use_reflective_boundary, use_stencil_downsample, normalize_stencil);
     }
-    cudaDeviceSynchronize();
-
-    output_gpu.copyD2H();
-    cudaDeviceSynchronize();
 }
 
 
-void richardson_lucy_cuda(PyAPR& apr, PyParticleData<float>& input_parts, PyParticleData<float>& output_parts,
-                          py::array_t<float>& stencil, int niter, bool downsample_stencil, bool normalize_stencil) {
+template<typename inputType, typename stencilType>
+void richardson_lucy_cuda(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParticleData<stencilType>& output_parts,
+                          py::array_t<stencilType>& stencil, int niter, bool use_stencil_downsample, bool normalize_stencil) {
 
     auto stencil_buf = stencil.request();
-
     int stencil_size;
 
     if( stencil_buf.ndim == 3 ) {
@@ -98,51 +139,30 @@ void richardson_lucy_cuda(PyAPR& apr, PyParticleData<float>& input_parts, PyPart
         throw std::invalid_argument("stencil must have 3 dimensions");
     }
 
-    const int nelements = stencil_size * stencil_size * stencil_size;
+    // copy stencil to VectorData
+    auto* stencil_ptr = static_cast<stencilType*>(stencil_buf.ptr);
+    PixelData<stencilType> stencil_pd;
+    stencil_pd.init_from_mesh(stencil_size, stencil_size, stencil_size, stencil_ptr);
 
     auto access = apr.apr.gpuAPRHelper();
     auto tree_access = apr.apr.gpuTreeHelper();
 
-    tree_access.init_gpu();
-    access.init_gpu(access.total_number_particles(tree_access.level_max()), tree_access);
-
-    output_parts.parts.init(access.total_number_particles());
-
-    PixelData<float> pd_stencil(stencil_size, stencil_size, stencil_size);
-    float* stenc_ptr = (float*) stencil_buf.ptr;
-    for(int i = 0; i < pd_stencil.mesh.size(); ++i) {
-        pd_stencil.mesh[i] = stenc_ptr[i];
-    }
-
-    ScopedCudaMemHandler<float*, JUST_ALLOC> input_gpu(input_parts.data(), input_parts.size());
-    ScopedCudaMemHandler<float*, JUST_ALLOC> output_gpu(output_parts.data(), output_parts.size());
-
-    input_gpu.copyH2D();
-    cudaDeviceSynchronize();
-
-    richardson_lucy(access, tree_access, input_gpu.get(), output_gpu.get(), pd_stencil, niter, downsample_stencil, normalize_stencil);
-    cudaDeviceSynchronize();
-
-    output_gpu.copyD2H();
-    cudaDeviceSynchronize();
+    richardson_lucy(access, tree_access, input_parts.parts.data, output_parts.parts.data, stencil_pd, niter, use_stencil_downsample, normalize_stencil);
 }
 
 
-void richardson_lucy_pixel_cuda(py::array_t<float> input, py::array_t<float> output, py::array_t<float>& stencil, int niter) {
+template<typename inputType, typename stencilType>
+void richardson_lucy_pixel_cuda(py::array_t<inputType> input, py::array_t<stencilType> output, py::array_t<stencilType>& stencil, int niter) {
 
     auto stencil_buf = stencil.request();
     auto input_buf = input.request();
     auto output_buf = output.request();
 
-    std::vector<int> dims(3);
-
     size_t npixels = 1;
     for( int i = 0; i < 3; i++) {
         if(input_buf.shape[i] == 0 || input_buf.shape[i] != output_buf.shape[i]) {
-            throw std::invalid_argument("input and output must have 3 equal and non-zero dimensions");
+            throw std::invalid_argument("input and output must have the same shape and 3 non-zero dimensions");
         }
-        npixels *= input_buf.shape[i];
-        dims[i] = input_buf.shape[i];
     }
 
     int stencil_size;
@@ -156,42 +176,57 @@ void richardson_lucy_pixel_cuda(py::array_t<float> input, py::array_t<float> out
         throw std::invalid_argument("stencil must have 3 dimensions");
     }
 
-    const int nelements = stencil_size * stencil_size * stencil_size;
+    PixelData<inputType> input_pd;
+    PixelData<stencilType> output_pd;
+    PixelData<stencilType> psf_pd;
 
-    VectorData<float> psf_flipped;
-    psf_flipped.resize(nelements);
-    float* psf_ptr = (float*) stencil_buf.ptr;
+    auto* input_ptr = static_cast<inputType*>(input_buf.ptr);
+    auto* output_ptr = static_cast<stencilType*>(output_buf.ptr);
+    auto* psf_ptr = static_cast<stencilType*>(stencil_buf.ptr);
 
-    for(int i = 0; i < nelements; ++i) {
-        psf_flipped[i] = psf_ptr[nelements-1-i];
-    }
+    input_pd.init_from_mesh(input_buf.shape[2], input_buf.shape[1], input_buf.shape[0], input_ptr);
+    output_pd.init_from_mesh(output_buf.shape[2], output_buf.shape[1], output_buf.shape[0], output_ptr);
+    psf_pd.init_from_mesh(stencil_size, stencil_size, stencil_size, psf_ptr);
 
-    ScopedCudaMemHandler<float*, JUST_ALLOC> psf_flipped_gpu(psf_flipped.data(), psf_flipped.size());
-    ScopedCudaMemHandler<float*, JUST_ALLOC> psf_gpu(psf_ptr, nelements);
-    ScopedCudaMemHandler<float*, JUST_ALLOC> input_gpu((float*) input_buf.ptr, npixels);
-    ScopedCudaMemHandler<float*, JUST_ALLOC> output_gpu((float*) output_buf.ptr, npixels);
-
-    input_gpu.copyH2D();
-    psf_gpu.copyH2D();
-    psf_flipped_gpu.copyH2D();
-    cudaDeviceSynchronize();
-
-    richardson_lucy_pixel(input_gpu.get(), output_gpu.get(), psf_gpu.get(), psf_flipped_gpu.get(), stencil_size, npixels, niter, dims);
-    cudaDeviceSynchronize();
-
-    output_gpu.copyD2H();
-    cudaDeviceSynchronize();
+    richardson_lucy_pixel(input_pd, output_pd, psf_pd, niter);
 }
+
+#endif
 
 
 void AddPyAPRFilter(py::module &m, const std::string &modulename) {
 
     auto m2 = m.def_submodule(modulename.c_str());
-    m2.def("convolve_cuda", &convolve_cuda, "Filter an APR with a stencil",
+    m2.def("convolve", &convolve<float, float>, "Convolve an APR with a stencil",
             py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),
-            py::arg("downsample_stencil")=true, py::arg("normalize_stencil")=false);
-    m2.def("richardson_lucy", &richardson_lucy_cuda, "run APR LR deconvolution on GPU",
+            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("use_reflective_boundary")=false);
+    m2.def("convolve", &convolve<uint16_t, float>, "Convolve an APR with a stencil",
+            py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),
+            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("use_reflective_boundary")=false);
+
+    m2.def("convolve_pencil", &convolve_pencil<float, float>, "Convolve an APR with a stencil",
+            py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),
+            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("use_reflective_boundary")=false);
+    m2.def("convolve_pencil", &convolve_pencil<uint16_t, float>, "Convolve an APR with a stencil",
+            py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),
+            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("use_reflective_boundary")=false);
+
+#ifdef PYAPR_USE_CUDA
+    m2.def("convolve_cuda", &convolve_cuda<float, float>, "Filter an APR with a stencil",
+            py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),
+            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("use_reflective_boundary")=false);
+    m2.def("convolve_cuda", &convolve_cuda<uint16_t, float>, "Filter an APR with a stencil",
+            py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),
+            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("use_reflective_boundary")=false);
+
+    m2.def("richardson_lucy", &richardson_lucy_cuda<float, float>, "run APR LR deconvolution on GPU",
             py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"), py::arg("niter"),
-            py::arg("downsample_stencil")=true, py::arg("normalize_stencil")=false);
-    m2.def("richardson_lucy_pixel", &richardson_lucy_pixel_cuda, "run pixel LR deconvolution on GPU");
+            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false);
+    m2.def("richardson_lucy", &richardson_lucy_cuda<uint16_t, float>, "run APR LR deconvolution on GPU",
+            py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"), py::arg("niter"),
+            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false);
+
+    m2.def("richardson_lucy_pixel", &richardson_lucy_pixel_cuda<float, float>, "run pixel LR deconvolution on GPU");
+    m2.def("richardson_lucy_pixel", &richardson_lucy_pixel_cuda<uint16_t, float>, "run pixel LR deconvolution on GPU");
+#endif
 }
