@@ -59,6 +59,7 @@ void convolve(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParticleData
 }
 
 
+template<typename inputType, typename stencilType>
 void convolve_pencil(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParticleData<stencilType>& output_parts,
                      py::array_t<stencilType>& stencil, bool use_stencil_downsample, bool normalize_stencil, bool use_reflective_boundary) {
 

@@ -59,14 +59,14 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     py::module converter = m.def_submodule("converter");
     AddPyAPRConverter<float>(converter, "Float");
     AddPyAPRConverter<uint16_t>(converter, "Short");
-    AddPyAPRConverter<uint8_t>(converter, "Byte");
+    //AddPyAPRConverter<uint8_t>(converter, "Byte");  // need to fix or disable APRConverter GPU steps to include this
 
-
+    // wrap APRFile
     py::module io = m.def_submodule("io");
     AddPyAPRFile(io, "APRFile");
 
+    // wrap visualization functions
     py::module viewer = m.def_submodule("viewer");
     AddViewerHelpers(viewer,"viewerHelp");
     AddPyAPRRaycaster(viewer,"raycaster");
-
 }
