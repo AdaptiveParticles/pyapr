@@ -1,12 +1,10 @@
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
-import pyqtgraph.opengl as gl
-import timeit
 import pyqtgraph as pg
 import pyapr
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-
+from pyapr.filegui import customSlider
 
 class MainWindowImage(QtGui.QWidget):
     def __init__(self):
@@ -74,6 +72,18 @@ class MainWindowImage(QtGui.QWidget):
         self.apr_ref = None
         self.parts_ref = None
         self.tree_parts_ref = None
+        self.raycaster_ref = None
+
+        self.slider_aniso = customSlider(self, "z anisotropy")
+        self.slider_aniso.maxBox.setMaximum(50)
+        self.slider_aniso.maxBox.setValue(10)
+        self.slider_aniso.slider.setValue(3)
+        self.slider_aniso.move(200, 110)
+        self.slider_aniso.connectSlider(self.valuechangeAniso)
+
+        # self.slider_Ith = customSlider(self, "radius")
+        # self.slider_Ith.move(200, 140)
+        # self.slider_Ith.connectSlider(self.valuechangeIth)
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Up:
@@ -210,7 +220,6 @@ class MainWindowImage(QtGui.QWidget):
         for i in range(self.apr_ref.level_max()-1, self.apr_ref.level_max()+1):
             self.update_slice(i)
 
-
     def histogram_updated(self):
         hist_range = self.hist.item.getLevels()
 
@@ -238,7 +247,6 @@ class MainWindowImage(QtGui.QWidget):
 
     def set_image(self, apr, parts, tree_parts):
 
-
         for i in range(0, apr.level_max() + 1):
 
             sz = pow(2, self.apr_ref.level_max() - i)
@@ -262,7 +270,6 @@ class MainWindowImage(QtGui.QWidget):
 
         self.view.addItem(self.img_list[0])
 
-
         # self.raycaster_ref.get_view(apr, parts, tree_parts, self.img_buff)
 
         self.img_list[1].setImage(self.array_list[apr.level_max()-1])
@@ -271,6 +278,11 @@ class MainWindowImage(QtGui.QWidget):
         self.apr_ref = apr
         self.parts_ref = parts
         self.tree_parts_ref = tree_parts
+
+    def valuechangeAniso(self):
+        val = self.slider_aniso.slider.value()
+        self.raycaster_ref.set_z_anisotropy(val)
+        self.update_slice(self.apr_ref.level_max())
 
 
 def raycast_viewer(apr, parts):

@@ -66,8 +66,9 @@ class MainWindow(QtGui.QWidget):
 
         self.cursor = QtGui.QLabel(self)
 
-        self.cursor.move(300, 20)
+        self.cursor.move(330, 20)
         self.cursor.setFixedWidth(200)
+        self.cursor.setFixedHeight(45)
 
     def add_level_toggle(self):
         self.level_toggle = QtWidgets.QCheckBox(self)
@@ -330,8 +331,8 @@ class MainWindow(QtGui.QWidget):
 
         pos = event.pos()
         i, j = pos.y(), pos.x()
-        i = int(np.clip(i, 0, data.shape[1] - 1))
-        j = int(np.clip(j, 0, data.shape[0] - 1))
+        i = int(np.clip(i, 0, data.shape[0] - 1))
+        j = int(np.clip(j, 0, data.shape[1] - 1))
         val = data[i, j]
 
         i_l = i
@@ -343,8 +344,8 @@ class MainWindow(QtGui.QWidget):
             j_l = int(j_l/2)
             val = self.array_list[current_level][i_l, j_l]
 
-        text_string = "(y: " + str(i) + ",x: " + str(j) + ") val; " + str(val) + "\n"
-        text_string += "(y_l: " + str(i_l) + ",x_l: " + str(j_l) + ",l: " + str(current_level) + ")"
+        text_string = "(y: " + str(i) + ",x: " + str(j) + ") val: " + str(val) + ")" + "\n"
+        text_string += "(y_l: " + str(i_l) + ",x_l: " + str(j_l) + ",l: " + str(current_level) + ")" + "\n"
 
         self.cursor.setText(text_string)
 

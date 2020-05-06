@@ -34,7 +34,7 @@ void get_down_sample_parts(PyAPR &aPyAPR, PyParticleData<T> &particles,PyParticl
 
    APRTreeNumerics::fill_tree_max(aPyAPR.apr, particles.parts,tree_particles.parts);
 
-};
+}
 
 
 /**
