@@ -14,6 +14,7 @@
 #include "data_containers/PyAPR.hpp"
 #include "data_containers/PyAPRParameters.hpp"
 #include "data_containers/PyParticleData.hpp"
+#include "data_containers/iterators/PyLinearIterator.hpp"
 #include "numerics/reconstruction/PyAPRReconstruction.hpp"
 #include "numerics/filter/PyAPRFilter.hpp"
 #include "converter/PyAPRConverter.hpp"
@@ -34,6 +35,7 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     m.attr("__version__") = py::str(ConfigAPR::APR_VERSION);
 
     py::module data_containers = m.def_submodule("data_containers");
+
     //wrap the PyAPR class
     AddPyAPR(data_containers, "APR");
 
@@ -49,6 +51,9 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     AddPyParticleData<uint8_t>(data_containers, "Byte");
     AddPyParticleData<float>(data_containers, "Float");
     AddPyParticleData<uint16_t>(data_containers, "Short");
+
+    // wrap PyLinearIterator
+    AddPyLinearIterator(data_containers, "iterators");
 
     // wrap numerics module and submodules
     py::module numerics = m.def_submodule("numerics");
