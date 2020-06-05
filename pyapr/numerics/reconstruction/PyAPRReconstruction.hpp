@@ -38,6 +38,18 @@ PyPixelData<DataType> recon_smooth(PyAPR &aPyAPR, PyParticleData<DataType> &inte
     return PyPixelData<DataType>(recon);
 }
 
+
+PyPixelData<uint8_t> recon_level(PyAPR &aPyAPR) {
+
+    PixelData<uint8_t> recon(aPyAPR.apr.y_num(aPyAPR.level_max()),
+                              aPyAPR.apr.x_num(aPyAPR.level_max()),
+                              aPyAPR.apr.z_num(aPyAPR.level_max()));
+
+    APRReconstruction::interp_level(aPyAPR.apr, recon);
+
+    return PyPixelData<uint8_t>(recon);
+}
+
 template<typename DataType>
 PyPixelData<DataType> recon_pc_patch(PyAPR &aPyAPR, PyParticleData<DataType> &intensities, int z_begin, int z_end,
                                      int x_begin, int x_end, int y_begin, int y_end) {
@@ -95,6 +107,8 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
             py::arg("APR"), py::arg("parts"));
     m2.def("recon_smooth", &recon_smooth<uint16_t>, "smooth reconstruction",
             py::arg("APR"), py::arg("parts"));
+
+    m2.def("recon_level", &recon_level, "level reconstruction", py::arg("APR"));
 
 
     m2.def("recon_patch", &recon_pc_patch<float>, "piecewise constant patch reconstruction",
