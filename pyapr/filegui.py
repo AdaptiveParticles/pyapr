@@ -338,24 +338,26 @@ class InteractiveIO():
         if self.app is None:
             self.app = Qt.QtGui.QApplication([])
 
-    def get_tiff_file_name(self):
-
+    @staticmethod
+    def get_tiff_file_name():
         print("Please select an input image file (TIFF)")
         file_name = Qt.QtGui.QFileDialog.getOpenFileName(None, "Open Tiff", "~", "(*.tif *.tiff)")
-
         return file_name[0]
 
-    def get_apr_file_name(self):
-
+    @staticmethod
+    def get_apr_file_name():
         print("Please select an input APR file (HDF5)")
         file_name = Qt.QtGui.QFileDialog.getOpenFileName(None, "Open APR", "", "(*.apr *.h5)")
-
         return file_name[0]
 
-    def save_apr_file_name(self):
+    @staticmethod
+    def save_apr_file_name(default_name='output.apr'):
+        file_name = Qt.QtGui.QFileDialog.getSaveFileName(None, "Save APR", default_name, "(*.apr *.h5)")
+        return file_name[0]
 
-        file_name = Qt.QtGui.QFileDialog.getSaveFileName(None, "Save APR", "output.apr", "(*.apr *.h5)")
-
+    @staticmethod
+    def save_tiff_file_name(default_name='output.tiff'):
+        file_name = Qt.QtGui.QFileDialog.getSaveFileName(None, "Save TIFF", default_name, "(*.tif *.tiff)")
         return file_name[0]
 
     def interactive_apr(self, converter, apr, img):
