@@ -7,6 +7,8 @@
 
 #include "data_containers/PyAPR.hpp"
 #include "data_structures/APR/particles/ParticleData.hpp"
+#include "data_containers/iterators/PyLinearIterator.hpp"
+
 
 namespace py = pybind11;
 
@@ -27,7 +29,17 @@ public:
         parts.swap(aInput);
     }
 
-    void copy(PyAPR& apr, PyParticleData<float>& partsToCopy){
+    void resize(uint64_t num_particles) {
+        parts.init(num_particles);
+    }
+
+    inline T& operator[](size_t aGlobalIndex) { return parts.data[aGlobalIndex]; }
+
+    void copy_float(PyAPR& apr, PyParticleData<float>& partsToCopy){
+        parts.copy_parts(apr.apr, partsToCopy.parts);
+    }
+
+    void copy_short(PyAPR& apr, PyParticleData<uint16_t>& partsToCopy){
         parts.copy_parts(apr.apr, partsToCopy.parts);
     }
 
@@ -81,7 +93,7 @@ public:
      * @param aPyAPR  PyAPR object
      * @param img     numpy array representing the image
      */
-    void sample_image(PyAPR &aPyAPR, py::array &img) {
+    void sample_image(PyAPR &aPyAPR, py::array_t<T> &img) {
         auto buf = img.request(false);
         unsigned int y_num, x_num, z_num;
 
@@ -103,7 +115,7 @@ public:
             throw std::invalid_argument("input array must be of dimension at most 3");
         }
 
-        auto ptr = (T*) buf.ptr;
+        auto ptr = static_cast<T*>(buf.ptr);
 
         PixelData<T> pd;
         pd.init_from_mesh(y_num, x_num, z_num, ptr);
@@ -146,13 +158,29 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
     std::string typeStr = aTypeString + "Particles";
     py::class_<TypeParticles>(m, typeStr.c_str(), py::buffer_protocol())
             .def(py::init())
+            .def(py::init([](uint64_t num_particles) { return new TypeParticles(num_particles); }))
+            .def(py::init([](PyAPR& aPyAPR) { return new TypeParticles(aPyAPR.total_number_particles()); }))
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
-            .def("copy", &TypeParticles::copy, "copy particles from another PyParticleData object")
+            .def("resize", &TypeParticles::resize, "resize the data array to a specified number of elements")
+            .def("copy", &TypeParticles::copy_float, "copy particles from another PyParticleData object",
+                 py::arg("apr"), py::arg("partsToCopy"))
+            .def("copy", &TypeParticles::copy_short, "copy particles from another PyParticleData object",
+                 py::arg("apr"), py::arg("partsToCopy"))
             .def("sample_image", &TypeParticles::sample_image, "sample particle values from an image (numpy array)")
             .def("fill_with_levels", &TypeParticles::fill_with_levels, "fill particle values with levels")
             .def("set_quantization_factor", &TypeParticles::set_quantization_factor, "set lossy quantization factor")
             .def("set_background", &TypeParticles::set_background, "set lossy background cut off")
             .def("set_compression_type", &TypeParticles::set_compression_type, "turn lossy compression on and off")
+            .def("__getitem__", [](TypeParticles &s, size_t i) {
+                if (i >= s.size()) { throw py::index_error(); }
+                return s[i];
+            })
+            .def("__setitem__", [](TypeParticles &s, size_t i, DataType v) {
+                if (i >= s.size()) { throw py::index_error(); }
+                s[i] = v;
+            })
+            .def("__iter__", [](const TypeParticles &s) { return py::make_iterator(s.parts.data.begin(), s.parts.data.end()); },
+                         py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
             .def_buffer([](TypeParticles &p) -> py::buffer_info{
                 return py::buffer_info(
                         p.data(),

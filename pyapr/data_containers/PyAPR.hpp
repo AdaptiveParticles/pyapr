@@ -11,6 +11,7 @@
 
 //#include "ConfigAPR.h"
 #include "data_structures/APR/APR.hpp"
+#include "data_containers/iterators/PyLinearIterator.hpp"
 
 namespace py = pybind11;
 
@@ -46,6 +47,17 @@ public:
         return apr.z_num(level);
     }
 
+    PyLinearIterator iterator() {
+        return PyLinearIterator(apr, false);
+    }
+
+    PyLinearIterator tree_iterator() {
+        return PyLinearIterator(apr, true);
+    }
+
+    py::tuple org_dims() {
+        return py::make_tuple(apr.org_dims(0), apr.org_dims(1), apr.org_dims(2));
+    }
 
 };
 
@@ -58,7 +70,10 @@ void AddPyAPR(pybind11::module &m, const std::string &modulename) {
             .def("level_max", &PyAPR::level_max, "return the maximum resolution level")
             .def("x_num", &PyAPR::x_num,  "Gives the maximum bounds in the x direction for the given level")
             .def("y_num", &PyAPR::y_num,  "Gives the maximum bounds in the y direction for the given level")
-            .def("z_num", &PyAPR::z_num,  "Gives the maximum bounds in the z direction for the given level");
+            .def("z_num", &PyAPR::z_num,  "Gives the maximum bounds in the z direction for the given level")
+            .def("org_dims", &PyAPR::org_dims, "returns the original pixel image dimensions as a tuple (y, x, z)")
+            .def("iterator", &PyAPR::iterator, "return a linear iterator for APR particles")
+            .def("tree_iterator", &PyAPR::tree_iterator, "return a linear iterator for tree particles");
 }
 
 #endif //PYLIBAPR_PYAPR_HPP
