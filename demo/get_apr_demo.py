@@ -1,6 +1,7 @@
 import os
 import pyapr
 from skimage import io as skio
+import numpy as np
 
 
 def main():
@@ -9,6 +10,9 @@ def main():
     io_int = pyapr.filegui.InteractiveIO()
     fpath = io_int.get_tiff_file_name()  # get image file path from gui (data type must be float32 or uint16)
     img = skio.imread(fpath)
+
+    while img.ndim < 3:
+        img = np.expand_dims(img, axis=0)
 
     # Initialize APRParameters (only Ip_th, grad_th and sigma_th are set interactively)
     par = pyapr.APRParameters()
