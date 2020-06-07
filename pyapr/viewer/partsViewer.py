@@ -1,26 +1,19 @@
-from pyqtgraph.Qt import QtCore, QtGui
+from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import numpy as np
 import pyqtgraph as pg
 import sys
 import pyapr
-
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QGridLayout, QGroupBox,
-                             QMenu, QPushButton, QRadioButton, QVBoxLayout, QWidget, QSlider, QLabel, QComboBox)
 import matplotlib.pyplot as plt
 
-class MainWindow(QtGui.QMainWindow):
+
+class MainWindow(QtGui.QWidget):
 
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        cw = QtGui.QWidget()
-        self.setCentralWidget(cw)
-
         self.layout = QtGui.QGridLayout()
-        cw.setLayout(self.layout)
         self.layout.setSpacing(0)
+        self.setLayout(self.layout)
 
         self.pg_win = pg.GraphicsView()
         self.view = pg.ViewBox()
@@ -29,7 +22,7 @@ class MainWindow(QtGui.QMainWindow):
         self.layout.addWidget(self.pg_win, 0, 0, 3, 1)
 
         # add a slider
-        self.slider = QSlider(Qt.Horizontal, self)
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
 
         self.slider.valueChanged.connect(self.valuechange)
 
@@ -73,8 +66,33 @@ class MainWindow(QtGui.QMainWindow):
 
         self.cursor = QtGui.QLabel(self)
 
-        self.cursor.move(300, 20)
+        self.cursor.move(330, 20)
         self.cursor.setFixedWidth(200)
+        self.cursor.setFixedHeight(45)
+
+    def add_level_toggle(self):
+        self.level_toggle = QtWidgets.QCheckBox(self)
+        self.level_toggle.setText("View Level")
+        self.level_toggle.move(605, 20)
+
+        self.level_toggle.setChecked(False)
+
+        self.level_toggle.stateChanged.connect(self.toggleLevel)
+
+    def toggleLevel(self):
+        force_update = self.current_view
+        self.current_view = -1
+
+        if self.level_toggle.isChecked():
+            self.hist_on = False
+            for l in range(self.level_min, self.level_max + 1):
+                self.img_list[l].setLevels([self.level_min, self.level_max], True)
+                self.zero_img.setLevels([0, 1], True)
+        else:
+            self.hist_on = True
+            self.histogram_updated()
+
+        self.update_slice(force_update)
 
     img_list = []
 
@@ -83,6 +101,8 @@ class MainWindow(QtGui.QMainWindow):
     array_int = np.array(1)
     aAPR_ref = 0
     parts_ref = 0
+
+    dtype = 0
 
     x_num = 0
     z_num = 0
@@ -104,6 +124,8 @@ class MainWindow(QtGui.QMainWindow):
 
     lut = 0
     lut_back = 0
+
+    hist_on = True
 
     def updateSliceText(self, slice):
 
@@ -153,6 +175,13 @@ class MainWindow(QtGui.QMainWindow):
         self.aAPR_ref = aAPR
         self.parts_ref = parts
 
+        if isinstance(parts, pyapr.FloatParticles):
+            self.dtype = np.float32
+        elif isinstance(parts, pyapr.ShortParticles):
+            self.dtype = np.uint16
+        else:
+            raise Exception("APR viewer is currently only implemented for particles of type Float or Short")
+
         self.z_num = aAPR.z_num(aAPR.level_max())
         self.x_num = aAPR.x_num(aAPR.level_max())
         self.y_num = aAPR.y_num(aAPR.level_max())
@@ -162,7 +191,7 @@ class MainWindow(QtGui.QMainWindow):
         ## Set up the slide
         self.slider.setMinimum(0)
         self.slider.setMaximum(self.z_num-1)
-        self.slider.setTickPosition(QSlider.TicksBothSides)
+        self.slider.setTickPosition(QtWidgets.QSlider.TicksBothSides)
         self.slider.setGeometry(0.05*self.full_size, 0.97*self.full_size, 0.95*self.full_size, 40)
 
         ## Viewer elements
@@ -178,7 +207,7 @@ class MainWindow(QtGui.QMainWindow):
             xl = aAPR.x_num(i)
             yl = aAPR.y_num(i)
 
-            self.array_list.append(np.zeros([xl, yl], dtype=np.uint16))
+            self.array_list.append(np.zeros([xl, yl], dtype=self.dtype))
             self.img_list.append(pg.ImageItem())
 
         #
@@ -190,8 +219,8 @@ class MainWindow(QtGui.QMainWindow):
 
         for l in range(self.level_min, self.level_max + 1):
             sz = pow(2, self.level_max - l)
-            img_sz_x = self.array_list[l].shape[0] * sz
-            img_sz_y = self.array_list[l].shape[1] * sz
+            img_sz_x = self.array_list[l].shape[1] * sz
+            img_sz_y = self.array_list[l].shape[0] * sz
             max_x = max(max_x, img_sz_x)
             max_y = max(max_y, img_sz_y)
 
@@ -204,7 +233,7 @@ class MainWindow(QtGui.QMainWindow):
         max_x = max_x*self.scale_sc
         max_y = max_y*self.scale_sc
 
-        self.zero_array = np.zeros([1, 1], dtype=np.uint16)
+        self.zero_array = np.zeros([1, 1], dtype=self.dtype)
         self.zero_array[0, 0] = 0
         self.zero_img = pg.ImageItem(self.zero_array)
         self.view.addItem(self.zero_img)
@@ -213,7 +242,7 @@ class MainWindow(QtGui.QMainWindow):
         for l in range(self.level_min, self.level_max + 1):
             self.view.addItem(self.img_list[l])
 
-        self.setLUT('viridis')
+        self.setLUT('bone')
 
         self.current_view = 10000
         self.update_slice(int(self.z_num*0.5))
@@ -245,12 +274,16 @@ class MainWindow(QtGui.QMainWindow):
                 prev_z = int(self.current_view/sz)
 
                 if prev_z != curr_z:
-                    pyapr.viewer.fill_slice(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
+
+                    if self.level_toggle.isChecked():
+                        pyapr.viewer.fill_slice_level(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
+                    else:
+                        pyapr.viewer.fill_slice(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
 
                     self.img_list[l].setImage(self.array_list[l], False)
 
-                    img_sz_x = self.scale_sc * self.array_list[l].shape[0] * sz
-                    img_sz_y = self.scale_sc * self.array_list[l].shape[1] * sz
+                    img_sz_x = self.scale_sc * self.array_list[l].shape[1] * sz
+                    img_sz_y = self.scale_sc * self.array_list[l].shape[0] * sz
 
                     self.img_list[l].setRect(QtCore.QRectF(self.min_x, self.min_y, img_sz_x, img_sz_y))
 
@@ -274,15 +307,16 @@ class MainWindow(QtGui.QMainWindow):
 
     def histogram_updated(self):
 
-        hist_range = self.hist.item.getLevels()
+        if self.hist_on:
+            hist_range = self.hist.item.getLevels()
 
-        self.hist_min = hist_range[0]
-        self.hist_max = hist_range[1]
+            self.hist_min = hist_range[0]
+            self.hist_max = hist_range[1]
 
-        for l in range(self.level_min, self.level_max + 1):
-            self.img_list[l].setLevels([self.hist_min,  self.hist_max], True)
+            for l in range(self.level_min, self.level_max + 1):
+                self.img_list[l].setLevels([self.hist_min,  self.hist_max], True)
 
-        self.zero_img.setLevels([0,  1], True)
+                self.zero_img.setLevels([0,  1], True)
 
     def imageHoverEvent(self, event):
         """Show the position, pixel, and value under the mouse cursor.
@@ -297,9 +331,9 @@ class MainWindow(QtGui.QMainWindow):
 
         pos = event.pos()
         i, j = pos.y(), pos.x()
-        i = int(np.clip(i, 0, data.shape[1] - 1))
-        j = int(np.clip(j, 0, data.shape[0] - 1))
-        val = data[j, i]
+        i = int(np.clip(i, 0, data.shape[0] - 1))
+        j = int(np.clip(j, 0, data.shape[1] - 1))
+        val = data[i, j]
 
         i_l = i
         j_l = j
@@ -308,28 +342,34 @@ class MainWindow(QtGui.QMainWindow):
             current_level -= 1
             i_l = int(i_l/2)
             j_l = int(j_l/2)
-            val = self.array_list[current_level][j_l,i_l]
+            val = self.array_list[current_level][i_l, j_l]
 
-        text_string = "(y: " + str(i) + ",x: " + str(j) + ") val; " + str(val) +  "\n"
-        text_string += "(y_l: " + str(i_l) + ",x_l: " + str(j_l) + ",l: " + str(current_level) + ")"
+        text_string = "(y: " + str(i) + ",x: " + str(j) + ") val: " + str(val) + ")" + "\n"
+        text_string += "(y_l: " + str(i_l) + ",x_l: " + str(j_l) + ",l: " + str(current_level) + ")" + "\n"
 
         self.cursor.setText(text_string)
+
 
 def parts_viewer(aAPR, Parts):
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
 
-    app = QtGui.QApplication([])
+    app = QtGui.QApplication.instance()
+    if app is None:
+        app = QtGui.QApplication([])
 
+    pg.setConfigOption('imageAxisOrder', 'row-major')
 
     ## Create window with GraphicsView widget
     win = MainWindow()
 
-    win.init_APR(aAPR,Parts)
+    win.add_level_toggle()
+
+    win.init_APR(aAPR, Parts)
 
     win.show()
 
-    QtGui.QApplication.instance().exec_()
+    app.exec_()
 
     return None
 

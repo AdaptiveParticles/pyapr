@@ -14,11 +14,13 @@
 #include "data_containers/PyAPR.hpp"
 #include "data_containers/PyAPRParameters.hpp"
 #include "data_containers/PyParticleData.hpp"
-#include "nn/APRNetOps.hpp"
+#include "data_containers/iterators/PyLinearIterator.hpp"
 #include "numerics/reconstruction/PyAPRReconstruction.hpp"
+#include "numerics/filter/PyAPRFilter.hpp"
 #include "converter/PyAPRConverter.hpp"
 #include "io/PyAPRFile.hpp"
 #include "viewer/ViewerHelpers.hpp"
+#include "viewer/PyAPRRaycaster.hpp"
 
 namespace py = pybind11;
 
@@ -33,6 +35,7 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     m.attr("__version__") = py::str(ConfigAPR::APR_VERSION);
 
     py::module data_containers = m.def_submodule("data_containers");
+
     //wrap the PyAPR class
     AddPyAPR(data_containers, "APR");
 
@@ -45,34 +48,30 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     AddPyAPRParameters(data_containers);
 
     // wrap the PyParticleData class for different data types
+    AddPyParticleData<uint8_t>(data_containers, "Byte");
     AddPyParticleData<float>(data_containers, "Float");
     AddPyParticleData<uint16_t>(data_containers, "Short");
 
-    // wrap the APRNet operations
-    py::module nn = m.def_submodule("nn");
-    nn.def("convolve", &APRNetOps::convolve, "kxk convolution with thread parallelism over the batch");
-    nn.def("convolve_backward", &APRNetOps::convolve_backward, "backpropagation through convolve");
-    nn.def("convolve3x3", &APRNetOps::convolve3x3, "3x3 convolution with thread parallelism over the batch");
-    nn.def("convolve3x3_backward", &APRNetOps::convolve3x3_backward, "backpropagation through convolve1x1");
-    nn.def("convolve1x1", &APRNetOps::convolve1x1, "1x1 convolution with thread parallelism over the batch");
-    nn.def("convolve1x1_backward", &APRNetOps::convolve1x1_backward, "backpropagation through convolve1x1");
-    nn.def("max_pool", &APRNetOps::max_pool, "max pooling of (current) max level particles");
-    nn.def("max_pool_backward", &APRNetOps::max_pool_backward, "backpropagation through max_pool");
-    nn.def("number_particles_after_pool", &APRNetOps::number_parts_after_pool, "compute number particles after downsampling");
+    // wrap PyLinearIterator
+    AddPyLinearIterator(data_containers, "iterators");
 
     // wrap numerics module and submodules
     py::module numerics = m.def_submodule("numerics");
     AddPyAPRReconstruction(numerics, "reconstruction");
+    AddPyAPRFilter(numerics, "filter");
 
     // wrap APRConverter for different data types
     py::module converter = m.def_submodule("converter");
     AddPyAPRConverter<float>(converter, "Float");
     AddPyAPRConverter<uint16_t>(converter, "Short");
+    //AddPyAPRConverter<uint8_t>(converter, "Byte");  // need to fix or disable APRConverter GPU steps to include this
 
+    // wrap APRFile
     py::module io = m.def_submodule("io");
     AddPyAPRFile(io, "APRFile");
 
+    // wrap visualization functions
     py::module viewer = m.def_submodule("viewer");
     AddViewerHelpers(viewer,"viewerHelp");
-
+    AddPyAPRRaycaster(viewer,"raycaster");
 }

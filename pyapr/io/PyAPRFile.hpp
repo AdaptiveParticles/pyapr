@@ -42,10 +42,10 @@ public:
     }
 
     template<typename DataType>
-    void write_particles(PyAPR &aPyAPR, std::string particles_name, PyParticleData<DataType>& particles, uint64_t t = 0,
+    void write_particles(std::string particles_name, PyParticleData<DataType>& particles, uint64_t t = 0,
                          bool apr_or_tree = true, std::string channel_name = "t") {
 
-        file.write_particles(aPyAPR.apr, particles_name, particles.parts, t, apr_or_tree, channel_name);
+        file.write_particles(particles_name, particles.parts, apr_or_tree, t, channel_name);
     }
 
     void read_apr(PyAPR &aPyAPR, uint64_t t = 0, std::string channel_name = "t"){
@@ -53,11 +53,20 @@ public:
     }
 
     template<typename DataType>
-    void read_particles(PyAPR &aPyAPR, std::string particles_name, PyParticleData<DataType>& particles, uint64_t t = 0,
-                        bool apr_or_tree = true, std::string channel_name = "t"){
+    void read_particles(PyAPR &aPyAPR, std::string particles_name, PyParticleData<DataType>& particles,
+                        bool apr_or_tree = true, uint64_t t = 0, std::string channel_name = "t"){
 
-        file.read_particles(aPyAPR.apr, particles_name, particles.parts, t, apr_or_tree, channel_name);
+        file.read_particles(aPyAPR.apr, particles_name, particles.parts, apr_or_tree, t, channel_name);
     }
+
+    float current_file_size_MB(){
+        return file.current_file_size_MB();
+    }
+
+    float current_file_size_GB(){
+        return file.current_file_size_GB();
+    }
+
 
 };
 
@@ -70,19 +79,21 @@ void AddPyAPRFile(pybind11::module &m, const std::string &modulename) {
             .def("set_read_write_tree", &PyAPRFile::set_read_write_tree, "set whether the internal APR Tree internal access should also be written and read.")
             .def("write_apr", &PyAPRFile::write_apr, py::arg("aPyAPR"), py::arg("t")=0, py::arg("channel_name")="t", "write apr to file")
             .def("write_apr_append", &PyAPRFile::write_apr_append, "write the APR to file and append it as the next time point")
-            .def("write_particles", &PyAPRFile::write_particles<uint8_t>, py::arg("aPyAPR"), py::arg("particles_name"),
+            .def("write_particles", &PyAPRFile::write_particles<uint8_t>, py::arg("particles_name"),
                  py::arg("particles"), py::arg("t")=0, py::arg("apr_or_tree")=true, py::arg("channel_name")="t", "write particles to file")
-            .def("write_particles", &PyAPRFile::write_particles<uint16_t>, py::arg("aPyAPR"), py::arg("particles_name"),
+            .def("write_particles", &PyAPRFile::write_particles<uint16_t>, py::arg("particles_name"),
                  py::arg("particles"), py::arg("t")=0, py::arg("apr_or_tree")=true, py::arg("channel_name")="t", "write particles to file")
-            .def("write_particles", &PyAPRFile::write_particles<float>, py::arg("aPyAPR"), py::arg("particles_name"),
+            .def("write_particles", &PyAPRFile::write_particles<float>, py::arg("particles_name"),
                  py::arg("particles"), py::arg("t")=0, py::arg("apr_or_tree")=true, py::arg("channel_name")="t", "write particles to file")
             .def("read_apr", &PyAPRFile::read_apr, py::arg("aPyAPR"), py::arg("t")=0, py::arg("channel_name")="t", "read an APR from file")
             .def("read_particles", &PyAPRFile::read_particles<uint8_t>, py::arg("aPyAPR"), py::arg("particles_name"), py::arg("particles"),
-                 py::arg("t")=0, py::arg("apr_or_tree")=true, py::arg("channel_name")="t", "read particles from file")
+                 py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t", "read particles from file")
             .def("read_particles", &PyAPRFile::read_particles<uint16_t>, py::arg("aPyAPR"), py::arg("particles_name"), py::arg("particles"),
-                 py::arg("t")=0, py::arg("apr_or_tree")=true, py::arg("channel_name")="t", "read particles from file")
+                 py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t", "read particles from file")
             .def("read_particles", &PyAPRFile::read_particles<float>, py::arg("aPyAPR"), py::arg("particles_name"), py::arg("particles"),
-                 py::arg("t")=0, py::arg("apr_or_tree")=true, py::arg("channel_name")="t", "read particles from file");
+                 py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t", "read particles from file")
+            .def("current_file_size_GB", &PyAPRFile::current_file_size_GB, "get current file size in GB")
+            .def("current_file_size_MB", &PyAPRFile::current_file_size_MB, "get current file size in MB");
 }
 
 #endif //PYLIBAPR_PYAPRFILE_HPP
