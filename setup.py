@@ -15,6 +15,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         'numpy',
+        'pyqtgraph',
+        'matplotlib'
     ],
     description='Python wrappers for LibAPR',
     long_description=long_description,
