@@ -33,6 +33,28 @@ void get_ds_stencil_vec(py::buffer_info& stencil_buf, std::vector<PixelData<T>>&
     get_downsampled_stencils(stencil, stencil_vec, num_levels, normalize);
 }
 
+template<typename T>
+void get_ds_grad_stencil_vec(py::buffer_info& stencil_buf, std::vector<PixelData<T>>& stencil_vec, int num_levels) {
+
+    auto* stencil_ptr = static_cast<T*>(stencil_buf.ptr);
+
+    PixelData<T> stencil;
+    stencil.init_from_mesh(stencil_buf.shape[0], stencil_buf.shape[1], stencil_buf.shape[2], stencil_ptr); // may lead to memory issues
+
+    assert(stencil.mesh.size() == 3 || stencil.mesh.size() == 9 || stencil.mesh.size() == 27);
+
+    stencil_vec.resize(num_levels);
+
+    for(int dlvl = 0; dlvl < num_levels; ++dlvl) {
+
+        stencil_vec[dlvl].init(stencil);
+        float step_size = std::pow(2, dlvl);
+
+        for(int i = 0; i < stencil.mesh.size(); ++i) {
+            stencil_vec[dlvl].mesh[i] = stencil.mesh[i] / step_size;
+        }
+    }
+}
 
 template<typename inputType, typename stencilType>
 void convolve(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParticleData<stencilType>& output_parts,
@@ -42,6 +64,19 @@ void convolve(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParticleData
     std::vector<PixelData<stencilType>> stencil_vec;
     int nlevels = use_stencil_downsample ? apr.level_max() - apr.level_min() : 1;
     get_ds_stencil_vec(stencil_buf, stencil_vec, nlevels, normalize_stencil);
+
+    APRFilter filter_fns;
+    filter_fns.boundary_cond = use_reflective_boundary;
+    filter_fns.convolve(apr.apr, stencil_vec, input_parts.parts, output_parts.parts);
+}
+
+template<typename inputType, typename stencilType>
+void adaptive_grad(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParticleData<stencilType>& output_parts,
+                   py::array_t<stencilType>& stencil, bool use_reflective_boundary = true) {
+
+    auto stencil_buf = stencil.request();
+    std::vector<PixelData<stencilType>> stencil_vec;
+    get_ds_grad_stencil_vec(stencil_buf, stencil_vec, apr.level_max() - apr.level_min());
 
     APRFilter filter_fns;
     filter_fns.boundary_cond = use_reflective_boundary;
@@ -209,6 +244,13 @@ void AddPyAPRFilter(py::module &m, const std::string &modulename) {
     m2.def("convolve", &convolve<uint16_t, float>, "Convolve an APR with a stencil",
             py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),
             py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("use_reflective_boundary")=false);
+
+    m2.def("adaptive_grad", &adaptive_grad<uint16_t, float>, "adaptive gradient filter",
+            py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),
+            py::arg("use_reflective_boundary")=true);
+    m2.def("adaptive_grad", &adaptive_grad<float, float>, "adaptive gradient filter",
+            py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),
+            py::arg("use_reflective_boundary")=true);
 
     m2.def("convolve_pencil", &convolve_pencil<float, float>, "Convolve an APR with a stencil",
             py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),

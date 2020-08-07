@@ -24,6 +24,7 @@ public:
 
     PyParticleData() {}
     PyParticleData(uint64_t num_particles){ parts.init(num_particles); }
+    PyParticleData(PyAPR &aPyAPR) { parts.init(aPyAPR.apr); }
 
     PyParticleData(ParticleData<T> &aInput) {
         parts.swap(aInput);
@@ -41,6 +42,22 @@ public:
 
     void copy_short(PyAPR& apr, PyParticleData<uint16_t>& partsToCopy){
         parts.copy_parts(apr.apr, partsToCopy.parts);
+    }
+
+    void compute_gradient_magnitude(PyParticleData<float>& dx, PyParticleData<float>& dy, PyParticleData<float>& dz) {
+        assert(dx.size() == dy.size());
+        assert(dx.size() == dz.size());
+
+        if(size() != dx.size()) {
+            resize(dx.size());
+        }
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+        for(int i = 0; i < parts.data.size(); ++i) {
+            parts[i] = std::sqrt(dx.parts[i] * dx.parts[i] + dy.parts[i] * dy.parts[i] + dz.parts[i] * dz.parts[i]);
+        }
     }
 
     /**
@@ -159,7 +176,7 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
     py::class_<TypeParticles>(m, typeStr.c_str(), py::buffer_protocol())
             .def(py::init())
             .def(py::init([](uint64_t num_particles) { return new TypeParticles(num_particles); }))
-            .def(py::init([](PyAPR& aPyAPR) { return new TypeParticles(aPyAPR.total_number_particles()); }))
+            .def(py::init([](PyAPR& aPyAPR) { return new TypeParticles(aPyAPR); }))
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
             .def("resize", &TypeParticles::resize, "resize the data array to a specified number of elements")
             .def("copy", &TypeParticles::copy_float, "copy particles from another PyParticleData object",
@@ -167,6 +184,7 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def("copy", &TypeParticles::copy_short, "copy particles from another PyParticleData object",
                  py::arg("apr"), py::arg("partsToCopy"))
             .def("sample_image", &TypeParticles::sample_image, "sample particle values from an image (numpy array)")
+            .def("gradmag", &TypeParticles::compute_gradient_magnitude, "compute magnitude of three ParticleData objects")
             .def("fill_with_levels", &TypeParticles::fill_with_levels, "fill particle values with levels")
             .def("set_quantization_factor", &TypeParticles::set_quantization_factor, "set lossy quantization factor")
             .def("set_background", &TypeParticles::set_background, "set lossy background cut off")
