@@ -12,10 +12,13 @@ def main():
     img += 1e-5 * img.max()  # add a small offset to avoid division by 0
 
     psf = np.ones((5, 5, 5), dtype=np.float32) / 125
-    num_iter = 100
+    num_iter = 20
 
     output = np.empty(img.shape, dtype=np.float32)
-    pyapr.numerics.richardson_lucy_pixel(img, output, psf, num_iter)
+    pyapr.numerics.richardson_lucy_pixel_cuda(img, output, psf, num_iter)
+
+    save_path = io_int.save_tiff_file_name()
+    skio.imsave(save_path, output)
 
     # do something with output
 
