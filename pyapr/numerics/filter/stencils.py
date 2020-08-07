@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def get_gaussian_stencil(size, sigma, normalize=False):
+def get_gaussian_stencil(size, sigma, ndims=3, normalize=False):
 
     x = np.arange(-size//2 + 1, size//2 + 1)
 
@@ -10,11 +10,18 @@ def get_gaussian_stencil(size, sigma, normalize=False):
     if normalize:
         vals = vals / vals.sum()
 
-    stenc = np.empty((size, size, size), dtype=np.float32)
+    stenc = np.empty((size,)*ndims, dtype=np.float32)
 
-    for i in range(size):
-        for j in range(size):
-            for k in range(size):
-                stenc[i, j, k] = vals[i] * vals[j] * vals[k]
+    if ndims == 3:
+        for i in range(size):
+            for j in range(size):
+                for k in range(size):
+                    stenc[i, j, k] = vals[i] * vals[j] * vals[k]
+    elif ndims == 2:
+        for i in range(size):
+            for j in range(size):
+                stenc[i, j] = vals[i] * vals[j]
+
+        stenc = np.expand_dims(stenc, axis=2)
 
     return stenc
