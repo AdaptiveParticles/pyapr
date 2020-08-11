@@ -42,6 +42,7 @@ class MainWindow(QtGui.QWidget):
 
         self.comboBox = QtGui.QComboBox(self)
         self.comboBox.move(20, 20)
+        self.comboBox.addItem('bone')
         self.comboBox.addItem('viridis')
         self.comboBox.addItem('plasma')
         self.comboBox.addItem('inferno')
@@ -51,7 +52,6 @@ class MainWindow(QtGui.QWidget):
         self.comboBox.addItem('Greens')
         self.comboBox.addItem('Oranges')
         self.comboBox.addItem('Reds')
-        self.comboBox.addItem('bone')
         self.comboBox.addItem('Pastel1')
 
         self.comboBox.currentTextChanged.connect(self.updatedLUT)
@@ -81,7 +81,7 @@ class MainWindow(QtGui.QWidget):
 
     def toggleLevel(self):
         force_update = self.current_view
-        self.current_view = -1
+        self.current_view = -pow(2, self.level_max-self.level_min+1)
 
         if self.level_toggle.isChecked():
             self.hist_on = False
@@ -244,14 +244,13 @@ class MainWindow(QtGui.QWidget):
 
         self.setLUT('bone')
 
-        self.current_view = 10000
+        self.current_view = -pow(2, self.level_max-self.level_min+1)
         self.update_slice(int(self.z_num*0.5))
 
         ## Setting up the histogram
 
         ## Needs to be updated to relay on a subsection of the particles
         arr = np.array(parts, copy=False)
-        #arr.shape = (arr.size(), 1)
         arr = arr.reshape((arr.shape[0], 1))
 
         ## then need to make it 2D, so it can be interpreted as an img;
