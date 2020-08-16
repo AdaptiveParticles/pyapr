@@ -16,10 +16,6 @@ def main():
     # Read from APR file
     pyapr.io.read(fpath_apr, apr, parts)
 
-    # Specify the PSF and number of iterations
-    psf = pyapr.numerics.filter.get_gaussian_stencil(size=5, sigma=0.8, ndims=3, normalize=True)
-    niter = 10
-
     # Copy particles to float
     fparts = pyapr.FloatParticles()
     fparts.copy(apr, parts)
@@ -30,6 +26,10 @@ def main():
 
     # Display the input image
     pyapr.viewer.parts_viewer(apr, fparts)
+
+    # Specify the PSF and number of iterations
+    psf = pyapr.numerics.filter.get_gaussian_stencil(size=5, sigma=0.8, ndims=3, normalize=True)
+    niter = 10
 
     # Perform richardson-lucy deconvolution
     output = pyapr.FloatParticles()
