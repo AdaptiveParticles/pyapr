@@ -37,6 +37,10 @@ public:
         converter.par = par;
     }
 
+    APRParameters get_parameters() {
+        return converter.par;
+    }
+
     /**
      * Compute an APR from a given image, given as a numpy array.
      * @param aPyAPR
@@ -191,6 +195,7 @@ void AddPyAPRConverter(pybind11::module &m, const std::string &aTypeString) {
             .def(py::init())
             .def("get_apr", &converter::get_apr, "compute APR from an image (input as a numpy array)")
             .def("set_parameters", &converter::set_parameters, "set parameters")
+            .def("get_parameters", &converter::get_parameters, "get parameters")
             .def("set_verbose", &converter::set_verbose,
                  "should timings and additional information be printed during conversion?")
             .def("get_level_slice", &converter::get_level_slice,

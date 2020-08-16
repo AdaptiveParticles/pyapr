@@ -299,7 +299,7 @@ class MainWindowImage(Qt.QtGui.QWidget):
 
         self.img_ds = np.zeros((self.y_num_ds, self.x_num_ds), dtype=np.float32)
 
-        self.par_ref = pyapr.APRParameters()
+        self.par_ref = converter.get_parameters()
 
         self.par_ref.grad_th = self.grad_th
 
