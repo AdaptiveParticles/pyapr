@@ -3,23 +3,18 @@ import pyapr
 
 def main():
 
-    # Read in an APR
+    # Get input APR file path from gui
     io_int = pyapr.filegui.InteractiveIO()
-    fpath_apr = io_int.get_apr_file_name()  # get APR file path from gui
+    fpath_apr = io_int.get_apr_file_name()
 
+    # Initialize APR and particles objects
     apr = pyapr.APR()
     parts = pyapr.ShortParticles()
 
-    # Initialize APRFile for I/O
-    aprfile = pyapr.io.APRFile()
-    aprfile.set_read_write_tree(True)
-
     # Read APR and particles from file
-    aprfile.open(fpath_apr, 'READ')
-    aprfile.read_apr(apr)
-    aprfile.read_particles(apr, 'particles', parts)
-    aprfile.close()
+    pyapr.io.read(fpath_apr, apr, parts)
 
+    # Launch the raycast viewer
     pyapr.viewer.raycast_viewer(apr, parts)
 
 

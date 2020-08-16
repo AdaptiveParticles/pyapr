@@ -20,54 +20,40 @@ def main():
     par.auto_parameters = False
     par.rel_error = 0.1
     par.Ip_th = 10
-    par.grad_th = 50
+    par.grad_th = 1
     par.gradient_smoothing = 2
-    par.sigma_th = 100
-    par.sigma_th_max = 50
+    par.sigma_th = 20
+    par.sigma_th_max = 10
     converter.set_parameters(par)
     converter.set_verbose(False)
 
     # Compute APR and sample particle values
     converter.get_apr(apr, img)
+    parts.sample_image(apr, img)
 
     # Compute and display the computational ratio
     numParts = apr.total_number_particles()
     numPix = img.size
-    CR = numPix / numParts
-
-    print('input image size: {} pixels, APR size: {} particles --> Computational Ratio: {}'.format(numPix, numParts, CR))
-
-    # Sample particle intensities
-    parts.sample_image(apr, img)
+    cr = numPix / numParts
+    print('Input image size: {} pixels, APR size: {} particles --> Computational Ratio: {}'.format(numPix, numParts, cr))
 
     # Save the APR to file
-    fpath_apr = io_int.save_apr_file_name()
-
-    # Initialize APRFile for I/O
-    aprfile = pyapr.io.APRFile()
-    aprfile.set_read_write_tree(True)
-
-    # Write APR and particles to file
-    aprfile.open(fpath_apr, 'WRITE')
-    aprfile.write_apr(apr)
-    aprfile.write_particles('particles', parts)
-    aprfile.close()
+    fpath_apr = io_int.save_apr_file_name()  # get save path from gui
+    pyapr.io.write(fpath_apr, apr, parts)    # write apr and particles to file
 
     # Read the newly written file
-
-    # Initialize objects for reading in data
     apr2 = pyapr.APR()
     parts2 = pyapr.ShortParticles()
+    pyapr.io.read(fpath_apr, apr2, parts2)
 
-    # Read from APR file
-    aprfile.open(fpath_apr, 'READ')
-    aprfile.read_apr(apr2)
-    aprfile.read_particles(apr2, 'particles', parts2)
-    aprfile.close()
+    # check that particles are equal at a single, random index
+    ri = np.random.randint(0, numParts)
+    assert parts[ri] == parts2[ri]
 
-    # Reconstruct pixel image
-    tmp = pyapr.numerics.reconstruction.recon_pc(apr, parts)
-    recon = np.array(tmp, copy=False)
+    # check some APR properties
+    assert apr.total_number_particles() == apr2.total_number_particles()
+    assert apr.level_max() == apr2.level_max()
+    assert apr.level_min() == apr2.level_min()
 
 
 if __name__ == '__main__':

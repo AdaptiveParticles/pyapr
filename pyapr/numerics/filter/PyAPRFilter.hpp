@@ -112,7 +112,7 @@ void convolve_pencil(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParti
 
 template<typename inputType, typename stencilType>
 void richardson_lucy_cpu(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParticleData<stencilType>& output_parts,
-                            py::array_t<stencilType>& stencil, int niter, bool use_stencil_downsample, bool normalize_stencil) {
+                            py::array_t<stencilType>& stencil, int niter, bool use_stencil_downsample, bool normalize_stencil, bool resume) {
 
     auto stencil_buf = stencil.request();
     auto* stencil_ptr = static_cast<stencilType*>(stencil_buf.ptr);
@@ -121,7 +121,7 @@ void richardson_lucy_cpu(PyAPR& apr, PyParticleData<inputType>& input_parts, PyP
 
     APRFilter filter_fns;
     filter_fns.boundary_cond = true;
-    filter_fns.richardson_lucy(apr.apr, input_parts.parts, output_parts.parts, psf, niter, use_stencil_downsample, normalize_stencil);
+    filter_fns.richardson_lucy(apr.apr, input_parts.parts, output_parts.parts, psf, niter, use_stencil_downsample, normalize_stencil, resume);
 }
 
 
@@ -261,10 +261,10 @@ void AddPyAPRFilter(py::module &m, const std::string &modulename) {
 
     m2.def("richardson_lucy", &richardson_lucy_cpu<float, float>, "APR LR deconvolution",
             py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"), py::arg("niter"),
-            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false);
+            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("resume")=false);
     m2.def("richardson_lucy", &richardson_lucy_cpu<uint16_t, float>, "APR LR deconvolution",
             py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"), py::arg("niter"),
-            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false);
+            py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("resume")=false);
 
 #ifdef PYAPR_USE_CUDA
     m2.def("convolve_cuda", &convolve_cuda<float, float>, "Filter an APR with a stencil",
