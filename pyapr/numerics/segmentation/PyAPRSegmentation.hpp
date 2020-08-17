@@ -125,10 +125,35 @@ void segment_apr_cpp(APR& apr, ParticleData<T>& input_parts, ParticleData<uint16
 }
 
 
+void compute_graphcut_pixel(py::array_t<float> &img) {
+    auto buf = img.request();
+
+    int z_num = buf.shape[0];
+    int y_num = buf.shape[1];
+    int x_num = buf.shape[2];
+
+    float *ptr = (float *) buf.ptr;
+
+    std::cout << ptr[13] << std::endl;
+
+    auto *g = new Graph<float, float, float>(apr.total_number_particles(), 6*apr.total_number_particles());
+    //g -> add_node();
+
+    // index of (z, y, x)  is z * x_num * y_num + y * x_num + x
+    for(int z = 0; z < z_num; ++z) {
+        // do stuff
+    }
+
+
+    delete g;
+}
+
+
 void AddPyAPRSegmentation(py::module &m, const std::string &modulename) {
 
     auto m2 = m.def_submodule(modulename.c_str());
     m2.def("example_graphcut", &example_graphcut, "description");
     m2.def("graphcut", &segment_apr_py<float>, "compute graphcut segmentation of an APR",
            py::arg("apr"), py::arg("input_parts"), py::arg("mask_parts"));
+    m2.def("graphcut_pixel", &compute_graphcut_pixel, "help");
 }
