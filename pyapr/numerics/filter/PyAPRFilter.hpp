@@ -117,7 +117,7 @@ void richardson_lucy_cpu(PyAPR& apr, PyParticleData<inputType>& input_parts, PyP
     auto stencil_buf = stencil.request();
     auto* stencil_ptr = static_cast<stencilType*>(stencil_buf.ptr);
     PixelData<stencilType> psf;
-    psf.init_from_mesh(stencil_buf.shape[0], stencil_buf.shape[1], stencil_buf.shape[2], stencil_ptr);
+    psf.init_from_mesh(stencil_buf.shape[2], stencil_buf.shape[1], stencil_buf.shape[0], stencil_ptr);
 
     APRFilter filter_fns;
     filter_fns.boundary_cond = true;

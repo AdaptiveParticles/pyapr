@@ -1,7 +1,14 @@
 import pyapr
+import numpy as np
 
 
 def get_apr_interactive(image, dtype='short', rel_error=0.1, gradient_smoothing=2, verbose=True, params=None):
+
+    # check that the image array is c-contiguous
+    if not image.flags['C_CONTIGUOUS']:
+        print('WARNING: \'image\' argument given to get_apr_interactive is not C-contiguous \n'
+              'input image has been replaced with a C-contiguous copy of itself')
+        image = np.ascontiguousarray(image)
 
     # Initialize objects
     io_int = pyapr.filegui.InteractiveIO()
