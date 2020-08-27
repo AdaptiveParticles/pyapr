@@ -125,6 +125,21 @@ void richardson_lucy_cpu(PyAPR& apr, PyParticleData<inputType>& input_parts, PyP
 }
 
 
+void richardson_lucy_tv_cpu(PyAPR& apr, PyParticleData<float>& input_parts, PyParticleData<float>& output_parts,
+                            py::array_t<float>& stencil, int niter, float reg_factor, bool use_stencil_downsample,
+                            bool normalize_stencil, bool resume) {
+
+    auto stencil_buf = stencil.request();
+    auto* stencil_ptr = static_cast<float*>(stencil_buf.ptr);
+    PixelData<float> psf;
+    psf.init_from_mesh(stencil_buf.shape[2], stencil_buf.shape[1], stencil_buf.shape[0], stencil_ptr);
+
+    APRFilter filter_fns;
+    filter_fns.boundary_cond = true;
+    filter_fns.richardson_lucy_tv(apr.apr, input_parts.parts, output_parts.parts, psf, niter, reg_factor, use_stencil_downsample, normalize_stencil, resume);
+}
+
+
 #ifdef PYAPR_USE_CUDA
 
 template<typename inputType, typename stencilType>
@@ -266,6 +281,9 @@ void AddPyAPRFilter(py::module &m, const std::string &modulename) {
             py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"), py::arg("niter"),
             py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("resume")=false);
 
+    m2.def("richardson_lucy_tv", &richardson_lucy_tv_cpu, "APR LR deconvolution with total variation regularization",
+            py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"), py::arg("niter"),
+            py::arg("reg_factor"), py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("resume")=false);
 #ifdef PYAPR_USE_CUDA
     m2.def("convolve_cuda", &convolve_cuda<float, float>, "Filter an APR with a stencil",
             py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),
