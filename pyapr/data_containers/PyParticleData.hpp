@@ -34,6 +34,32 @@ public:
         parts.init(num_particles);
     }
 
+    T max() {
+        T max_val = std::numeric_limits<T>::min();
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(static) reduction(max : max_val)
+#endif
+        for(uint64_t i = 0; i < parts.size(); ++i) {
+            max_val = std::max(max_val, parts[i]);
+        }
+
+        return max_val;
+    }
+
+    T min() {
+        T min_val = std::numeric_limits<T>::max();
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(static) reduction(min : min_val)
+#endif
+        for(uint64_t i = 0; i < parts.size(); ++i) {
+            min_val = std::min(min_val, parts[i]);
+        }
+
+        return min_val;
+    }
+
     inline T& operator[](size_t aGlobalIndex) { return parts.data[aGlobalIndex]; }
 
     void copy_float(PyAPR& apr, PyParticleData<float>& partsToCopy){
@@ -179,6 +205,8 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def(py::init([](PyAPR& aPyAPR) { return new TypeParticles(aPyAPR); }))
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
             .def("resize", &TypeParticles::resize, "resize the data array to a specified number of elements")
+            .def("min", &TypeParticles::min, "return the minimum value")
+            .def("max", &TypeParticles::max, "return the maximum value")
             .def("copy", &TypeParticles::copy_float, "copy particles from another PyParticleData object",
                  py::arg("apr"), py::arg("partsToCopy"))
             .def("copy", &TypeParticles::copy_short, "copy particles from another PyParticleData object",
