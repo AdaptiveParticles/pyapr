@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "graph.h"
+#include <iostream>
 
 /*
 	special constants for node->parent. Duplicated in maxflow.cpp, both should match!
@@ -23,7 +24,13 @@ template <typename captype, typename tcaptype, typename flowtype>
 
 	nodes = (node*) malloc(node_num_max*sizeof(node));
 	arcs = (arc*) malloc(2*edge_num_max*sizeof(arc));
-	if (!nodes || !arcs) { if (error_function) (*error_function)("Not enough memory!"); exit(1); }
+	std::cout << "Constructing graph... node size: " << sizeof(node) << " edge size: " << sizeof(arc) << std::endl;
+	std::cout << "Allocating " << node_num_max*sizeof(node)*1e-9 << " GB of memory for nodes" << std::endl;
+	std::cout << "Allocating " << 2*edge_num_max*sizeof(arc)*1e-9 << " GB of memory for edges" << std::endl;
+	std::cout << "Total memory for nodes and edges: " << node_num_max*sizeof(node)*1e-9 + 2*edge_num_max*sizeof(arc)*1e-9 << " GB" << std::endl;
+	if (!nodes || !arcs) {
+	    if (error_function) (*error_function)("Not enough memory!"); exit(1);
+	}
 
 	node_last = nodes;
 	node_max = nodes + node_num_max;
@@ -101,6 +108,7 @@ template <typename captype, typename tcaptype, typename flowtype>
 
 	arc_num_max += arc_num_max / 2; if (arc_num_max & 1) arc_num_max ++;
 	arcs = (arc*) realloc(arcs_old, arc_num_max*sizeof(arc));
+	std::cout << "Reallocating edges: " << arc_num_max*sizeof(arc)*1e-9 << " GB (arc_num_max = " << arc_num_max << ")" << std::endl;
 	if (!arcs) { if (error_function) (*error_function)("Not enough memory!"); exit(1); }
 
 	arc_last = arcs + arc_num;
