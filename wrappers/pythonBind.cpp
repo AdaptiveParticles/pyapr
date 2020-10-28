@@ -17,6 +17,7 @@
 #include "data_containers/iterators/PyLinearIterator.hpp"
 #include "numerics/reconstruction/PyAPRReconstruction.hpp"
 #include "numerics/filter/PyAPRFilter.hpp"
+#include "numerics/segmentation/PyAPRSegmentation.hpp"
 #include "converter/PyAPRConverter.hpp"
 #include "io/PyAPRFile.hpp"
 #include "viewer/ViewerHelpers.hpp"
@@ -59,6 +60,7 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     py::module numerics = m.def_submodule("numerics");
     AddPyAPRReconstruction(numerics, "reconstruction");
     AddPyAPRFilter(numerics, "filter");
+    AddPyAPRSegmentation(numerics, "segmentation");
 
     // wrap APRConverter for different data types
     py::module converter = m.def_submodule("converter");
