@@ -115,8 +115,8 @@ void fill_slice_level(PyAPR &aPyAPR, PyParticleData<T> &particles, py::array_t<T
 
         }
     }
-
 }
+
 
 /**
  *
@@ -169,6 +169,41 @@ void compress_and_fill_slice(PyAPR &aPyAPR, PyParticleData<uint16_t> &particles,
 }
 
 
+template<typename T>
+PyPixelData<float> get_points(PyAPR &aPyAPR, PyParticleData<T> &particles, int z) {
+
+    auto apr_it = aPyAPR.apr.iterator();
+    int num_parts_in_slice = 0;
+
+    for(int level = apr_it.level_max(); level > apr_it.level_min(); --level) {
+        int step_size = std::pow(2, (int)apr_it.level_max() - level);
+        int64_t ifirst = apr_it.begin(level, z/step_size, 0);
+
+        apr_it.begin(level, z/step_size, apr_it.x_num(level)-1);
+        int64_t ilast = apr_it.end();
+
+        num_parts_in_slice += (ilast-ifirst);
+    }
+
+    PixelData<float> arr(num_parts_in_slice, 4, 1);
+    int64_t i = 0;
+    for(int level = apr_it.level_max(); level > apr_it.level_min(); --level) {
+        int step_size = std::pow(2, (int)apr_it.level_max() - level);
+        for(int x = 0; x < apr_it.x_num(level); ++x) {
+            for(apr_it.begin(level, z/step_size, x); apr_it < apr_it.end(); ++apr_it) {
+                arr.mesh[i] = ((float)x+0.5f) * step_size;
+                arr.mesh[i+num_parts_in_slice] = ((float)apr_it.y()+0.5f) * step_size;
+                arr.mesh[i+2*num_parts_in_slice] = step_size;
+                arr.mesh[i+3*num_parts_in_slice] = particles[apr_it];
+
+                i++;
+            }
+        }
+    }
+    return PyPixelData<float>(arr);
+}
+
+
 void AddViewerHelpers(py::module &m, const std::string &modulename) {
 
     auto m2 = m.def_submodule(modulename.c_str());
@@ -182,4 +217,6 @@ void AddViewerHelpers(py::module &m, const std::string &modulename) {
     m2.def("fill_slice_level", &fill_slice_level<float>, "fills an array particle level at that location");
     m2.def("min_occupied_level", &min_occupied_level, "Returns the minimum occupied level in the APR");
     m2.def("compress_and_fill_slice", &compress_and_fill_slice, "compresses and fills the slice");
+    m2.def("get_points", &get_points<float>, py::return_value_policy::take_ownership, "extract particles in a given slice as an array of coordinates and properties");
+    m2.def("get_points", &get_points<uint16_t>, py::return_value_policy::take_ownership, "extract particles in a given slice as an array of coordinates and properties");
 }
