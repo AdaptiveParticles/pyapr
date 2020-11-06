@@ -77,8 +77,8 @@ class MainWindowImage(QtGui.QWidget):
         self.slider_aniso = customSlider(self, "z anisotropy")
         self.slider_aniso.maxBox.setMaximum(50)
         self.slider_aniso.maxBox.setValue(10)
-        self.slider_aniso.slider.setValue(3)
-        self.slider_aniso.move(200, 110)
+        self.slider_aniso.slider.setValue(1)
+        self.slider_aniso.move(200, 50)
         self.slider_aniso.connectSlider(self.valuechangeAniso)
 
         # self.slider_Ith = customSlider(self, "radius")
@@ -306,7 +306,7 @@ def raycast_viewer(apr, parts):
 
     raycaster = pyapr.viewer.raycaster()
 
-    raycaster.set_z_anisotropy(3)
+    raycaster.set_z_anisotropy(1)
     raycaster.set_radius(0.1)
 
     win.view.setMouseEnabled(False, False)
