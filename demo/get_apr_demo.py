@@ -11,17 +11,38 @@ def main():
     fpath = io_int.get_tiff_file_name()  # get image file path from gui (data type must be float32 or uint16)
     img = skio.imread(fpath)
 
-    while img.ndim < 3:
-        img = np.expand_dims(img, axis=0)
-
-    # Initialize and set some APRParameters (only Ip_th, grad_th and sigma_th are set interactively)
     par = pyapr.APRParameters()
-    par.auto_parameters = False
-    par.rel_error = 0.1
-    par.gradient_smoothing = 3
+    par.rel_error = 0.1          # relative error threshold
+    par.gradient_smoothing = 3   # b-spline smoothing parameter for gradient estimation
+    #                              0 = no smoothing, higher = more smoothing
+    par.dx = 1
+    par.dy = 1                   # voxel size
+    par.dz = 1
+    # threshold parameters
+    par.Ip_th = 0                # regions below this intensity are regarded as background
+    par.grad_th = 3              # gradients below this value are set to 0
+    par.sigma_th = 10            # the local intensity scale is clipped from below to this value
+    par.auto_parameters = False  # if true, threshold parameters are set automatically based on histograms
+
+    # Initialize converter and particles based on image data type
+    if img.dtype in ('float', 'float32'):
+        parts = pyapr.FloatParticles()
+        converter = pyapr.converter.FloatConverter()
+    else:
+        img = img.astype(np.uint16)
+        parts = pyapr.ShortParticles()
+        converter = pyapr.converter.ShortConverter()
 
     # Compute APR and sample particle values
-    apr, parts = pyapr.converter.get_apr_interactive(img, dtype=img.dtype, params=par, verbose=True)
+    converter.set_parameters(par)
+    converter.set_verbose(True)
+    apr = pyapr.APR()
+    converter.get_apr(apr, img)
+    parts.sample_image(apr, img)
+
+    # Compute computational ratio
+    cr = img.size/apr.total_number_particles()
+    print("Compuational Ratio: {:7.2f}".format(cr))
 
     # Display the APR
     pyapr.viewer.parts_viewer(apr, parts)
@@ -31,19 +52,14 @@ def main():
     fpath_apr = io_int.save_apr_file_name()  # get path through gui
     pyapr.io.write(fpath_apr, apr, parts)
 
-    # Display the size of the file
-    file_sz = os.path.getsize(fpath_apr)
-    print("APR File Size: {:7.2f} MB \n".format(file_sz * 1e-6))
+    if fpath_apr:
+        # Display the size of the file
+        file_sz = os.path.getsize(fpath_apr)
+        print("APR File Size: {:7.2f} MB \n".format(file_sz * 1e-6))
 
-    # Compute compression ratio
-    mcr = os.path.getsize(fpath) / file_sz
-    print("Memory Compression Ratio: {:7.2f}".format(mcr))
-
-    # Compute computational ratio
-    cr = img.size/apr.total_number_particles()
-    print("Compuational Ratio: {:7.2f}".format(cr))
-
-    print("Done.")
+        # Compute compression ratio
+        mcr = os.path.getsize(fpath) / file_sz
+        print("Memory Compression Ratio: {:7.2f}".format(mcr))
 
 
 if __name__ == '__main__':
