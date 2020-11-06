@@ -62,6 +62,8 @@ public:
     APRParameters get_parameters() {
         return apr.get_apr_parameters();
     }
+
+    float computational_ratio() { return apr.computational_ratio(); }
 };
 
 // -------- wrapper -------------------------------------------------
@@ -82,7 +84,8 @@ void AddPyAPR(pybind11::module &m, const std::string &modulename) {
             .def("org_dims", &PyAPR::org_dims, "returns the original pixel image dimensions as a tuple (y, x, z)")
             .def("iterator", &PyAPR::iterator, "return a linear iterator for APR particles")
             .def("tree_iterator", &PyAPR::tree_iterator, "return a linear iterator for tree particles")
-            .def("get_parameters", &PyAPR::get_parameters, "return the parameters used to create the APR");
+            .def("get_parameters", &PyAPR::get_parameters, "return the parameters used to create the APR")
+            .def("computational_ratio", &PyAPR::computational_ratio, "return the computational ratio (number of pixels in original image / number of particles in the APR)");
 }
 
 #endif //PYLIBAPR_PYAPR_HPP

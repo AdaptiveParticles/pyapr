@@ -166,6 +166,23 @@ public:
         parts.sample_parts_from_img_downsampled(aPyAPR.apr, pd);
     }
 
+
+    /**
+     * Sample the particle values from a TIFF file, that is read in blocks of z-slices to reduce memory usage.
+     *
+     * @param aPyAPR     PyAPR object
+     * @param aFileName  Path to the TIFF file
+     * @param blockSize  Number of z-slices to process in each tile
+     * @param ghostSize  Number of ghost slices on each side of the block (maximum slices held in memory at any given time is blockSize + 2*ghostSize)
+     */
+    void sample_image_blocked(PyAPR &aPyAPR,
+                              const std::string &aFileName,
+                              const int blockSize,
+                              const int ghostSize) {
+        parts.sample_parts_from_img_blocked(aPyAPR.apr, aFileName, blockSize, ghostSize);
+    }
+
+
     /**
      * Fill the particle values with their corresponding resolution levels.
      *
@@ -212,6 +229,8 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def("copy", &TypeParticles::copy_short, "copy particles from another PyParticleData object",
                  py::arg("apr"), py::arg("partsToCopy"))
             .def("sample_image", &TypeParticles::sample_image, "sample particle values from an image (numpy array)")
+            .def("sample_image_blocked", &TypeParticles::sample_image_blocked,
+                 "sample particle values from a file in z-blocks to reduce memory usage")
             .def("gradmag", &TypeParticles::compute_gradient_magnitude, "compute magnitude of three ParticleData objects")
             .def("fill_with_levels", &TypeParticles::fill_with_levels, "fill particle values with levels")
             .def("set_quantization_factor", &TypeParticles::set_quantization_factor, "set lossy quantization factor")

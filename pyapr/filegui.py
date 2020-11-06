@@ -356,7 +356,7 @@ class InteractiveIO():
         return file_name[0]
 
     @staticmethod
-    def save_tiff_file_name(default_name='output.tiff'):
+    def save_tiff_file_name(default_name='output.tif'):
         file_name = Qt.QtGui.QFileDialog.getSaveFileName(None, "Save TIFF", default_name, "(*.tif *.tiff)")
         return file_name[0]
 
@@ -394,3 +394,23 @@ class InteractiveIO():
         converter.get_apr_step2(apr, win.par_ref)
 
         return None
+
+    def find_parameters_interactive(self, converter, apr, img):
+        converter.get_apr_step1(apr, img)
+        pg.setConfigOption('background', 'w')
+        pg.setConfigOption('foreground', 'k')
+        pg.setConfigOption('imageAxisOrder', 'row-major')
+
+        # Create window with GraphicsView widget
+        win = MainWindowImage()
+        win.show()
+        win.apr_ref = apr
+        win.app_ref = self.app
+        win.set_image(img, converter)
+
+        # Run the app
+        self.app.exec_()
+        win.close()
+
+        # Return the Parameters
+        return win.par_ref
