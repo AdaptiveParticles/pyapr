@@ -19,6 +19,7 @@
 #include "numerics/filter/PyAPRFilter.hpp"
 #include "numerics/segmentation/PyAPRSegmentation.hpp"
 #include "converter/PyAPRConverter.hpp"
+#include "converter/PyAPRConverterBatch.hpp"
 #include "io/PyAPRFile.hpp"
 #include "viewer/ViewerHelpers.hpp"
 #include "viewer/PyAPRRaycaster.hpp"
@@ -66,6 +67,8 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     py::module converter = m.def_submodule("converter");
     AddPyAPRConverter<float>(converter, "Float");
     AddPyAPRConverter<uint16_t>(converter, "Short");
+    AddPyAPRConverterBatch<float>(converter, "Float");
+    AddPyAPRConverterBatch<uint16_t>(converter, "Short");
     //AddPyAPRConverter<uint8_t>(converter, "Byte");  // need to fix or disable APRConverter GPU steps to include this
 
     // wrap APRFile

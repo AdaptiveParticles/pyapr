@@ -1,6 +1,7 @@
 import os
 import pyapr
 from skimage import io as skio
+import numpy as np
 
 
 def main():
@@ -10,21 +11,21 @@ def main():
     fpath = io_int.get_tiff_file_name()  # get image file path from gui (data type must be float32 or uint16)
     img = skio.imread(fpath)
 
+    while img.ndim < 3:
+        img = np.expand_dims(img, axis=0)
+
+    # Initialize and set some parameters (only Ip_th, grad_th and sigma_th are set interactively)
     par = pyapr.APRParameters()
-    par.rel_error = 0.1          # relative error threshold
-    par.gradient_smoothing = 3   # b-spline smoothing parameter for gradient estimation
-    #                              0 = no smoothing, higher = more smoothing
+    par.auto_parameters = False
+    par.rel_error = 0.1              # relative error threshold
+    par.gradient_smoothing = 10      # b-spline smoothing parameter for gradient estimation
+    #                                  0 = no smoothing, higher = more smoothing
     par.dx = 1
-    par.dy = 1                   # voxel size
+    par.dy = 1                       # voxel size
     par.dz = 1
-    # threshold parameters
-    par.Ip_th = 0                # regions below this intensity are regarded as background
-    par.grad_th = 3              # gradients below this value are set to 0
-    par.sigma_th = 10            # the local intensity scale is clipped from below to this value
-    par.auto_parameters = False  # if true, threshold parameters are set automatically based on histograms
 
     # Compute APR and sample particle values
-    apr, parts = pyapr.converter.get_apr(img, params=par, verbose=True)
+    apr, parts = pyapr.converter.get_apr_interactive(img, params=par, verbose=True)
 
     # Compute computational ratio
     cr = img.size/apr.total_number_particles()

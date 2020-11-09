@@ -16,6 +16,10 @@ def read(fpath, apr, parts, t=0, channel_name_apr='t', channel_name_parts='parti
 
 def write(fpath, apr, parts, t=0, channel_name_apr='t', channel_name_parts='particles'):
 
+    if not fpath:
+        print('Empty path given. Ignoring call to pyapr.io.write')
+        return
+
     # Initialize APRFile for I/O
     aprfile = pyapr.io.APRFile()
     aprfile.set_read_write_tree(True)
@@ -28,6 +32,10 @@ def write(fpath, apr, parts, t=0, channel_name_apr='t', channel_name_parts='part
 
 
 def write_multichannel(fpath, apr, parts_list, t=0, channel_name_apr='t', channel_names_parts=None):
+
+    if not fpath:
+        print('Empty path given. Ignoring call to pyapr.io.write')
+        return
 
     if isinstance(parts_list, (tuple, list)):
         for p in parts_list:
