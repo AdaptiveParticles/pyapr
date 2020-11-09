@@ -22,6 +22,7 @@ viewer
 """
 
 from .data_containers import *
+from .filegui import InteractiveIO
 from . import converter
 from . import io
 from . import numerics

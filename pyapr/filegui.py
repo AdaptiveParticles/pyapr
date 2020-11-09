@@ -370,29 +370,23 @@ class InteractiveIO():
 
         # Create window with GraphicsView widget
         win = MainWindowImage()
-
         win.show()
-
         win.apr_ref = apr
-
         win.app_ref = self.app
-
         win.set_image(img, converter)
 
         self.app.exec_()
-
         win.close()
 
         # now compute the APR
 
-        print("\n---------------------------------\n")
-        print("Using the following parameters:\n")
-        print("grad_th = {}, sigma_th = {}, Ip_th = {} \n".format(win.par_ref.grad_th,
+        print("---------------------------------")
+        print("Using the following parameters:")
+        print("grad_th = {}, sigma_th = {}, Ip_th = {}".format(win.par_ref.grad_th,
                                                                win.par_ref.sigma_th, win.par_ref.Ip_th))
-        print("---------------------------------\n \n")
+        print("---------------------------------")
 
         converter.get_apr_step2(apr, win.par_ref)
-
         return None
 
     def find_parameters_interactive(self, converter, apr, img):
