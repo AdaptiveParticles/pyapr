@@ -1,7 +1,6 @@
 import os
 import pyapr
 from skimage import io as skio
-import numpy as np
 
 
 def main():
@@ -24,21 +23,8 @@ def main():
     par.sigma_th = 10            # the local intensity scale is clipped from below to this value
     par.auto_parameters = False  # if true, threshold parameters are set automatically based on histograms
 
-    # Initialize converter and particles based on image data type
-    if img.dtype in ('float', 'float32'):
-        parts = pyapr.FloatParticles()
-        converter = pyapr.converter.FloatConverter()
-    else:
-        img = img.astype(np.uint16)
-        parts = pyapr.ShortParticles()
-        converter = pyapr.converter.ShortConverter()
-
     # Compute APR and sample particle values
-    converter.set_parameters(par)
-    converter.set_verbose(True)
-    apr = pyapr.APR()
-    converter.get_apr(apr, img)
-    parts.sample_image(apr, img)
+    apr, parts = pyapr.converter.get_apr(img, params=par, verbose=True)
 
     # Compute computational ratio
     cr = img.size/apr.total_number_particles()

@@ -25,7 +25,7 @@ def main():
     par.dz = 1
 
     # Compute APR and sample particle values
-    apr, parts = pyapr.converter.get_apr_interactive(img, dtype=img.dtype, params=par, verbose=True)
+    apr, parts = pyapr.converter.get_apr_interactive(img, params=par, verbose=True)
 
     # Compute computational ratio
     cr = img.size/apr.total_number_particles()

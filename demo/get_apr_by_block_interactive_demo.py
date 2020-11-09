@@ -24,7 +24,7 @@ def main():
     par.gradient_smoothing = 5
 
     # Interactively set the threshold parameters using the partial image
-    par = pyapr.converter.find_parameters_interactive(img, dtype=img.dtype, params=par, verbose=True)
+    par = pyapr.converter.find_parameters_interactive(img, params=par, verbose=True)
 
     del img  # Parameters found, we don't need the partial image anymore
 
