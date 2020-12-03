@@ -1,0 +1,7 @@
+cmake-setuptools
+numpy
+libtiff
+scikit-image
+PyQt5
+pyqtgraph
+matplotlib
