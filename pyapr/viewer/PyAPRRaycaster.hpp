@@ -1,7 +1,6 @@
-#ifndef PYLIBAPR_PYRAYCASTER_HPP
-#define PYLIBAPR_PYRAYCASTER_HPP
 
-
+#ifndef PYLIBAPR_PYAPRRAYCASTER_HPP
+#define PYLIBAPR_PYAPRRAYCASTER_HPP
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -141,4 +140,4 @@ void AddPyAPRRaycaster(pybind11::module &m,  const std::string &modulename) {
         .def("get_view", &PyAPRRaycaster::get_view, "demo");
 }
 
-#endif //PYLIBAPR_PYPARTICLEDATA_HPP
+#endif //PYLIBAPR_PYAPRRAYCASTER_HPP

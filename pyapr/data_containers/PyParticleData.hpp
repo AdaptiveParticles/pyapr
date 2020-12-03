@@ -4,6 +4,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
+#include <pybind11/operators.h>
 
 #include "data_containers/PyAPR.hpp"
 #include "data_structures/APR/particles/ParticleData.hpp"
@@ -23,7 +24,9 @@ public:
     ParticleData<T> parts; //#TODO: should this be called something else?
 
     PyParticleData() {}
+
     PyParticleData(uint64_t num_particles){ parts.init(num_particles); }
+
     PyParticleData(PyAPR &aPyAPR) { parts.init(aPyAPR.apr); }
 
     PyParticleData(ParticleData<T> &aInput) {
@@ -34,57 +37,253 @@ public:
         parts.init(num_particles);
     }
 
-    T max() {
-        T max_val = std::numeric_limits<T>::min();
 
+    void fill(T val) {
+        parts.fill(val);
+    }
+
+
+    T max() {
+        T max_val = parts[0];
 #ifdef PYAPR_HAVE_OPENMP
 #pragma omp parallel for schedule(static) reduction(max : max_val)
 #endif
-        for(uint64_t i = 0; i < parts.size(); ++i) {
+        for(uint64_t i = 1; i < parts.size(); ++i) {
             max_val = std::max(max_val, parts[i]);
         }
-
         return max_val;
     }
 
     T min() {
-        T min_val = std::numeric_limits<T>::max();
-
+        T min_val = parts[0];
 #ifdef PYAPR_HAVE_OPENMP
 #pragma omp parallel for schedule(static) reduction(min : min_val)
 #endif
-        for(uint64_t i = 0; i < parts.size(); ++i) {
+        for(uint64_t i = 1; i < parts.size(); ++i) {
             min_val = std::min(min_val, parts[i]);
         }
-
         return min_val;
     }
 
-    inline T& operator[](size_t aGlobalIndex) { return parts.data[aGlobalIndex]; }
 
-    void copy_float(PyAPR& apr, PyParticleData<float>& partsToCopy){
-        parts.copy_parts(apr.apr, partsToCopy.parts);
+    inline T& operator[](size_t aGlobalIndex){ return parts.data[aGlobalIndex]; }
+    inline const T& operator[](size_t aGlobalIndex) const { return parts.data[aGlobalIndex]; }
+
+
+    void copy_float(PyParticleData<float>& partsToCopy) {
+        parts.copy(partsToCopy.parts);
     }
 
-    void copy_short(PyAPR& apr, PyParticleData<uint16_t>& partsToCopy){
-        parts.copy_parts(apr.apr, partsToCopy.parts);
+    void copy_short(PyParticleData<uint16_t>& partsToCopy) {
+        parts.copy(partsToCopy.parts);
     }
 
-    void compute_gradient_magnitude(PyParticleData<float>& dx, PyParticleData<float>& dy, PyParticleData<float>& dz) {
-        assert(dx.size() == dy.size());
-        assert(dx.size() == dz.size());
+    void copy_parts_float(PyAPR &aPyAPR, PyParticleData<float>& partsToCopy, int level=0) {
+        parts.copy_parts(aPyAPR.apr, partsToCopy.parts, level);
+    }
 
-        if(size() != dx.size()) {
-            resize(dx.size());
+    void copy_parts_short(PyAPR &aPyAPR, PyParticleData<uint16_t>& partsToCopy, int level=0) {
+        parts.copy_parts(aPyAPR.apr, partsToCopy.parts, level);
+    }
+
+    /**
+     *  return a copy of this
+     */
+    PyParticleData copy() {
+        PyParticleData output(this->size());
+        output.parts.copy(this->parts);
+        return output;
+    }
+
+    /**
+     *  in-place addition with another PyParticleData
+     */
+    template<typename S>
+    PyParticleData& operator+=(const PyParticleData<S>& other) {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot add PyParticleData of different sizes");
         }
-
-#ifdef PYAPR_HAVE_OPENMP
-#pragma omp parallel for schedule(static)
-#endif
-        for(int i = 0; i < parts.data.size(); ++i) {
-            parts[i] = std::sqrt(dx.parts[i] * dx.parts[i] + dy.parts[i] * dy.parts[i] + dz.parts[i] * dz.parts[i]);
-        }
+        this->parts.binary_map(other.parts, this->parts, [](const T& a, const S& b){return a+b;});
+        return *this;
     }
+
+
+    /**
+     *  in-place subtraction of another PyParticleData
+     */
+    template<typename S>
+    PyParticleData& operator-=(const PyParticleData<S>& other) {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot subtract PyParticleData of different sizes");
+        }
+        this->parts.binary_map(other.parts, this->parts, [](const T& a, const S& b){return a-b;});
+        return *this;
+    }
+
+
+    /**
+     *   in-place elementwise multiplication with another PyParticleData
+     */
+    template<typename S>
+    PyParticleData& operator*=(const PyParticleData<S> &other) {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot multiply PyParticleData of different sizes");
+        }
+        this->parts.binary_map(other.parts, this->parts, [](const T& a, const S& b){return a*b;});
+        return *this;
+    }
+
+
+    /**
+     *  in-place multiplication with a constant
+     */
+    PyParticleData& operator*=(float v) {
+        this->parts.unary_map(this->parts, [v](const T& a){return a*v;});
+        return *this;
+    }
+
+
+    /**
+     *  in-place addition of a constant
+     */
+    PyParticleData& operator+=(float v) {
+        this->parts.unary_map(this->parts, [v](const T& a){return a+v;});
+        return *this;
+    }
+
+
+    /**
+     *  in-place subtraction of a constant
+     */
+    PyParticleData& operator-=(float v) {
+        this->parts.unary_map(this->parts, [v](const T& a){return a-v;});
+        return *this;
+    }
+
+
+    /**
+     *  multiplication with a constant
+     */
+    PyParticleData operator*(float v) const {
+        PyParticleData output(this->size());
+        this->parts.unary_map(output.parts, [v](const T& a){return a*v;});
+        return output;
+    }
+
+
+    /**
+     *  multiplication with a constant
+     */
+    friend PyParticleData operator*(float v, const PyParticleData& p) {
+        PyParticleData output(p.size());
+        p.parts.unary_map(output.parts, [v](const T& a){return a*v;});
+        return output;
+    }
+
+
+    /**
+     *  addition of a constant
+     */
+    PyParticleData operator+(float v) const {
+        PyParticleData output(this->size());
+        this->parts.unary_map(output.parts, [v](const T& a){return a+v;});
+        return output;
+    }
+
+
+    /**
+     *  subtraction of a constant
+     */
+    PyParticleData operator-(float v) const {
+        PyParticleData output(this->size());
+        this->parts.unary_map(output.parts, [v](const T& a){return a-v;});
+        return output;
+    }
+
+
+    /**
+     *  addition of two PyParticleData, where at least one is float -> return float
+     */
+    template<typename S, std::enable_if_t<(std::is_floating_point<T>::value || std::is_floating_point<S>::value), bool> = true>
+    PyParticleData<float> operator+(const PyParticleData<S> &other) const {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot add PyParticleData of different sizes");
+        }
+        PyParticleData<float> output(this->size());
+        this->parts.binary_map(other.parts, output.parts, [](const T& a, const S& b){return a+b;});
+        return output;
+    }
+
+
+    /**
+     *  addition of two PyParticleData, where neither is float -> return own type
+     */
+    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && !std::is_floating_point<S>::value, bool> = false>
+    PyParticleData operator+(const PyParticleData<S> &other) const {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot add PyParticleData of different sizes");
+        }
+        PyParticleData output(this->size());
+        this->parts.binary_map(other.parts, output.parts, [](const T& a, const S& b){return a+b;});
+        return output;
+    }
+
+
+
+    /**
+     *  subtraction of two PyParticleData, where at least one is float -> return float
+     */
+    template<typename S, std::enable_if_t<std::is_floating_point<T>::value || std::is_floating_point<S>::value, bool> = true>
+    PyParticleData<float> operator-(const PyParticleData<S> &other) const {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot subtract PyParticleData of different sizes");
+        }
+        PyParticleData<float> output(this->size());
+        this->parts.binary_map(other.parts, output.parts, [](const T& a, const S& b){return a-b;});
+        return output;
+    }
+
+    /**
+     *  subtraction of two PyParticleData, where neither is float -> return own type
+     */
+    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && !std::is_floating_point<S>::value, bool> = false>
+    PyParticleData operator-(const PyParticleData<S> &other) const {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot subtract PyParticleData of different sizes");
+        }
+        PyParticleData output(this->size());
+        this->parts.binary_map(other.parts, output.parts, [](const T& a, const S& b){return a-b;});
+        return output;
+    }
+
+
+    /**
+     *  elementwise multiplication of two PyParticleData, where at least one is float -> return float
+     */
+    template<typename S, std::enable_if_t<std::is_floating_point<T>::value || std::is_floating_point<S>::value, bool> = true>
+    PyParticleData<float> operator*(const PyParticleData<S> &other) const {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot multiply PyParticleData of different sizes");
+        }
+        PyParticleData<float> output(this->size());
+        this->parts.binary_map(other.parts, output.parts, [](const T& a, const S& b){return a*b;});
+        return output;
+    }
+
+
+    /**
+     *  elementwise multiplication of two PyParticleData, where at least one is float -> return own type
+     */
+    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && !std::is_floating_point<S>::value, bool> = false>
+    PyParticleData operator*(const PyParticleData<S> &other) const {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot multiply PyParticleData of different sizes");
+        }
+        PyParticleData output(this->size());
+        this->parts.binary_map(other.parts, output.parts, [](const T& a, const S& b){return a*b;});
+        return output;
+    }
+
 
     /**
      * @return pointer to the data
@@ -192,7 +391,7 @@ public:
 
         auto it = aPyAPR.apr.iterator();
 
-        for (unsigned int level = it.level_min(); level <= it.level_max(); ++level) {
+        for (int level = it.level_min(); level <= it.level_max(); ++level) {
 
             T lvl = static_cast<T>(level);
 
@@ -222,20 +421,44 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def(py::init([](PyAPR& aPyAPR) { return new TypeParticles(aPyAPR); }))
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
             .def("resize", &TypeParticles::resize, "resize the data array to a specified number of elements")
+            .def("fill", &TypeParticles::fill, "fill all elements with a given value")
             .def("min", &TypeParticles::min, "return the minimum value")
             .def("max", &TypeParticles::max, "return the maximum value")
             .def("copy", &TypeParticles::copy_float, "copy particles from another PyParticleData object",
-                 py::arg("apr"), py::arg("partsToCopy"))
+                 py::arg("partsToCopy"))
             .def("copy", &TypeParticles::copy_short, "copy particles from another PyParticleData object",
-                 py::arg("apr"), py::arg("partsToCopy"))
+                 py::arg("partsToCopy"))
+            .def("copy", &TypeParticles::copy_parts_float, "copy particles from another PyParticleData object",
+                 py::arg("aPyAPR"), py::arg("partsToCopy"), py::arg("level")=0)
+            .def("copy", &TypeParticles::copy_parts_short, "copy particles from another PyParticleData object",
+                 py::arg("aPyAPR"), py::arg("partsToCopy"), py::arg("level")=0)
+            .def("copy", &TypeParticles::copy, "return a copy of self")
             .def("sample_image", &TypeParticles::sample_image, "sample particle values from an image (numpy array)")
             .def("sample_image_blocked", &TypeParticles::sample_image_blocked,
                  "sample particle values from a file in z-blocks to reduce memory usage")
-            .def("gradmag", &TypeParticles::compute_gradient_magnitude, "compute magnitude of three ParticleData objects")
             .def("fill_with_levels", &TypeParticles::fill_with_levels, "fill particle values with levels")
             .def("set_quantization_factor", &TypeParticles::set_quantization_factor, "set lossy quantization factor")
             .def("set_background", &TypeParticles::set_background, "set lossy background cut off")
             .def("set_compression_type", &TypeParticles::set_compression_type, "turn lossy compression on and off")
+            .def(py::self += PyParticleData<uint16_t>())
+            .def(py::self += PyParticleData<float>())
+            .def(py::self -= PyParticleData<uint16_t>())
+            .def(py::self -= PyParticleData<float>())
+            .def(py::self *= PyParticleData<uint16_t>())
+            .def(py::self *= PyParticleData<float>())
+            .def(py::self *= float())
+            .def(py::self += float())
+            .def(py::self -= float())
+            .def(py::self + PyParticleData<uint16_t>())
+            .def(py::self + PyParticleData<float>())
+            .def(py::self - PyParticleData<uint16_t>())
+            .def(py::self - PyParticleData<float>())
+            .def(py::self * PyParticleData<uint16_t>())
+            .def(py::self * PyParticleData<float>())
+            .def(py::self * float())
+            .def(py::self + float())
+            .def(py::self - float())
+            .def(float() * py::self)
             .def("__getitem__", [](TypeParticles &s, size_t i) {
                 if (i >= s.size()) { throw py::index_error(); }
                 return s[i];

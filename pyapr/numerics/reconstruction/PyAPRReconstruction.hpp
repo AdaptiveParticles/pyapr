@@ -1,3 +1,7 @@
+
+#ifndef PYLIBAPR_PYAPRRECONSTRUCTION_HPP
+#define PYLIBAPR_PYAPRRECONSTRUCTION_HPP
+
 #include "data_structures/APR/APR.hpp"
 #include "data_containers/PyPixelData.hpp"
 #include "data_containers/PyAPR.hpp"
@@ -127,3 +131,4 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
            py::arg("x_begin"), py::arg("x_end"), py::arg("y_begin"), py::arg("y_end"));
 }
 
+#endif //PYLIBAPR_PYAPRRECONSTRUCTION_HPP

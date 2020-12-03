@@ -3,7 +3,7 @@ import numpy as np
 
 def get_gaussian_stencil(size, sigma, ndims=3, normalize=False):
 
-    x = np.arange(-size//2 + 1, size//2 + 1)
+    x = np.arange(-(size//2), size//2 + 1)
 
     vals = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-x**2 / (2 * sigma**2))
 

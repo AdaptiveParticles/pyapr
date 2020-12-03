@@ -1,3 +1,7 @@
+
+#ifndef PYLIBAPR_VIEWERHELPERS_HPP
+#define PYLIBAPR_VIEWERHELPERS_HPP
+
 #include "data_structures/APR/APR.hpp"
 #include "data_containers/PyPixelData.hpp"
 #include "data_containers/PyAPR.hpp"
@@ -220,3 +224,5 @@ void AddViewerHelpers(py::module &m, const std::string &modulename) {
     m2.def("get_points", &get_points<float>, py::return_value_policy::take_ownership, "extract particles in a given slice as an array of coordinates and properties");
     m2.def("get_points", &get_points<uint16_t>, py::return_value_policy::take_ownership, "extract particles in a given slice as an array of coordinates and properties");
 }
+
+#endif //PYLIBAPR_VIEWERHELPERS_HPP

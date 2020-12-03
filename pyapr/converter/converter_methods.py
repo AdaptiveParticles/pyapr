@@ -6,7 +6,7 @@ def get_apr(image, rel_error=0.1, gradient_smoothing=2, verbose=True, params=Non
 
     # check that the image array is c-contiguous
     if not image.flags['C_CONTIGUOUS']:
-        print('WARNING: \'image\' argument given to get_apr_interactive is not C-contiguous \n'
+        print('WARNING: \'image\' argument given to get_apr is not C-contiguous \n'
               'input image has been replaced with a C-contiguous copy of itself')
         image = np.ascontiguousarray(image)
 
@@ -33,7 +33,7 @@ def get_apr(image, rel_error=0.1, gradient_smoothing=2, verbose=True, params=Non
     else:
         errstr = 'get_apr_interactive image dtype must be one of (float, float32, short, uint16), ' \
                  'but {} was given'.format(image.dtype)
-        raise Exception(errstr)
+        raise TypeError(errstr)
 
     converter.set_parameters(par)
     converter.set_verbose(verbose)
@@ -46,6 +46,12 @@ def get_apr(image, rel_error=0.1, gradient_smoothing=2, verbose=True, params=Non
 
 
 def get_apr_interactive(image, rel_error=0.1, gradient_smoothing=2, verbose=True, params=None):
+
+    # check that the image array is c-contiguous
+    if not image.flags['C_CONTIGUOUS']:
+        print('WARNING: \'image\' argument given to get_apr_interactive is not C-contiguous \n'
+              'input image has been replaced with a C-contiguous copy of itself')
+        image = np.ascontiguousarray(image)
 
     # Initialize objects
     io_int = pyapr.InteractiveIO()
@@ -69,9 +75,9 @@ def get_apr_interactive(image, rel_error=0.1, gradient_smoothing=2, verbose=True
     #     parts = pyapr.ByteParticles()
     #     converter = pyapr.converter.ByteConverter()
     else:
-        errstr = 'get_apr_interactive image dtype must be one of (float, float32, short, uint16), ' \
+        errstr = 'pyapr.converter.get_apr_interactive: image dtype must be one of (float, float32, short, uint16), ' \
                  'but {} was given'.format(image.dtype)
-        raise Exception(errstr)
+        raise TypeError(errstr)
 
     converter.set_parameters(par)
     converter.set_verbose(verbose)
@@ -81,6 +87,7 @@ def get_apr_interactive(image, rel_error=0.1, gradient_smoothing=2, verbose=True
 
     if verbose:
         print("Total number of particles: {} \n".format(apr.total_number_particles()))
+        print("Number of pixels in original image: {} \n".format(image.size))
         cr = image.size/apr.total_number_particles()
         print("Compuational Ratio: {:7.2f}".format(cr))
         print("Sampling particles ...")
@@ -92,6 +99,13 @@ def get_apr_interactive(image, rel_error=0.1, gradient_smoothing=2, verbose=True
 
 
 def find_parameters_interactive(image, rel_error=0.1, gradient_smoothing=0, verbose=True, params=None):
+
+    # check that the image array is c-contiguous
+    if not image.flags['C_CONTIGUOUS']:
+        print('WARNING: \'image\' argument given to find_parameters_interactive is not C-contiguous \n'
+              'input image has been replaced with a C-contiguous copy of itself')
+        image = np.ascontiguousarray(image)
+
     # Initialize objects
     io_int = pyapr.filegui.InteractiveIO()
     apr = pyapr.APR()
@@ -112,7 +126,7 @@ def find_parameters_interactive(image, rel_error=0.1, gradient_smoothing=0, verb
     else:
         errstr = 'find_parameters_interactive image.dtype must be one of (float, float32, short, uint16), ' \
                  'but {} was given'.format(image.dtype)
-        raise Exception(errstr)
+        raise TypeError(errstr)
 
     converter.set_parameters(par)
     converter.set_verbose(verbose)
