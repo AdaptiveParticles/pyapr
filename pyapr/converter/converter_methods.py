@@ -86,11 +86,10 @@ def get_apr_interactive(image, rel_error=0.1, gradient_smoothing=2, verbose=True
     io_int.interactive_apr(converter, apr, image)
 
     if verbose:
-        print("Total number of particles: {} \n".format(apr.total_number_particles()))
-        print("Number of pixels in original image: {} \n".format(image.size))
+        print("Total number of particles: {}".format(apr.total_number_particles()))
+        print("Number of pixels in original image: {}".format(image.size))
         cr = image.size/apr.total_number_particles()
         print("Compuational Ratio: {:7.2f}".format(cr))
-        print("Sampling particles ...")
 
     # sample particles
     parts.sample_image(apr, image)

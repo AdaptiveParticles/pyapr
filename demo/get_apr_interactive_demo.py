@@ -41,10 +41,6 @@ def main():
     # Compute APR and sample particle values
     apr, parts = pyapr.converter.get_apr_interactive(img, params=par, verbose=True)
 
-    # Compute computational ratio
-    cr = img.size/apr.total_number_particles()
-    print("Compuational Ratio: {:7.2f}".format(cr))
-
     # Display the APR
     pyapr.viewer.parts_viewer(apr, parts)
 

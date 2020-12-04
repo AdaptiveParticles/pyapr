@@ -5,8 +5,8 @@ import tifffile
 
 def main():
     """
-    Interactive APR conversion of large images. Reads in a block of z-slices from z_start to z_end for interactive
-    setting of the parameters:
+    Interactive APR conversion of large images. Reads in a block of z-slices for interactive setting of the
+    following parameters:
         Ip_th       (background intensity level)
         sigma_th    (local intensity scale threshold)
         grad_th     (gradient threshold)
@@ -26,8 +26,8 @@ def main():
     fpath = io_int.get_tiff_file_name()  # get image file path from gui (data type must be float32 or uint16)
 
     # Specify the z-range to be used to set the parameters
-    z_start = 256
-    z_end = z_start + 512
+    z_start = 0
+    z_end = 256
 
     # Read slice range into numpy array
     with tifffile.TiffFile(fpath) as tif:
