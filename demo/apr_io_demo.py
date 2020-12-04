@@ -4,13 +4,17 @@ from skimage import io as skio
 
 
 def main():
+    """
+    This demo converts a selected TIFF image to an APR, writes the result to file and then reads the file.
+    """
+
+    io_int = pyapr.filegui.InteractiveIO()
 
     # Read in an image
-    io_int = pyapr.filegui.InteractiveIO()
     fpath = io_int.get_tiff_file_name()
     img = skio.imread(fpath).astype(np.uint16)
 
-    # Initialize objects
+    # Instantiate objects
     apr = pyapr.APR()
     parts = pyapr.ShortParticles()
     par = pyapr.APRParameters()
@@ -47,7 +51,7 @@ def main():
     pyapr.io.read(fpath_apr, apr2, parts2)
 
     # check that particles are equal at a single, random index
-    ri = np.random.randint(0, numParts)
+    ri = np.random.randint(0, numParts-1)
     assert parts[ri] == parts2[ri]
 
     # check some APR properties

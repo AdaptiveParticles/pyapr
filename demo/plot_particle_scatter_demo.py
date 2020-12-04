@@ -3,14 +3,14 @@ import pyapr
 
 def main():
     """
-    Demonstrates how a certain z-slice of the APR can be visualized as a scatter plot
+    Read a selected APR from file and display (a rectangular region of) a given z-slice as a point scatter.
     """
 
     # Get APR file path from gui
     io_int = pyapr.filegui.InteractiveIO()
     fpath_apr = io_int.get_apr_file_name()
 
-    # Initialize APR and particles objects
+    # Instantiate APR and particles objects
     apr = pyapr.APR()
     parts = pyapr.ShortParticles()
     # parts = pyapr.FloatParticles()
@@ -29,7 +29,7 @@ def main():
     figsize = None                 # figure size in inches (default None -> determined by xrange, yrange and dpi)
     dpi = 50                       # dots per inch (output image dimensions will be dpi*figsize)
     xrange = (400, 800)            # range of x values to be plotted
-    yrange = (400, 800)            # range of y values to be plotted
+    yrange = (400, 800)            # range of y values to be plotted  (if None or out of bounds, the entire range is used)
 
     pyapr.viewer.particle_scatter_plot(apr, parts, z=z, markersize_scale_factor=markersize_scale_factor,
                                        base_markersize=base_markersize, figsize=figsize, dpi=dpi,

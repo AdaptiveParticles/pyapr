@@ -4,12 +4,16 @@ from skimage import io as skio
 
 
 def main():
+    """
+    This demo shows how to convert an image to an APR using a fixed set of parameters.
+    """
 
     # Read in an image
     io_int = pyapr.filegui.InteractiveIO()
     fpath = io_int.get_tiff_file_name()  # get image file path from gui (data type must be float32 or uint16)
     img = skio.imread(fpath)
 
+    # Set some parameters
     par = pyapr.APRParameters()
     par.rel_error = 0.1          # relative error threshold
     par.gradient_smoothing = 3   # b-spline smoothing parameter for gradient estimation

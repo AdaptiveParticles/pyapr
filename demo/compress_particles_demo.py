@@ -3,11 +3,15 @@ import pyapr
 
 
 def main():
+    """
+    This demo applies lossy compression to the particle intensities, with the background level and quantization factor
+    set interactively.
+    """
 
     io_int = pyapr.filegui.InteractiveIO()
     fpath_apr = io_int.get_apr_file_name()  # get APR file path from gui
 
-    # Initialize objects
+    # Instantiate objects
     apr = pyapr.APR()
     parts = pyapr.ShortParticles()
 
@@ -28,8 +32,8 @@ def main():
     # Uncompressed pixel image size (assuming 16-bit datatype)
     original_image_size = 2e-6 * apr.x_num(apr.level_max()) * apr.y_num(apr.level_max()) * apr.z_num(apr.level_max())
 
-    print("Original File Size: {:7.2f} MB".format(original_file_size))
-    print("Lossy Compressed File Size: {:7.2f} MB".format(compressed_file_size))
+    print("Original APR File Size: {:7.2f} MB".format(original_file_size))
+    print("Lossy Compressed APR File Size: {:7.2f} MB".format(compressed_file_size))
 
     # compare uncompressed pixel image size to compressed APR file sizes
     print("Original Memory Compression Ratio: {:7.2f} ".format(original_image_size/original_file_size))

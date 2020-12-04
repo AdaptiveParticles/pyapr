@@ -1,9 +1,25 @@
 import os
 import pyapr
-from skimage.external import tifffile
+import tifffile
 
 
 def main():
+    """
+    Interactive APR conversion of large images. Reads in a block of z-slices from z_start to z_end for interactive
+    setting of the parameters:
+        Ip_th       (background intensity level)
+        sigma_th    (local intensity scale threshold)
+        grad_th     (gradient threshold)
+
+    Use the sliders to control the adaptation. The red overlay shows (approximately) the regions that will be fully
+    resolved (at pixel resolution).
+
+    Once the parameters are set, the entire image is processed in overlapping blocks of z-slices. The size of the
+    blocks, and the overlap, can be set in the code below to control the memory consumption.
+
+    Note: The effect of grad_th may hide the effect of the other thresholds. It is thus recommended to keep grad_th
+    low while setting Ip_th and sigma_th, and then increasing grad_th.
+    """
 
     # Read in an image
     io_int = pyapr.filegui.InteractiveIO()
@@ -17,11 +33,14 @@ def main():
     with tifffile.TiffFile(fpath) as tif:
         img = tif.asarray(key=slice(z_start, z_end))
 
-    # Initialize and set some APRParameters (only Ip_th, grad_th and sigma_th are set interactively)
+    # Set some parameters (only Ip_th, grad_th and sigma_th are set interactively)
     par = pyapr.APRParameters()
-    par.auto_parameters = False
-    par.rel_error = 0.1
-    par.gradient_smoothing = 5
+    par.rel_error = 0.1              # relative error threshold
+    par.gradient_smoothing = 3       # b-spline smoothing parameter for gradient estimation
+    #                                  0 = no smoothing, higher = more smoothing
+    par.dx = 1
+    par.dy = 1                       # voxel size
+    par.dz = 1
 
     # Interactively set the threshold parameters using the partial image
     par = pyapr.converter.find_parameters_interactive(img, params=par, verbose=True)

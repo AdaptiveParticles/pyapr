@@ -5,20 +5,34 @@ import numpy as np
 
 
 def main():
+    """
+    Interactive APR conversion. Reads in a selected TIFF image for interactive setting of the parameters:
+        Ip_th       (background intensity level)
+        sigma_th    (local intensity scale threshold)
+        grad_th     (gradient threshold)
+
+    Use the sliders to control the adaptation. The red overlay shows (approximately) the regions that will be fully
+    resolved (at pixel resolution).
+
+    Once the parameters are set, the final steps of the conversion pipeline are applied to produce the APR and sample
+    the particle intensities.
+
+    Note: The effect of grad_th may hide the effect of the other thresholds. It is thus recommended to keep grad_th
+    low while setting Ip_th and sigma_th, and then increasing grad_th.
+    """
 
     # Read in an image
     io_int = pyapr.filegui.InteractiveIO()
     fpath = io_int.get_tiff_file_name()  # get image file path from gui (data type must be float32 or uint16)
-    img = skio.imread(fpath)
+    img = skio.imread(fpath).astype(np.float32)
 
     while img.ndim < 3:
         img = np.expand_dims(img, axis=0)
 
-    # Initialize and set some parameters (only Ip_th, grad_th and sigma_th are set interactively)
+    # Set some parameters (only Ip_th, grad_th and sigma_th are set interactively)
     par = pyapr.APRParameters()
-    par.auto_parameters = False
     par.rel_error = 0.1              # relative error threshold
-    par.gradient_smoothing = 10      # b-spline smoothing parameter for gradient estimation
+    par.gradient_smoothing = 3       # b-spline smoothing parameter for gradient estimation
     #                                  0 = no smoothing, higher = more smoothing
     par.dx = 1
     par.dy = 1                       # voxel size
