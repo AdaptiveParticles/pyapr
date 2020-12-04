@@ -24,12 +24,13 @@ template <typename captype, typename tcaptype, typename flowtype>
 
 	nodes = (node*) malloc(node_num_max*sizeof(node));
 	arcs = (arc*) malloc(2*edge_num_max*sizeof(arc));
-	std::cout << "Constructing graph... node size: " << sizeof(node) << " edge size: " << sizeof(arc) << std::endl;
+
 	std::cout << "Allocating " << node_num_max*sizeof(node)*1e-9 << " GB of memory for nodes" << std::endl;
 	std::cout << "Allocating " << 2*edge_num_max*sizeof(arc)*1e-9 << " GB of memory for edges" << std::endl;
 	std::cout << "Total memory for nodes and edges: " << node_num_max*sizeof(node)*1e-9 + 2*edge_num_max*sizeof(arc)*1e-9 << " GB" << std::endl;
 	if (!nodes || !arcs) {
-	    if (error_function) (*error_function)("Not enough memory!"); exit(1);
+	    if (error_function) (*error_function)("Not enough memory!");
+	    exit(1);
 	}
 
 	node_last = nodes;
