@@ -22,7 +22,7 @@ new features that simplify the generation and handling of the APR. For example:
 This requires the following packages:
 
 * HDF5 1.8.20 or higher
-* OpenMP > 3.0 (optional, but suggested)
+* OpenMP > 3.0 (optional, but recommended)
 * CMake 3.6 or higher
 * LibTIFF 4.0 or higher
 
@@ -96,3 +96,9 @@ To use the homebrew-installed clang for OpenMP support on OSX, modify the call a
 ```
 CPPFLAGS="-I/usr/local/opt/llvm/include" LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib" CXX="/usr/local/opt/llvm/bin/clang++" CC="/usr/local/opt/llvm/bin/clang" python setup.py install 
 ```
+
+## Contact us
+
+If anything is not working as you think it should, or would like it to, please get in touch with us!! Further, dont 
+hesitate to contact us if you have a project or algorithm you would like to try using the APR for. We would be happy to 
+assist you!
