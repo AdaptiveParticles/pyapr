@@ -121,8 +121,6 @@ class MainWindowImage(QtGui.QWidget):
         diff = self.org_pos - event.pos()
         self.org_pos = event.pos()
 
-        print(diff)
-
         #self.current_theta += diff.x()/self.angle_scale
 
         self.raycaster_ref.increment_angle(diff.x()/self.angle_scale)
