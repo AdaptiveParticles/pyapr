@@ -9,8 +9,6 @@
 
 namespace py = pybind11;
 
-// #TODO: should this be a templated class?
-
 
 /**
  *
