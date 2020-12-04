@@ -20,7 +20,6 @@ def main():
 
     # Launch the by-slice viewer
     pyapr.viewer.parts_viewer(apr, parts)
-    # pyapr.viewer.draw_viewer(apr, parts)
 
 
 if __name__ == '__main__':
