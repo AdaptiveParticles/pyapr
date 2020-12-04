@@ -88,7 +88,7 @@ endif()
 ###############################################################################
 message(STATUS "PyAPR: Building PYTHON wrappers")
 
-set(PYTHON_VERSION 3)
+set(PYBIND11_PYTHON_VERSION 3)
 find_package( PythonInterp ${PYTHON_VERSION} REQUIRED )
 find_package( PythonLibs ${PYTHON_VERSION} REQUIRED )
 
