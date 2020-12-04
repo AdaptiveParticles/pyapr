@@ -24,7 +24,7 @@ def main():
     # Read in an image
     io_int = pyapr.filegui.InteractiveIO()
     fpath = io_int.get_tiff_file_name()  # get image file path from gui (data type must be float32 or uint16)
-    img = skio.imread(fpath).astype(np.float32)
+    img = skio.imread(fpath)
 
     while img.ndim < 3:
         img = np.expand_dims(img, axis=0)
