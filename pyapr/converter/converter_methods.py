@@ -53,6 +53,9 @@ def get_apr_interactive(image, rel_error=0.1, gradient_smoothing=2, verbose=True
               'input image has been replaced with a C-contiguous copy of itself')
         image = np.ascontiguousarray(image)
 
+    while image.ndim < 3:
+        image = np.expand_dims(image, axis=0)
+
     # Initialize objects
     io_int = pyapr.InteractiveIO()
     apr = pyapr.APR()
@@ -104,6 +107,9 @@ def find_parameters_interactive(image, rel_error=0.1, gradient_smoothing=0, verb
         print('WARNING: \'image\' argument given to find_parameters_interactive is not C-contiguous \n'
               'input image has been replaced with a C-contiguous copy of itself')
         image = np.ascontiguousarray(image)
+
+    while image.ndim < 3:
+        image = np.expand_dims(image, axis=0)
 
     # Initialize objects
     io_int = pyapr.filegui.InteractiveIO()

@@ -26,9 +26,6 @@ def main():
     fpath = io_int.get_tiff_file_name()  # get image file path from gui (data type must be float32 or uint16)
     img = skio.imread(fpath)
 
-    while img.ndim < 3:
-        img = np.expand_dims(img, axis=0)
-
     # Set some parameters (only Ip_th, grad_th and sigma_th are set interactively)
     par = pyapr.APRParameters()
     par.rel_error = 0.1              # relative error threshold

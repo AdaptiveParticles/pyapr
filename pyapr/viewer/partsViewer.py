@@ -349,26 +349,20 @@ class MainWindow(QtGui.QWidget):
         self.cursor.setText(text_string)
 
 
-def parts_viewer(aAPR, Parts):
-    pg.setConfigOption('background', 'w')
-    pg.setConfigOption('foreground', 'k')
+def parts_viewer(apr, parts):
 
     app = QtGui.QApplication.instance()
     if app is None:
         app = QtGui.QApplication([])
 
+    pg.setConfigOption('background', 'w')
+    pg.setConfigOption('foreground', 'k')
     pg.setConfigOption('imageAxisOrder', 'row-major')
 
-    ## Create window with GraphicsView widget
+    # Create window with GraphicsView widget
     win = MainWindow()
-
     win.add_level_toggle()
-
-    win.init_APR(aAPR, Parts)
-
+    win.init_APR(apr, parts)
     win.show()
 
     app.exec_()
-
-    return None
-

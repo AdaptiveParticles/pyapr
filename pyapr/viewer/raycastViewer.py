@@ -285,6 +285,15 @@ class MainWindowImage(QtGui.QWidget):
 
 def raycast_viewer(apr, parts):
 
+    # Raycast viewer currently only works for ShortParticles
+    if isinstance(parts, pyapr.FloatParticles):
+        print('Warning: raycast_viewer is currently only implemented for ShortParticles. '
+              'Using a uint16 copy of the input particles.')
+        parts_short = pyapr.ShortParticles()
+        parts_short.copy(parts)
+    else:
+        parts_short = parts
+
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
     pg.setConfigOption('imageAxisOrder', 'row-major')
@@ -293,31 +302,23 @@ def raycast_viewer(apr, parts):
     if app is None:
         app = QtGui.QApplication([])
 
-    ## Create window with GraphicsView widget
+    # Create window with GraphicsView widget
     win = MainWindowImage()
-
     win.show()
-
     win.apr_ref = apr
-
     win.app_ref = app
 
     raycaster = pyapr.viewer.raycaster()
-
     raycaster.set_z_anisotropy(1)
     raycaster.set_radius(0.1)
 
     win.view.setMouseEnabled(False, False)
-
     win.raycaster_ref = raycaster
-
     win.raycaster_ref.set_angle(win.current_theta)
     win.raycaster_ref.set_phi(win.current_phi)
 
     tree_parts = pyapr.FloatParticles()
-
     pyapr.viewer.get_down_sample_parts(apr, parts, tree_parts)
 
-    win.set_image(apr, parts, tree_parts)
-
+    win.set_image(apr, parts_short, tree_parts)
     app.exec_()

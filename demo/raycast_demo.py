@@ -21,12 +21,6 @@ def main():
     # Read APR and particles from file
     pyapr.io.read(fpath_apr, apr, parts)
 
-    # Raycast viewer currently only works for ShortParticles
-    if isinstance(parts, pyapr.FloatParticles):
-        tmp = pyapr.ShortParticles()
-        tmp.copy(parts)
-        parts = tmp
-
     # Launch the raycast viewer
     pyapr.viewer.raycast_viewer(apr, parts)
 
