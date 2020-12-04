@@ -30,7 +30,7 @@ void gradient(PyAPR& apr, const PyParticleData<inputType>& input_parts, PyPartic
 
 template<typename inputType, typename stencilType>
 void gradient_magnitude(PyAPR& apr, const PyParticleData<inputType>& input_parts, PyParticleData<stencilType>& output_parts,
-                        std::vector<float>& deltas = {1.0f, 1.0f, 1.0f}, bool sobel=false) {
+                        const std::vector<float>& deltas = {1.0f, 1.0f, 1.0f}, bool sobel=false) {
 
     if(sobel) {
         APRNumerics::gradient_magnitude_sobel(apr.apr, input_parts.parts, output_parts.parts, deltas);
@@ -42,7 +42,7 @@ void gradient_magnitude(PyAPR& apr, const PyParticleData<inputType>& input_parts
 
 template<typename inputType, typename outputType>
 void local_std(PyAPR& apr, const PyParticleData<inputType>& input_parts, PyParticleData<outputType>& output_parts,
-               std::vector<int>& size = {3, 3, 3}) {
+               const std::vector<int>& size = {3, 3, 3}) {
     APRNumerics::local_std(apr.apr, input_parts.parts, output_parts.parts, size);
 }
 
@@ -261,3 +261,4 @@ void AddPyAPRNumerics(py::module &p, const std::string &modulename) {
 }
 
 #endif //PYLIBAPR_PYAPRNUMERICS_HPP
+
