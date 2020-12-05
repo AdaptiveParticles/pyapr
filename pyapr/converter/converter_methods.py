@@ -21,17 +21,17 @@ def get_apr(image, rel_error=0.1, gradient_smoothing=2, verbose=True, params=Non
     else:
         par = params
 
-    if image.dtype in ('float', 'float32'):
+    if image.dtype == np.float32:
         parts = pyapr.FloatParticles()
         converter = pyapr.converter.FloatConverter()
-    elif image.dtype in ('short', 'uint16'):
+    elif image.dtype == np.uint16:
         parts = pyapr.ShortParticles()
         converter = pyapr.converter.ShortConverter()
     # elif image.dtype in {'byte', 'uint8'}:  # currently not working
     #     parts = pyapr.ByteParticles()
     #     converter = pyapr.converter.ByteConverter()
     else:
-        errstr = 'get_apr_interactive image dtype must be one of (float, float32, short, uint16), ' \
+        errstr = 'pyapr.converter.get_apr: input image dtype must be numpy.uint16 or numpy.float32, ' \
                  'but {} was given'.format(image.dtype)
         raise TypeError(errstr)
 
@@ -68,17 +68,17 @@ def get_apr_interactive(image, rel_error=0.1, gradient_smoothing=2, verbose=True
     else:
         par = params
 
-    if image.dtype in ('float', 'float32'):
+    if image.dtype == np.float32:
         parts = pyapr.FloatParticles()
         converter = pyapr.converter.FloatConverter()
-    elif image.dtype in ('short', 'uint16'):
+    elif image.dtype == np.uint16:
         parts = pyapr.ShortParticles()
         converter = pyapr.converter.ShortConverter()
     # elif image.dtype in {'byte', 'uint8'}:  # currently not working
     #     parts = pyapr.ByteParticles()
     #     converter = pyapr.converter.ByteConverter()
     else:
-        errstr = 'pyapr.converter.get_apr_interactive: image dtype must be one of (float, float32, short, uint16), ' \
+        errstr = 'pyapr.converter.get_apr_interactive: input image dtype must be numpy.uint16 or numpy.float32, ' \
                  'but {} was given'.format(image.dtype)
         raise TypeError(errstr)
 
@@ -122,14 +122,14 @@ def find_parameters_interactive(image, rel_error=0.1, gradient_smoothing=0, verb
     else:
         par = params
 
-    if image.dtype in ('float', 'float32'):
+    if image.dtype == np.float32:
         converter = pyapr.converter.FloatConverter()
-    elif image.dtype in ('short', 'uint16'):
+    elif image.dtype == np.uint16:
         converter = pyapr.converter.ShortConverter()
     # elif image.dtype in {'byte', 'uint8'}:  # currently not working
     #     converter = pyapr.converter.ByteConverter()
     else:
-        errstr = 'find_parameters_interactive image.dtype must be one of (float, float32, short, uint16), ' \
+        errstr = 'pyapr.converter.find_parameters_interactive: input image dtype must be numpy.uint16 or numpy.float32, ' \
                  'but {} was given'.format(image.dtype)
         raise TypeError(errstr)
 
