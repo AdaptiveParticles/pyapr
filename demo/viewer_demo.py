@@ -2,28 +2,25 @@ import pyapr
 
 
 def main():
+    """
+    Read a selected APR from file and display it in the z-slice viewer.
+    """
 
-    # Read in an APR
+    # Get APR file path from gui
     io_int = pyapr.filegui.InteractiveIO()
-    fpath_apr = io_int.get_apr_file_name()  # get APR file path from gui
+    fpath_apr = io_int.get_apr_file_name()
 
-    # Initialize APRFile for I/O
-    aprfile = pyapr.io.APRFile()
-    aprfile.set_read_write_tree(True)
-
+    # Instantiate APR and particles objects
     apr = pyapr.APR()
     parts = pyapr.ShortParticles()
+    # parts = pyapr.FloatParticles()
 
     # Read APR and particles from file
-    aprfile.open(fpath_apr, 'READ')
-    aprfile.read_apr(apr)
-    aprfile.read_particles(apr, 'particles', parts)
-    aprfile.close()
+    pyapr.io.read(fpath_apr, apr, parts)
 
-    # launch the by-slice viewer
+    # Launch the by-slice viewer
     pyapr.viewer.parts_viewer(apr, parts)
 
 
 if __name__ == '__main__':
     main()
-

@@ -299,7 +299,7 @@ class MainWindowImage(Qt.QtGui.QWidget):
 
         self.img_ds = np.zeros((self.y_num_ds, self.x_num_ds), dtype=np.float32)
 
-        self.par_ref = pyapr.APRParameters()
+        self.par_ref = converter.get_parameters()
 
         self.par_ref.grad_th = self.grad_th
 
@@ -356,7 +356,7 @@ class InteractiveIO():
         return file_name[0]
 
     @staticmethod
-    def save_tiff_file_name(default_name='output.tiff'):
+    def save_tiff_file_name(default_name='output.tif'):
         file_name = Qt.QtGui.QFileDialog.getSaveFileName(None, "Save TIFF", default_name, "(*.tif *.tiff)")
         return file_name[0]
 
@@ -370,27 +370,41 @@ class InteractiveIO():
 
         # Create window with GraphicsView widget
         win = MainWindowImage()
-
         win.show()
-
         win.apr_ref = apr
-
         win.app_ref = self.app
-
         win.set_image(img, converter)
 
         self.app.exec_()
-
         win.close()
 
         # now compute the APR
 
-        print("\n---------------------------------\n")
-        print("Using the following parameters:\n")
-        print("grad_th = {}, sigma_th = {}, Ip_th = {} \n".format(win.par_ref.grad_th,
+        print("---------------------------------")
+        print("Using the following parameters:")
+        print("grad_th = {}, sigma_th = {}, Ip_th = {}".format(win.par_ref.grad_th,
                                                                win.par_ref.sigma_th, win.par_ref.Ip_th))
-        print("---------------------------------\n \n")
+        print("---------------------------------")
 
         converter.get_apr_step2(apr, win.par_ref)
-
         return None
+
+    def find_parameters_interactive(self, converter, apr, img):
+        converter.get_apr_step1(apr, img)
+        pg.setConfigOption('background', 'w')
+        pg.setConfigOption('foreground', 'k')
+        pg.setConfigOption('imageAxisOrder', 'row-major')
+
+        # Create window with GraphicsView widget
+        win = MainWindowImage()
+        win.show()
+        win.apr_ref = apr
+        win.app_ref = self.app
+        win.set_image(img, converter)
+
+        # Run the app
+        self.app.exec_()
+        win.close()
+
+        # Return the Parameters
+        return win.par_ref

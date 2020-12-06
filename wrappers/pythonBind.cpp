@@ -15,9 +15,13 @@
 #include "data_containers/PyAPRParameters.hpp"
 #include "data_containers/PyParticleData.hpp"
 #include "data_containers/iterators/PyLinearIterator.hpp"
+#include "numerics/PyAPRNumerics.hpp"
 #include "numerics/reconstruction/PyAPRReconstruction.hpp"
 #include "numerics/filter/PyAPRFilter.hpp"
+#include "numerics/segmentation/PyAPRSegmentation.hpp"
+#include "numerics/transform/PyAPRTransform.hpp"
 #include "converter/PyAPRConverter.hpp"
+#include "converter/PyAPRConverterBatch.hpp"
 #include "io/PyAPRFile.hpp"
 #include "viewer/ViewerHelpers.hpp"
 #include "viewer/PyAPRRaycaster.hpp"
@@ -57,13 +61,18 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
 
     // wrap numerics module and submodules
     py::module numerics = m.def_submodule("numerics");
+    AddPyAPRNumerics(numerics, "aprnumerics");
     AddPyAPRReconstruction(numerics, "reconstruction");
     AddPyAPRFilter(numerics, "filter");
+    AddPyAPRSegmentation(numerics, "segmentation");
+    AddPyAPRTransform(numerics, "transform");
 
     // wrap APRConverter for different data types
     py::module converter = m.def_submodule("converter");
     AddPyAPRConverter<float>(converter, "Float");
     AddPyAPRConverter<uint16_t>(converter, "Short");
+    AddPyAPRConverterBatch<float>(converter, "Float");
+    AddPyAPRConverterBatch<uint16_t>(converter, "Short");
     //AddPyAPRConverter<uint8_t>(converter, "Byte");  // need to fix or disable APRConverter GPU steps to include this
 
     // wrap APRFile

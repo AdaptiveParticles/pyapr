@@ -21,7 +21,9 @@ viewer
     a simple graphical user interface for visualizing results and exploring parameters
 """
 
+from . import data_containers
 from .data_containers import *
+from .filegui import InteractiveIO
 from . import converter
 from . import io
 from . import numerics

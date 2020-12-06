@@ -88,19 +88,25 @@ endif()
 ###############################################################################
 message(STATUS "PyAPR: Building PYTHON wrappers")
 
-set(PYTHON_VERSION 3)
+set(PYBIND11_PYTHON_VERSION 3)
 find_package( PythonInterp ${PYTHON_VERSION} REQUIRED )
 find_package( PythonLibs ${PYTHON_VERSION} REQUIRED )
 
 add_subdirectory("pybind11")
+add_library(maxflow SHARED
+            external/maxflow-v3.04.src/graph.cpp
+            external/maxflow-v3.04.src/maxflow.cpp)
+
+#set(MAXFLOW_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/maxflow-v3.04.src)
 
 include_directories("pyapr")
+include_directories("external")
 
 set(APR_PYTHON_MODULE_NAME _pyaprwrapper)
 add_definitions(-DAPR_PYTHON_MODULE_NAME=${APR_PYTHON_MODULE_NAME})
-add_library(${APR_PYTHON_MODULE_NAME} MODULE wrappers/pythonBind.cpp)
-target_include_directories(${APR_PYTHON_MODULE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/wrappers ${CMAKE_CURRENT_SOURCE_DIR}/pyapr)
-target_link_libraries(${APR_PYTHON_MODULE_NAME} PRIVATE staticLib pybind11::module ${HDF5_LIBRARIES} ${TIFF_LIBRARIES} ${BLOSC_LIBRARIES} ${ZLIB_LIBRARIES})
+pybind11_add_module(${APR_PYTHON_MODULE_NAME} MODULE wrappers/pythonBind.cpp)
+target_include_directories(${APR_PYTHON_MODULE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/wrappers ${CMAKE_CURRENT_SOURCE_DIR}/pyapr ${CMAKE_CURRENT_SOURCE_DIR}/external)
+target_link_libraries(${APR_PYTHON_MODULE_NAME} PRIVATE staticLib pybind11::module ${HDF5_LIBRARIES} ${TIFF_LIBRARIES} ${BLOSC_LIBRARIES} ${ZLIB_LIBRARIES} maxflow)
 set_target_properties(${APR_PYTHON_MODULE_NAME} PROPERTIES OUTPUT_NAME ${APR_PYTHON_MODULE_NAME})
 set_target_properties(${APR_PYTHON_MODULE_NAME} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
         SUFFIX "${PYTHON_MODULE_EXTENSION}")

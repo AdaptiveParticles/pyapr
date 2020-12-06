@@ -59,12 +59,22 @@ public:
         return py::make_tuple(apr.org_dims(0), apr.org_dims(1), apr.org_dims(2));
     }
 
+    APRParameters get_parameters() {
+        return apr.get_apr_parameters();
+    }
+
+    float computational_ratio() { return apr.computational_ratio(); }
 };
 
 // -------- wrapper -------------------------------------------------
 void AddPyAPR(pybind11::module &m, const std::string &modulename) {
     py::class_<PyAPR>(m, modulename.c_str())
             .def(py::init())
+            .def("__repr__", [](PyAPR& a) {
+                return "PyAPR: " + std::to_string(a.total_number_particles()) + " particles. Original image shape: (z, x, y) = (" + \
+                        std::to_string(a.apr.org_dims(2)) + ", " + std::to_string(a.apr.org_dims(1)) + ", " + std::to_string(a.apr.org_dims(0)) \
+                         + "). Computational Ratio = " + std::to_string(a.apr.computational_ratio());
+            })
             .def("total_number_particles", &PyAPR::total_number_particles, "return number of particles")
             .def("level_min", &PyAPR::level_min, "return the minimum resolution level")
             .def("level_max", &PyAPR::level_max, "return the maximum resolution level")
@@ -73,7 +83,9 @@ void AddPyAPR(pybind11::module &m, const std::string &modulename) {
             .def("z_num", &PyAPR::z_num,  "Gives the maximum bounds in the z direction for the given level")
             .def("org_dims", &PyAPR::org_dims, "returns the original pixel image dimensions as a tuple (y, x, z)")
             .def("iterator", &PyAPR::iterator, "return a linear iterator for APR particles")
-            .def("tree_iterator", &PyAPR::tree_iterator, "return a linear iterator for tree particles");
+            .def("tree_iterator", &PyAPR::tree_iterator, "return a linear iterator for tree particles")
+            .def("get_parameters", &PyAPR::get_parameters, "return the parameters used to create the APR")
+            .def("computational_ratio", &PyAPR::computational_ratio, "return the computational ratio (number of pixels in original image / number of particles in the APR)");
 }
 
 #endif //PYLIBAPR_PYAPR_HPP

@@ -1,3 +1,6 @@
+#ifndef PYLIBAPR_PYAPRPARAMETERS_HPP
+#define PYLIBAPR_PYAPRPARAMETERS_HPP
+
 #include "algorithm/APRParameters.hpp"
 
 void AddPyAPRParameters(pybind11::module &m) {
@@ -10,9 +13,7 @@ void AddPyAPRParameters(pybind11::module &m) {
         .def_readwrite("psfy", &APRParameters::psfy)
         .def_readwrite("psfz", &APRParameters::psfz)
         .def_readwrite("Ip_th", &APRParameters::Ip_th)
-        .def_readwrite("SNR_min", &APRParameters::SNR_min)
         .def_readwrite("gradient_smoothing", &APRParameters::lambda) // lambda is reserved in python
-        .def_readwrite("min_signal", &APRParameters::min_signal)
         .def_readwrite("rel_error", &APRParameters::rel_error)
         .def_readwrite("sigma_th", &APRParameters::sigma_th)
         .def_readwrite("sigma_th_max", &APRParameters::sigma_th_max)
@@ -20,7 +21,6 @@ void AddPyAPRParameters(pybind11::module &m) {
         .def_readwrite("noise_sd_estimate", &APRParameters::noise_sd_estimate)
         .def_readwrite("background_intensity_estimate", &APRParameters::background_intensity_estimate)
         .def_readwrite("auto_parameters", &APRParameters::auto_parameters)
-        .def_readwrite("full_resolution", &APRParameters::full_resolution)
         .def_readwrite("neighborhood_optimization", &APRParameters::neighborhood_optimization)
         .def_readwrite("output_steps", &APRParameters::output_steps)
         .def_readwrite("name", &APRParameters::name)
@@ -30,3 +30,5 @@ void AddPyAPRParameters(pybind11::module &m) {
         .def_readwrite("mask_file", &APRParameters::mask_file)
         .def_readwrite("grad_th", &APRParameters::grad_th);
 }
+
+#endif //PYLIBAPR_PYAPRPARAMETERS_HPP

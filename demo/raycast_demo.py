@@ -2,24 +2,26 @@ import pyapr
 
 
 def main():
+    """
+    Read a selected APR from file and visualize it via maximum intensity projection.
 
-    # Read in an APR
+    Scroll to zoom
+    Click and drag to change the view
+    """
+
+    # Get input APR file path from gui
     io_int = pyapr.filegui.InteractiveIO()
-    fpath_apr = io_int.get_apr_file_name()  # get APR file path from gui
+    fpath_apr = io_int.get_apr_file_name()
 
+    # Instantiate APR and particles objects
     apr = pyapr.APR()
     parts = pyapr.ShortParticles()
-
-    # Initialize APRFile for I/O
-    aprfile = pyapr.io.APRFile()
-    aprfile.set_read_write_tree(True)
+    # parts = pyapr.FloatParticles()
 
     # Read APR and particles from file
-    aprfile.open(fpath_apr, 'READ')
-    aprfile.read_apr(apr)
-    aprfile.read_particles(apr, 'particles', parts)
-    aprfile.close()
+    pyapr.io.read(fpath_apr, apr, parts)
 
+    # Launch the raycast viewer
     pyapr.viewer.raycast_viewer(apr, parts)
 
 

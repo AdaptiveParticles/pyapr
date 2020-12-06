@@ -15,11 +15,16 @@ setup(
     packages=find_packages(),
     install_requires=[
         'numpy',
+        'scikit-image',
+        'libtiff',
+        'PyQt5',
+        'pyqtgraph',
+        'matplotlib'
     ],
     description='Python wrappers for LibAPR',
     long_description=long_description,
     url='https://github.com/joeljonsson/PyLibAPR',
-    author='Joel Jonsson',
+    author='Joel Jonsson, Bevan Cheeseman',
     author_email='jonsson@mpi-cbg.de',
     license='Apache-2.0',
     classifiers=[
@@ -28,6 +33,6 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3'
     ],
-    keywords='LibAPR, PyLibAPR, APRNet',
+    keywords='LibAPR, PyLibAPR, APR',
     zip_safe=False
 )
