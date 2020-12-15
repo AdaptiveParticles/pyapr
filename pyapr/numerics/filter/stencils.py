@@ -22,6 +22,6 @@ def get_gaussian_stencil(size, sigma, ndims=3, normalize=False):
             for j in range(size):
                 stenc[i, j] = vals[i] * vals[j]
 
-        stenc = np.expand_dims(stenc, axis=2)
+        stenc = np.expand_dims(stenc, axis=0)
 
     return stenc
