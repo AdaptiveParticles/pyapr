@@ -54,7 +54,7 @@ may additionally need to install an X server.
 The repository requires submodules, so the repository needs to be cloned recursively:
 
 ```
-git clone --recursive https://github.com/joeljonsson/PyLibAPR.git
+git clone --recursive https://github.com/AdaptiveParticles/PyLibAPR.git
 ```
 
 It is recommended to use a virtual environment, such as `virtualenv`. To set this up, use e.g.
