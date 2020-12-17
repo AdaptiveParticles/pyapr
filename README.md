@@ -26,7 +26,7 @@ This requires the following packages:
 * CMake 3.6 or higher
 * LibTIFF 4.0 or higher
 
-The Python library additionally requires Python 3.
+The Python library additionally requires Python 3, and the packages listed in [requirements.txt](requirements.txt).
 
 ### Installing dependencies on Linux
 
