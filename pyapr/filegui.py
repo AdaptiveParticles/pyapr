@@ -1,16 +1,60 @@
 import pyqtgraph.Qt as Qt
 import pyqtgraph as pg
-import pyapr
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-class customSlider():
-    def __init__(self, window, label_name):
+class DoubleSlider(Qt.QtWidgets.QSlider):
+    """
+    Extends QSlider to allow floating-point values
 
-        self.slider = Qt.QtWidgets.QSlider(Qt.QtCore.Qt.Horizontal, window)
+    Adapted from Stack Overflow answer https://stackoverflow.com/a/50300848
+    by user bfris (https://stackoverflow.com/users/9705687/bfris)
+    """
+
+    # create a signal that we can connect to if necessary
+    doubleValueChanged = Qt.QtCore.pyqtSignal(float)
+
+    def __init__(self, decimals=2, *args, **kwargs):
+        super(DoubleSlider, self).__init__(*args, **kwargs)
+        self._multi = 10 ** decimals
+        self.valueChanged.connect(self.emitDoubleValueChanged)
+
+    def emitDoubleValueChanged(self):
+        value = float(super(DoubleSlider, self).value()) / self._multi
+        self.doubleValueChanged.emit(value)
+
+    def value(self):
+        return float(super(DoubleSlider, self).value()) / self._multi
+
+    def setValue(self, value):
+        super(DoubleSlider, self).setValue(int(value * self._multi))
+
+    def setMinimum(self, value):
+        return super(DoubleSlider, self).setMinimum(value * self._multi)
+
+    def setMaximum(self, value):
+        return super(DoubleSlider, self).setMaximum(value * self._multi)
+
+    def setSingleStep(self, value):
+        return super(DoubleSlider, self).setSingleStep(value * self._multi)
+
+    def singleStep(self):
+        return float(super(DoubleSlider, self).singleStep()) / self._multi
+
+
+class CustomSlider:
+    def __init__(self, window, label_name, decimals=0):
+
+        if decimals < 0 or not isinstance(decimals, int):
+            raise ValueError('CustomSlider initialized with \'decimals\'={}. Only non-negative integers are allowed.'.format(decimals))
+
+        self.decimals = decimals
+
+        self.slider = DoubleSlider(decimals, Qt.QtCore.Qt.Horizontal, window)
+        self.maxBox = Qt.QtWidgets.QDoubleSpinBox(window, decimals=self.decimals)
+
         self.label = Qt.QtWidgets.QLabel(window)
-        self.maxBox = Qt.QtWidgets.QSpinBox(window)
 
         self.maxBox.setMaximum(64000)
         self.maxBox.setValue(300)
@@ -24,9 +68,9 @@ class customSlider():
         self.slider.setValue(1)
         self.slider.setMaximum(self.maxBox.value())
 
-    sz_label = 100
-    sz_slider = 200
-    sz_box = 75
+        self.sz_label = 200
+        self.sz_slider = 200
+        self.sz_box = 90
 
     def move(self, loc1, loc2):
 
@@ -39,21 +83,20 @@ class customSlider():
         self.maxBox.setFixedWidth(self.sz_box)
 
     def updateRange(self):
-        max = self.maxBox.value()
-        self.slider.setMaximum(max)
-        self.slider.setTickInterval(1)
+        max_val = self.maxBox.value()
+        self.slider.setMaximum(max_val)
 
     def connectSlider(self, function):
         self.slider.valueChanged.connect(function)
 
     def updateText(self):
-        text_str = self.label_name + ": " + str(self.slider.value())
+        val_str = '{:.{prec}f}'.format(self.slider.value(), prec=self.decimals)
+        text_str = self.label_name + ': ' + val_str
         self.label.setText(text_str)
 
 
 class MainWindowImage(Qt.QtGui.QWidget):
-
-    def __init__(self):
+    def __init__(self, slider_decimals=0):
         super(MainWindowImage, self).__init__()
 
         self.setMouseTracking(True)
@@ -88,15 +131,15 @@ class MainWindowImage(Qt.QtGui.QWidget):
         # add a QLabel giving information on the current slice and the APR
         self.slice_info = Qt.QtGui.QLabel(self)
 
-        self.slice_info.move(10, 20)
-        self.slice_info.setFixedWidth(200)
+        self.slice_info.move(20, 20)
+        self.slice_info.setFixedWidth(250)
 
         # add a label for the current cursor position
 
         self.cursor = Qt.QtGui.QLabel(self)
 
         self.cursor.move(20, 40)
-        self.cursor.setFixedWidth(200)
+        self.cursor.setFixedWidth(250)
 
         # add parameter tuning
 
@@ -108,17 +151,17 @@ class MainWindowImage(Qt.QtGui.QWidget):
 
         self.max_label = Qt.QtWidgets.QLabel(self)
         self.max_label.setText("Slider Max")
-        self.max_label.move(505, 50)
+        self.max_label.move(610, 50)
 
-        self.slider_grad = customSlider(self, "grad_th")
+        self.slider_grad = CustomSlider(self, "gradient threshold", decimals=slider_decimals)
         self.slider_grad.move(200, 80)
         self.slider_grad.connectSlider(self.valuechangeGrad)
 
-        self.slider_sigma = customSlider(self, "sigma_th")
+        self.slider_sigma = CustomSlider(self, "sigma threshold", decimals=slider_decimals)
         self.slider_sigma.move(200, 110)
         self.slider_sigma.connectSlider(self.valuechangeSigma)
 
-        self.slider_Ith = customSlider(self, "Ip_th")
+        self.slider_Ith = CustomSlider(self, "intensity threshold", decimals=slider_decimals)
         self.slider_Ith.move(200, 140)
         self.slider_Ith.connectSlider(self.valuechangeIth)
 
@@ -129,7 +172,6 @@ class MainWindowImage(Qt.QtGui.QWidget):
     array_int = np.array(1)
     img_ref = 0
     par_ref = 0
-
 
     x_num = 0
     z_num = 0
@@ -149,7 +191,6 @@ class MainWindowImage(Qt.QtGui.QWidget):
 
     #parameters to be played with
     grad_th = 0
-
     app_ref = 0
 
     def imageHoverEvent(self, event):
@@ -167,17 +208,14 @@ class MainWindowImage(Qt.QtGui.QWidget):
         j = int(np.clip(j, 0, data.shape[1] - 1))
         val = data[i, j]
 
-        text_string = "(y: " + str(i) + ",x: " + str(j) + ") val; " + str(val) + "\n"
-
+        text_string = 'x={}, y={}, z={}, value={}\n'.format(j, i, self.current_view, val)
         self.cursor.setText(text_string)
 
     def exitPressed(self):
         self.app_ref.exit()
 
-    def updateSliceText(self, slice):
-
-        text_string = 'Slice: ' + str(slice) + '/' + str(self.z_num) + ", " + str(self.y_num) + 'x' + str(self.x_num) + '\n'
-
+    def updateSliceText(self, z):
+        text_string = 'Slice: {}/{}, {}x{}\n'.format(z+1, self.z_num, self.y_num, self.x_num)
         self.slice_info.setText(text_string)
 
     def updatedLUT(self):
@@ -223,7 +261,6 @@ class MainWindowImage(Qt.QtGui.QWidget):
 
         self.img_I_ds.setImage(None, levels=(self.apr_ref.level_max()-2, self.apr_ref.level_max()), opacity=0.5)
 
-
     def update_slice(self, new_view):
 
         if (new_view >= 0) & (new_view < self.z_num):
@@ -268,7 +305,6 @@ class MainWindowImage(Qt.QtGui.QWidget):
         self.par_ref.Ip_th = size
         self.update_slice(self.current_view)
 
-
     def histogram_updated(self):
 
         hist_range = self.hist.item.getLevels()
@@ -277,7 +313,6 @@ class MainWindowImage(Qt.QtGui.QWidget):
         self.hist_max = hist_range[1]
 
         #self.img_I.setLevels([self.hist_min,  self.hist_max], True)
-
 
     def set_image(self, img, converter):
 
@@ -313,7 +348,7 @@ class MainWindowImage(Qt.QtGui.QWidget):
         self.img_I_ds.setRect(Qt.QtCore.QRectF(self.min_x, self.min_y, self.x_num_ds*2, self.y_num_ds*2))
         self.img_I.setRect(Qt.QtCore.QRectF(self.min_x, self.min_y, self.x_num, self.y_num))
 
-        ## Set up the slide
+        ## Set up the z slider
         self.slider.setMinimum(0)
         self.slider.setMaximum(self.z_num - 1)
         self.slider.setTickPosition(Qt.QtWidgets.QSlider.TicksBothSides)
@@ -323,16 +358,14 @@ class MainWindowImage(Qt.QtGui.QWidget):
 
         ## Image hover event
         self.img_I.hoverEvent = self.imageHoverEvent
-
         self.update_slice(int(self.z_num/2))
 
     def closeEvent(self, event):
         self.pg_win.close()
 
 
-class InteractiveIO():
+class InteractiveIO:
     def __init__(self):
-
         # class methods require a QApplication instance - this helps to avoid multiple instances...
         self.app = Qt.QtGui.QApplication.instance()
         if self.app is None:
@@ -360,7 +393,7 @@ class InteractiveIO():
         file_name = Qt.QtGui.QFileDialog.getSaveFileName(None, "Save TIFF", default_name, "(*.tif *.tiff)")
         return file_name[0]
 
-    def interactive_apr(self, converter, apr, img):
+    def interactive_apr(self, converter, apr, img, slider_decimals=2):
 
         converter.get_apr_step1(apr, img)
 
@@ -369,7 +402,7 @@ class InteractiveIO():
         pg.setConfigOption('imageAxisOrder', 'row-major')
 
         # Create window with GraphicsView widget
-        win = MainWindowImage()
+        win = MainWindowImage(slider_decimals=slider_decimals)
         win.show()
         win.apr_ref = apr
         win.app_ref = self.app
@@ -389,14 +422,16 @@ class InteractiveIO():
         converter.get_apr_step2(apr, win.par_ref)
         return None
 
-    def find_parameters_interactive(self, converter, apr, img):
+    def find_parameters_interactive(self, converter, apr, img, slider_decimals=2):
+
         converter.get_apr_step1(apr, img)
+
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
         pg.setConfigOption('imageAxisOrder', 'row-major')
 
         # Create window with GraphicsView widget
-        win = MainWindowImage()
+        win = MainWindowImage(slider_decimals=slider_decimals)
         win.show()
         win.apr_ref = apr
         win.app_ref = self.app

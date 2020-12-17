@@ -1,7 +1,6 @@
 import os
 import pyapr
 from skimage import io as skio
-import numpy as np
 
 
 def main():
@@ -36,7 +35,7 @@ def main():
     par.dz = 1
 
     # Compute APR and sample particle values
-    apr, parts = pyapr.converter.get_apr_interactive(img, params=par, verbose=True)
+    apr, parts = pyapr.converter.get_apr_interactive(img, params=par, verbose=True, slider_decimals=1)
 
     # Display the APR
     pyapr.viewer.parts_viewer(apr, parts)
