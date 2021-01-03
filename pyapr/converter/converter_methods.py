@@ -45,7 +45,7 @@ def get_apr(image, rel_error=0.1, gradient_smoothing=2, verbose=True, params=Non
     return apr, parts
 
 
-def get_apr_interactive(image, rel_error=0.1, gradient_smoothing=2, verbose=True, params=None):
+def get_apr_interactive(image, rel_error=0.1, gradient_smoothing=2, verbose=True, params=None, slider_decimals=1):
 
     # check that the image array is c-contiguous
     if not image.flags['C_CONTIGUOUS']:
@@ -86,7 +86,7 @@ def get_apr_interactive(image, rel_error=0.1, gradient_smoothing=2, verbose=True
     converter.set_verbose(verbose)
 
     # launch interactive APR converter
-    io_int.interactive_apr(converter, apr, image)
+    io_int.interactive_apr(converter, apr, image, slider_decimals=slider_decimals)
 
     if verbose:
         print("Total number of particles: {}".format(apr.total_number_particles()))
@@ -100,7 +100,7 @@ def get_apr_interactive(image, rel_error=0.1, gradient_smoothing=2, verbose=True
     return apr, parts
 
 
-def find_parameters_interactive(image, rel_error=0.1, gradient_smoothing=0, verbose=True, params=None):
+def find_parameters_interactive(image, rel_error=0.1, gradient_smoothing=0, verbose=True, params=None, slider_decimals=1):
 
     # check that the image array is c-contiguous
     if not image.flags['C_CONTIGUOUS']:
@@ -137,7 +137,7 @@ def find_parameters_interactive(image, rel_error=0.1, gradient_smoothing=0, verb
     converter.set_verbose(verbose)
 
     # launch interactive APR converter
-    par = io_int.find_parameters_interactive(converter, apr, image)
+    par = io_int.find_parameters_interactive(converter, apr, image, slider_decimals=slider_decimals)
 
     if verbose:
         print("---------------------------------")

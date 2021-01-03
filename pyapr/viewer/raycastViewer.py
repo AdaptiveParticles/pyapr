@@ -4,7 +4,7 @@ import pyapr
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-from pyapr.filegui import customSlider
+from pyapr.filegui import CustomSlider
 
 class MainWindowImage(QtGui.QWidget):
     def __init__(self):
@@ -74,7 +74,7 @@ class MainWindowImage(QtGui.QWidget):
         self.tree_parts_ref = None
         self.raycaster_ref = None
 
-        self.slider_aniso = customSlider(self, "z anisotropy")
+        self.slider_aniso = CustomSlider(self, "z anisotropy")
         self.slider_aniso.maxBox.setMaximum(50)
         self.slider_aniso.maxBox.setValue(10)
         self.slider_aniso.slider.setValue(1)

@@ -61,19 +61,20 @@ class MainWindow(QtGui.QWidget):
 
         self.slice_info.move(130, 20)
         self.slice_info.setFixedWidth(200)
+        self.slice_info.setFixedHeight(45)
 
         # add a label for the current cursor position
 
         self.cursor = QtGui.QLabel(self)
 
         self.cursor.move(330, 20)
-        self.cursor.setFixedWidth(200)
+        self.cursor.setFixedWidth(260)
         self.cursor.setFixedHeight(45)
 
     def add_level_toggle(self):
         self.level_toggle = QtWidgets.QCheckBox(self)
         self.level_toggle.setText("View Level")
-        self.level_toggle.move(605, 20)
+        self.level_toggle.move(625, 20)
 
         self.level_toggle.setChecked(False)
 
@@ -127,10 +128,10 @@ class MainWindow(QtGui.QWidget):
 
     hist_on = True
 
-    def updateSliceText(self, slice):
-
-        text_string = 'Slice: ' + str(slice) + '/' + str(self.z_num) + ", " + str(self.y_num) + 'x' + str(self.x_num) + '\n'
-        text_string += 'level_min: ' + str(self.level_min) + ', level_max: ' + str(self.level_max) + '\n'
+    def updateSliceText(self, z):
+        text_string = 'Slice: {}/{}, {}x{}\n' \
+                      'level_min: {}, level_max: {}\n'.format(z+1, self.z_num, self.y_num, self.x_num,
+                                                              self.level_min, self.level_max)
 
         self.slice_info.setText(text_string)
 
@@ -334,17 +335,21 @@ class MainWindow(QtGui.QWidget):
         j = int(np.clip(j, 0, data.shape[1] - 1))
         val = data[i, j]
 
+        k = self.current_view
+
         i_l = i
         j_l = j
+        k_l = k
 
         while (val == 0) & (current_level > self.level_min):
             current_level -= 1
             i_l = int(i_l/2)
             j_l = int(j_l/2)
+            k_l = int(k_l/2)
             val = self.array_list[current_level][i_l, j_l]
 
-        text_string = "(y: " + str(i) + ",x: " + str(j) + ") val: " + str(val) + ")" + "\n"
-        text_string += "(y_l: " + str(i_l) + ",x_l: " + str(j_l) + ",l: " + str(current_level) + ")" + "\n"
+        text_string = 'x={}, y={}, z={}, value={}\n' \
+                      'x_l={}, y_l={}, z_l={}, level={}\n'.format(j, i, k, val, j_l, i_l, k_l, current_level)
 
         self.cursor.setText(text_string)
 
