@@ -486,6 +486,145 @@ void segment_apr_block(APR& apr, const ParticleData<T>& input_parts, ParticleDat
 }
 
 
+/// -----------------------------------------
+/// APR connected component
+/// -----------------------------------------
+
+int uf_find(int x, std::vector<int>& labels) {
+    int y = x;
+    while (labels[y] != y)
+        y = labels[y];
+
+    while (labels[x] != x) {
+        int z = labels[x];
+        labels[x] = y;
+        x = z;
+    }
+    return y;
+}
+
+/*  uf_union joins two equivalence classes and returns the canonical label of the resulting class. */
+int uf_union(int x, int y, std::vector<int>& labels) {
+    return labels[uf_find(x,labels)] = uf_find(y,labels);
+}
+
+/*  uf_make_set creates a new equivalence class and returns its label */
+int uf_make_set(std::vector<int>& labels) {
+    labels[0]++;
+    labels.push_back(labels[0]);
+    return labels[0];
+}
+
+
+void calc_connected_component(APR& apr, ParticleData<uint16_t>& binary_mask, ParticleData<uint16_t>& component_labels) {
+
+    component_labels.init(apr);
+
+    APRTimer timer(true);
+
+    auto apr_it = apr.random_iterator();
+    auto neigh_it = apr.random_iterator();
+
+    std::vector<int> labels;
+    labels.resize(1, 0);
+
+    timer.start_timer("connected component first loop");
+
+    // iterate over particles
+    for(int level = apr_it.level_min(); level <= apr_it.level_max(); ++level) {
+        for(int z = 0; z < apr_it.z_num(level); ++z) {
+            for(int x = 0; x < apr_it.x_num(level); ++x) {
+                for(apr_it.begin(level, z, x); apr_it < apr_it.end(); ++apr_it) {
+
+                    if(binary_mask[apr_it] > 0) {
+
+                        std::vector<int> neigh_labels;
+
+                        // iterate over neighbours in negative y, x, z directions
+                        // Neighbour Particle Cell Face definitions [+y,-y,+x,-x,+z,-z] =  [0,1,2,3,4,5]
+                        for (int direction = 1; direction < 6; direction += 2) {
+                            apr_it.find_neighbours_in_direction(direction);
+
+                            // For each face, there can be 0-4 neighbours
+                            for (int index = 0; index < apr_it.number_neighbours_in_direction(direction); ++index) {
+                                if (neigh_it.set_neighbour_iterator(apr_it, direction, index)) {
+
+                                    if (component_labels[neigh_it] > 0) {
+                                        neigh_labels.push_back(component_labels[neigh_it]);
+                                    }
+                                }
+                            }
+                        }
+
+                        if(neigh_labels.size() == 0) {
+                            // no neighbour labels, make new region
+                            component_labels[apr_it] = uf_make_set(labels);
+
+                        } else if (neigh_labels.size() == 1){
+                            // one neighbour label, set mask to that label
+                            component_labels[apr_it] = neigh_labels[0];
+
+                        } else {
+                            // multiple neighbour regions, resolve
+
+                            uint16_t curr_label = neigh_labels[0];
+
+                            //resolve labels
+                            for(int n = 0; n < ((int)neigh_labels.size()-1); ++n){
+                                curr_label = uf_union(curr_label, neigh_labels[n+1], labels);
+                            }
+
+                            component_labels[apr_it] = curr_label;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    timer.stop_timer();
+
+    std::vector<int> new_labels;
+    new_labels.resize(labels.size(), 0);
+
+    timer.start_timer("connected component second loop");
+
+    // iterate over particles
+    for(int level = apr_it.level_min(); level <= apr_it.level_max(); ++level) {
+        for (int z = 0; z < apr_it.z_num(level); ++z) {
+            for (int x = 0; x < apr_it.x_num(level); ++x) {
+                for (apr_it.begin(level, z, x); apr_it < apr_it.end(); ++apr_it) {
+
+                    if(component_labels[apr_it] > 0){
+
+                        int x = uf_find(component_labels[apr_it], labels);
+                        if(new_labels[x] == 0) {
+                            new_labels[0]++;
+                            new_labels[x] = new_labels[0];
+                        }
+
+                        component_labels[apr_it] = new_labels[x];
+                    }
+                }
+            }
+        }
+    }
+
+    timer.stop_timer();
+}
+
+/**
+ * Compute connected components from a binary particle mask
+ * @param apr
+ * @param binary_mask
+ * @param component_labels
+ */
+void calc_connected_component_py(PyAPR& apr, PyParticleData<uint16_t>& binary_mask, PyParticleData<uint16_t>& component_labels) {
+    calc_connected_component(apr.apr, binary_mask.parts, component_labels.parts);
+}
+
+
+
 void AddPyAPRSegmentation(py::module &m, const std::string &modulename) {
 
     auto m2 = m.def_submodule(modulename.c_str());
@@ -512,6 +651,9 @@ void AddPyAPRSegmentation(py::module &m, const std::string &modulename) {
            py::arg("min_var")=0.0f, py::arg("std_window_size")=5, py::arg("max_factor")=3.0, py::arg("num_levels")=2);
 
     m2.def("get_terminal_energies", &get_terminal_energies, "Compute terminal edges (useful for debugging or fine-tuning)");
+
+    m2.def("connected_component", &calc_connected_component_py, "Compute connected components from a binary particle mask",
+           py::arg("apr"), py::arg("binary_mask"), py::arg("component_labels"));
 }
 
 #endif //PYLIBAPR_PYAPRSEGMENTATION_HPP
