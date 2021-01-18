@@ -490,37 +490,67 @@ void segment_apr_block(APR& apr, const ParticleData<T>& input_parts, ParticleDat
 /// APR connected component
 /// -----------------------------------------
 
-int uf_find(int x, std::vector<int>& labels) {
-    int y = x;
-    while (labels[y] != y)
-        y = labels[y];
-
-    while (labels[x] != x) {
-        int z = labels[x];
-        labels[x] = y;
-        x = z;
+/* Find the equivalence class corresponding to a given label */
+inline int uf_find(int x, std::vector<int>& labels) {
+    while (x != labels[x]) {
+        x = labels[x];
     }
-    return y;
+    return x;
 }
 
-/*  uf_union joins two equivalence classes and returns the canonical label of the resulting class. */
-int uf_union(int x, int y, std::vector<int>& labels) {
-    return labels[uf_find(x,labels)] = uf_find(y,labels);
+
+/* Merge each step from x to target. Assumes labels[target] = target */
+inline void uf_merge_path(int x, int target, std::vector<int>& labels) {
+    while(x != target) {
+        int tmp = x;
+        x = labels[x];
+        labels[tmp] = target;
+    }
 }
 
-/*  uf_make_set creates a new equivalence class and returns its label */
-int uf_make_set(std::vector<int>& labels) {
+
+/* Join two equivalence classes and return the minimum label */
+inline int uf_union(int x, int y, std::vector<int>& labels) {
+    const int orig_x = x;
+    const int orig_y = y;
+
+    // find mininum label
+    int lx = uf_find(x, labels);
+    int ly = uf_find(y, labels);
+    const int minlabel = std::min(lx, ly);
+
+    // merge roots
+    labels[ly] = minlabel;
+    labels[lx] = minlabel;
+
+    // merge each step to minlevel
+    uf_merge_path(orig_x, minlabel, labels);
+    uf_merge_path(orig_y, minlabel, labels);
+
+    return minlabel;
+}
+
+
+/*  Create a new equivalence class and returns its label */
+inline int uf_make_set(std::vector<int>& labels) {
     labels[0]++;
     labels.push_back(labels[0]);
     return labels[0];
 }
 
 
+/**
+ * Compute connected component labels from a binary mask, using face-side connectivity. That is, two segments are
+ * considered connected if they share a common particle cell face. Diagonal neighbours are not considered connected.
+ * @param apr
+ * @param binary_mask
+ * @param component_labels
+ */
 void calc_connected_component(APR& apr, ParticleData<uint16_t>& binary_mask, ParticleData<uint16_t>& component_labels) {
 
     component_labels.init(apr);
 
-    APRTimer timer(true);
+    APRTimer timer(false);
 
     auto apr_it = apr.random_iterator();
     auto neigh_it = apr.random_iterator();
@@ -540,9 +570,9 @@ void calc_connected_component(APR& apr, ParticleData<uint16_t>& binary_mask, Par
 
                         std::vector<int> neigh_labels;
 
-                        // iterate over neighbours in negative y, x, z directions
+                        // iterate over face-side neighbours in y, x, z directions
                         // Neighbour Particle Cell Face definitions [+y,-y,+x,-x,+z,-z] =  [0,1,2,3,4,5]
-                        for (int direction = 1; direction < 6; direction += 2) {
+                        for (int direction = 0; direction < 6; direction++) {
                             apr_it.find_neighbours_in_direction(direction);
 
                             // For each face, there can be 0-4 neighbours
@@ -566,10 +596,7 @@ void calc_connected_component(APR& apr, ParticleData<uint16_t>& binary_mask, Par
 
                         } else {
                             // multiple neighbour regions, resolve
-
-                            uint16_t curr_label = neigh_labels[0];
-
-                            //resolve labels
+                            int curr_label = neigh_labels[0];
                             for(int n = 0; n < ((int)neigh_labels.size()-1); ++n){
                                 curr_label = uf_union(curr_label, neigh_labels[n+1], labels);
                             }
@@ -590,23 +617,16 @@ void calc_connected_component(APR& apr, ParticleData<uint16_t>& binary_mask, Par
     timer.start_timer("connected component second loop");
 
     // iterate over particles
-    for(int level = apr_it.level_min(); level <= apr_it.level_max(); ++level) {
-        for (int z = 0; z < apr_it.z_num(level); ++z) {
-            for (int x = 0; x < apr_it.x_num(level); ++x) {
-                for (apr_it.begin(level, z, x); apr_it < apr_it.end(); ++apr_it) {
+    for(size_t idx = 0; idx < apr_it.total_number_particles(); ++idx) {
 
-                    if(component_labels[apr_it] > 0){
+        if(component_labels[idx] > 0){
 
-                        int x = uf_find(component_labels[apr_it], labels);
-                        if(new_labels[x] == 0) {
-                            new_labels[0]++;
-                            new_labels[x] = new_labels[0];
-                        }
-
-                        component_labels[apr_it] = new_labels[x];
-                    }
-                }
+            int curr_label = uf_find(component_labels[idx], labels);
+            if(new_labels[curr_label] == 0) {
+                new_labels[curr_label] = (++new_labels[0]);
             }
+
+            component_labels[idx] = new_labels[curr_label];
         }
     }
 
@@ -614,7 +634,8 @@ void calc_connected_component(APR& apr, ParticleData<uint16_t>& binary_mask, Par
 }
 
 /**
- * Compute connected components from a binary particle mask
+ * Compute connected component labels from a binary mask, using face-side connectivity. That is, two segments are
+ * considered connected if they share a common particle cell face. Diagonal neighbours are not considered connected.
  * @param apr
  * @param binary_mask
  * @param component_labels
@@ -622,7 +643,6 @@ void calc_connected_component(APR& apr, ParticleData<uint16_t>& binary_mask, Par
 void calc_connected_component_py(PyAPR& apr, PyParticleData<uint16_t>& binary_mask, PyParticleData<uint16_t>& component_labels) {
     calc_connected_component(apr.apr, binary_mask.parts, component_labels.parts);
 }
-
 
 
 void AddPyAPRSegmentation(py::module &m, const std::string &modulename) {
