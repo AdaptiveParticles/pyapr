@@ -111,6 +111,25 @@ public:
         return output;
     }
 
+
+    /**
+     * Check if all elements are equal between two PyParticleData objects
+     */
+    bool operator==(const PyParticleData<T>& other) const {
+        if(this->size() != other.size()) return false;
+        for(size_t i=0; i < this->size(); ++i) {
+            if(parts[i] != other[i]) return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * Check if not all elements are equal between two PyParticleData objects
+     */
+    bool operator!=(const PyParticleData<T>& other) const { return !operator==(other); }
+
+
     /**
      *  in-place addition with another PyParticleData
      */
@@ -213,6 +232,72 @@ public:
     PyParticleData operator-(float v) const {
         PyParticleData output(this->size());
         this->parts.unary_map(output.parts, [v](const T& a){return a-v;});
+        return output;
+    }
+
+
+    /**
+     * compare each value to a constant.
+     * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
+     */
+    PyParticleData operator==(float v) const {
+        PyParticleData output(this->size());
+        this->parts.unary_map(output.parts, [v](const T& a){return a==v;});
+        return output;
+    }
+
+
+    /**
+     * compare each value to a constant.
+     * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
+     */
+    PyParticleData operator!=(float v) const {
+        PyParticleData output(this->size());
+        this->parts.unary_map(output.parts, [v](const T& a){return a!=v;});
+        return output;
+    }
+
+
+    /**
+     * compare each value to a constant.
+     * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
+     */
+    PyParticleData operator<(float v) const {
+        PyParticleData output(this->size());
+        this->parts.unary_map(output.parts, [v](const T& a){return a<v;});
+        return output;
+    }
+
+
+    /**
+     * compare each value to a constant.
+     * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
+     */
+    PyParticleData operator<=(float v) const {
+        PyParticleData output(this->size());
+        this->parts.unary_map(output.parts, [v](const T& a){return a<=v;});
+        return output;
+    }
+
+
+    /**
+     * compare each value to a constant.
+     * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
+     */
+    PyParticleData operator>(float v) const {
+        PyParticleData output(this->size());
+        this->parts.unary_map(output.parts, [v](const T& a){return a>v;});
+        return output;
+    }
+
+
+    /**
+     * compare each value to a constant.
+     * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
+     */
+    PyParticleData operator>=(float v) const {
+        PyParticleData output(this->size());
+        this->parts.unary_map(output.parts, [v](const T& a){return a>=v;});
         return output;
     }
 
@@ -478,6 +563,14 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def(py::self + float())
             .def(py::self - float())
             .def(float() * py::self)
+            .def(py::self == py::self)
+            .def(py::self != py::self)
+            .def(py::self == float())
+            .def(py::self != float())
+            .def(py::self < float())
+            .def(py::self <= float())
+            .def(py::self > float())
+            .def(py::self >= float())
             // access single element
             .def("__getitem__", [](TypeParticles &s, size_t i) {
                 if (i >= s.size()) { throw py::index_error(); }
