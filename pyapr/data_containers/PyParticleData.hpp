@@ -33,6 +33,22 @@ public:
         parts.swap(aInput);
     }
 
+    PyParticleData(py::array_t<T, py::array::c_style | py::array::forcecast>& arr) {
+        auto buf = arr.request();
+        this->parts.init(buf.size);
+        auto ptr = static_cast<T*>(buf.ptr);
+        std::copy(ptr, ptr+size(), this->data());
+    }
+
+    bool contains(T val) const {
+        for(size_t i = 0; i < this->size(); ++i) {
+            if(parts[i] == val) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     void resize(uint64_t num_particles) {
         parts.init(num_particles);
     }
@@ -419,7 +435,9 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def(py::init())
             .def(py::init([](uint64_t num_particles) { return new TypeParticles(num_particles); }))
             .def(py::init([](PyAPR& aPyAPR) { return new TypeParticles(aPyAPR); }))
+            .def(py::init([](py::array_t<DataType, py::array::c_style | py::array::forcecast>& arr){ return new TypeParticles(arr); }))
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
+            .def("__contains__", [](const TypeParticles &p, DataType v) { return p.contains(v); })
             .def("resize", &TypeParticles::resize, "resize the data array to a specified number of elements")
             .def("fill", &TypeParticles::fill, "fill all elements with a given value")
             .def("min", &TypeParticles::min, "return the minimum value")
@@ -436,7 +454,8 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def("sample_image", &TypeParticles::sample_image, "sample particle values from an image (numpy array)")
             .def("sample_image_blocked", &TypeParticles::sample_image_blocked,
                  "sample particle values from a file in z-blocks to reduce memory usage")
-            .def("fill_with_levels", &TypeParticles::fill_with_levels, "fill particle values with levels")
+            .def("fill_with_levels", &TypeParticles::fill_with_levels, "fill particle values with levels",
+                 py::arg("aPyAPR"))
             .def("set_quantization_factor", &TypeParticles::set_quantization_factor, "set lossy quantization factor")
             .def("set_background", &TypeParticles::set_background, "set lossy background cut off")
             .def("set_compression_type", &TypeParticles::set_compression_type, "turn lossy compression on and off")
@@ -459,6 +478,7 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def(py::self + float())
             .def(py::self - float())
             .def(float() * py::self)
+            // access single element
             .def("__getitem__", [](TypeParticles &s, size_t i) {
                 if (i >= s.size()) { throw py::index_error(); }
                 return s[i];
@@ -467,6 +487,50 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
                 if (i >= s.size()) { throw py::index_error(); }
                 s[i] = v;
             })
+            /// Slicing protocol (via NumPy array)
+            .def("__getitem__", [](const TypeParticles &p, py::slice slice) -> py::array_t<DataType> {
+                size_t start, stop, step, slicelength;
+                if (!slice.compute(p.size(), &start, &stop, &step, &slicelength))
+                    throw py::error_already_set();
+
+                auto result = py::array_t<DataType>(slicelength);
+                auto buf = result.request();
+                auto ptr = static_cast<DataType *>(buf.ptr);
+
+                for (size_t i = 0; i < slicelength; ++i) {
+                    ptr[i] = p[start];
+                    start += step;
+                }
+                return result;
+            })
+            .def("__setitem__", [](TypeParticles &p, py::slice slice, const py::array_t<DataType> &value) {
+                size_t start, stop, step, slicelength;
+                if (!slice.compute(p.size(), &start, &stop, &step, &slicelength))
+                    throw py::error_already_set();
+
+                auto buf = value.request();
+                if (slicelength != (size_t)buf.size)
+                    throw std::runtime_error("Left and right hand size of slice assignment have different sizes!");
+
+                auto ptr = static_cast<DataType *>(buf.ptr);
+                for (size_t i = 0; i < slicelength; ++i) {
+                    p[start] = ptr[i];
+                    start += step;
+                }
+            })
+
+            /// set slice to single value
+            .def("__setitem__", [](TypeParticles &p, py::slice slice, const DataType value) {
+                size_t start, stop, step, slicelength;
+                if (!slice.compute(p.size(), &start, &stop, &step, &slicelength))
+                    throw py::error_already_set();
+
+                for (size_t i = 0; i < slicelength; ++i) {
+                    p[start] = value;
+                    start += step;
+                }
+            })
+
             .def("__iter__", [](const TypeParticles &s) { return py::make_iterator(s.parts.data.begin(), s.parts.data.end()); },
                          py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
             .def_buffer([](TypeParticles &p) -> py::buffer_info{
