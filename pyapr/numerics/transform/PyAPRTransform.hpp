@@ -275,6 +275,39 @@ void find_perimeter(APR& apr, ParticleData<T>& parts, ParticleData<T>& perimeter
 }
 
 
+/**
+ * Remove objects smaller than a given volume (in pixels). Assumes that each object is labeled with a distinct number,
+ * for example the output of connected_component.
+ * @param apr
+ * @param object_labels
+ * @param min_volume
+ */
+void remove_small_objects(PyAPR& apr, PyParticleData<uint16_t>& object_labels, const int min_volume) {
+    auto max_label = object_labels.max();
+
+    std::vector<uint16_t> bin_counts(max_label+1, 0);
+    auto it = apr.apr.iterator();
+    const int ndim = it.number_dimensions();
+
+    for(int level = it.level_min(); level <= it.level_max(); ++level) {
+        const int particle_volume = std::pow(2, ndim*(it.level_max() - level));
+
+        for(uint64_t idx = it.particles_level_begin(level); idx < it.particles_level_end(level); ++idx) {
+            bin_counts[object_labels[idx]] += particle_volume;
+        }
+    }
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+    for(size_t idx = 0; idx < it.total_number_particles(); ++idx) {
+        if(bin_counts[object_labels[idx]] < min_volume) {
+            object_labels[idx] = 0;
+        }
+    }
+}
+
+
 void AddPyAPRTransform(py::module &m, const std::string &modulename) {
 
     auto m2 = m.def_submodule(modulename.c_str());
@@ -295,6 +328,8 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
            py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
     m2.def("find_perimeter", &find_perimeter_py<float>, "find all positive particles with at least one zero neighbour",
            py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
+
+    m2.def("remove_small_objects", &remove_small_objects, py::arg("apr"), py::arg("object_labels"), py::arg("min_volume"));
 }
 
 #endif //PYLIBAPR_PYAPRTRANSFORM_HPP
