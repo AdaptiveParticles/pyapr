@@ -308,6 +308,46 @@ void remove_small_objects(PyAPR& apr, PyParticleData<uint16_t>& object_labels, c
 }
 
 
+void find_objects(PyAPR& apr, PyParticleData<uint16_t>& labels, py::array_t<int>& min_coords, py::array_t<int>& max_coords) {
+    // assumes min_coords initialized to a >= the maximum (original) dimension and max_coords to 0
+    auto minc = min_coords.mutable_unchecked<2>(); // Will throw if ndim != 2 or flags.writeable is false
+    auto maxc = max_coords.mutable_unchecked<2>();
+
+    auto it = apr.apr.iterator();
+    const int z_num = it.z_num(it.level_max());
+    const int x_num = it.x_num(it.level_max());
+    const int y_num = it.y_num(it.level_max());
+
+    for(int level = it.level_min(); level <= it.level_max(); ++level) {
+        const int lsize = it.level_size(level);
+        for(int z = 0; z < it.z_num(level); ++z) {
+            const int zl = z * lsize;
+            const int zh = std::min(zl + lsize, z_num);
+            for(int x = 0; x < it.x_num(level); ++x) {
+                const int xl = x * lsize;
+                const int xh = std::min(xl + lsize, x_num);
+                for(it.begin(level, z, x); it < it.end(); ++it) {
+                    if(labels[it] > 0) {
+                        const int lab = labels[it];
+                        const int yl = it.y() * lsize;
+                        const int yh = std::min(yl + lsize, y_num);
+
+                        minc(lab, 0) = std::min(minc(lab, 0), zl);
+                        minc(lab, 1) = std::min(minc(lab, 1), xl);
+                        minc(lab, 2) = std::min(minc(lab, 2), yl);
+
+                        maxc(lab, 0) = std::max(maxc(lab, 0), zh);
+                        maxc(lab, 1) = std::max(maxc(lab, 1), xh);
+                        maxc(lab, 2) = std::max(maxc(lab, 2), yh);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
 void AddPyAPRTransform(py::module &m, const std::string &modulename) {
 
     auto m2 = m.def_submodule(modulename.c_str());
@@ -330,6 +370,7 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
            py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
 
     m2.def("remove_small_objects", &remove_small_objects, py::arg("apr"), py::arg("object_labels"), py::arg("min_volume"));
+    m2.def("find_objects_cpp", &find_objects, py::arg("apr"), py::arg("labels"), py::arg("min_coords").noconvert(), py::arg("max_coords").noconvert());
 }
 
 #endif //PYLIBAPR_PYAPRTRANSFORM_HPP
