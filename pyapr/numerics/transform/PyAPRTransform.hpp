@@ -347,6 +347,102 @@ void find_objects(PyAPR& apr, PyParticleData<uint16_t>& labels, py::array_t<int>
 }
 
 
+template<typename T>
+void maximum_projection_y(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
+    // assumes proj is of shape (z_num, x_num) initialized to 0
+    auto mip = proj.mutable_unchecked<2>();
+    auto it = apr.apr.iterator();
+
+    const int z_num = it.z_num(it.level_max());
+    const int x_num = it.x_num(it.level_max());
+
+    for(int level = it.level_max(); level >= it.level_min(); --level) {
+        const int level_size = it.level_size(level);
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) firstprivate(it)
+#endif
+        for(int z = 0; z < it.z_num(level); ++z) {
+            const int z_m = z * level_size;
+            for(int x = 0; x < it.x_num(level); ++x) {
+                const int x_m = x * level_size;
+                for(it.begin(level, z, x); it < it.end(); ++it) {
+
+                    for (int i = z_m; i < std::min(z_m + level_size, z_num); ++i) {
+                        for (int j = x_m; j < std::min(x_m + level_size, x_num); ++j) {
+                            mip(i, j) = (mip(i, j) < parts[it]) ? parts[it] : mip(i, j);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+template<typename T>
+void maximum_projection_x(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
+    // assumes proj is of shape (z_num, y_num) initialized to 0
+    auto mip = proj.mutable_unchecked<2>();
+    auto it = apr.apr.iterator();
+
+    const int z_num = it.z_num(it.level_max());
+    const int y_num = it.y_num(it.level_max());
+
+    for(int level = it.level_max(); level >= it.level_min(); --level) {
+        const int level_size = it.level_size(level);
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) firstprivate(it)
+#endif
+        for(int z = 0; z < it.z_num(level); ++z) {
+            const int z_m = z * level_size;
+            for(int x = 0; x < it.x_num(level); ++x) {
+                for(it.begin(level, z, x); it < it.end(); ++it) {
+
+                    const int y_m = it.y() * level_size;
+                    for (int i = z_m; i < std::min(z_m + level_size, z_num); ++i) {
+                        for (int j = y_m; j < std::min(y_m + level_size, y_num); ++j) {
+                            mip(i, j) = (mip(i, j) < parts[it]) ? parts[it] : mip(i, j);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+template<typename T>
+void maximum_projection_z(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
+    // assumes proj is of shape (z_num, y_num) initialized to 0
+    auto mip = proj.mutable_unchecked<2>();
+    auto it = apr.apr.iterator();
+
+    const int x_num = it.x_num(it.level_max());
+    const int y_num = it.y_num(it.level_max());
+
+    for(int level = it.level_max(); level >= it.level_min(); --level) {
+        const int level_size = it.level_size(level);
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) firstprivate(it)
+#endif
+        for(int x = 0; x < it.x_num(level); ++x) {  // swapped x and z loops to avoid race conditions
+            const int x_m = x * level_size;
+            for(int z = 0; z < it.z_num(level); ++z) {
+                for(it.begin(level, z, x); it < it.end(); ++it) {
+
+                    const int y_m = it.y() * level_size;
+                    for (int i = x_m; i < std::min(x_m + level_size, x_num); ++i) {
+                        for (int j = y_m; j < std::min(y_m + level_size, y_num); ++j) {
+                            mip(i, j) = (mip(i, j) < parts[it]) ? parts[it] : mip(i, j);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 
 void AddPyAPRTransform(py::module &m, const std::string &modulename) {
 
@@ -371,6 +467,21 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
 
     m2.def("remove_small_objects", &remove_small_objects, py::arg("apr"), py::arg("object_labels"), py::arg("min_volume"));
     m2.def("find_objects_cpp", &find_objects, py::arg("apr"), py::arg("labels"), py::arg("min_coords").noconvert(), py::arg("max_coords").noconvert());
+
+    m2.def("max_projection_y", &maximum_projection_y<float>, "maximum projection along y axis",
+            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+    m2.def("max_projection_y", &maximum_projection_y<uint16_t>, "maximum projection along y axis",
+           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+
+    m2.def("max_projection_x", &maximum_projection_x<float>, "maximum projection along x axis",
+           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+    m2.def("max_projection_x", &maximum_projection_x<uint16_t>, "maximum projection along x axis",
+           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+
+    m2.def("max_projection_z", &maximum_projection_z<float>, "maximum projection along z axis",
+           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+    m2.def("max_projection_z", &maximum_projection_z<uint16_t>, "maximum projection along z axis",
+           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
 }
 
 #endif //PYLIBAPR_PYAPRTRANSFORM_HPP
