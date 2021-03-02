@@ -14,6 +14,7 @@
 #include "data_containers/PyAPR.hpp"
 #include "data_containers/PyAPRParameters.hpp"
 #include "data_containers/PyParticleData.hpp"
+#include "data_containers/ReconPatch.hpp"
 #include "data_containers/iterators/PyLinearIterator.hpp"
 #include "numerics/PyAPRNumerics.hpp"
 #include "numerics/reconstruction/PyAPRReconstruction.hpp"
@@ -55,6 +56,8 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     AddPyParticleData<uint8_t>(data_containers, "Byte");
     AddPyParticleData<float>(data_containers, "Float");
     AddPyParticleData<uint16_t>(data_containers, "Short");
+
+    AddReconPatch(data_containers);
 
     // wrap PyLinearIterator
     AddPyLinearIterator(data_containers, "iterators");
