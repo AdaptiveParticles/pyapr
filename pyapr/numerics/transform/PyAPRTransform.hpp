@@ -16,15 +16,11 @@ namespace py = pybind11;
 template<typename T>
 void dilation_py(PyAPR& apr, PyParticleData<T>& parts, bool binary=false, int radius=1) {
 
-    APRTimer timer(true);
-
-    timer.start_timer("dilation");
     if(binary) {
         dilation_binary(apr.apr, parts.parts, radius);
     } else {
         dilation(apr.apr, parts.parts, radius);
     }
-    timer.stop_timer();
 }
 
 
@@ -109,14 +105,11 @@ void dilation_binary(APR& apr, ParticleData<T>& parts, const int radius) {
 template<typename T>
 void erosion_py(PyAPR& apr, PyParticleData<T>& parts, bool binary=false, int radius=1) {
 
-    APRTimer timer(true);
-    timer.start_timer("erosion");
     if(binary) {
         erosion_binary(apr.apr, parts.parts, radius);
     } else {
         erosion(apr.apr, parts.parts, radius);
     }
-    timer.stop_timer();
 }
 
 
