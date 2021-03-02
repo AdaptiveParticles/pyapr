@@ -365,12 +365,15 @@ void maximum_projection_y(PyAPR& apr, PyParticleData<T>& parts, py::array_t<floa
             const int z_m = z * level_size;
             for(int x = 0; x < it.x_num(level); ++x) {
                 const int x_m = x * level_size;
-                for(it.begin(level, z, x); it < it.end(); ++it) {
 
-                    for (int i = z_m; i < std::min(z_m + level_size, z_num); ++i) {
-                        for (int j = x_m; j < std::min(x_m + level_size, x_num); ++j) {
-                            mip(i, j) = (mip(i, j) < parts[it]) ? parts[it] : mip(i, j);
-                        }
+                float row_max = std::numeric_limits<float>::min();
+                for(it.begin(level, z, x); it < it.end(); ++it) {
+                    row_max = row_max < parts[it] ? parts[it] : row_max;
+                }
+
+                for (int i = z_m; i < std::min(z_m + level_size, z_num); ++i) {
+                    for (int j = x_m; j < std::min(x_m + level_size, x_num); ++j) {
+                        mip(i, j) = (mip(i, j) < row_max) ? row_max : mip(i, j);
                     }
                 }
             }
@@ -443,6 +446,167 @@ void maximum_projection_z(PyAPR& apr, PyParticleData<T>& parts, py::array_t<floa
 }
 
 
+/// maximum projections in a subregion of the image, specified by a ReconPatch struct
+
+template<typename T>
+void maximum_projection_y_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, ReconPatch& patch) {
+    // assumes proj is of shape (z_num, x_num) initialized to 0
+    auto mip = proj.mutable_unchecked<2>();
+    auto it = apr.apr.iterator();
+
+    int tmp = patch.level_delta;
+    patch.level_delta = 0;
+    check_patch(patch, apr);
+    patch.level_delta = tmp;
+
+    for(int level = it.level_max(); level > it.level_min(); --level) {
+        const int level_size = it.level_size(level);
+
+        const int z_begin_l = patch.z_begin / level_size;
+        const int x_begin_l = patch.x_begin / level_size;
+        const int y_begin_l = patch.y_begin / level_size;
+        const int z_end_l = (patch.z_end + level_size - 1) / level_size;
+        const int x_end_l = (patch.x_end + level_size - 1) / level_size;
+        const int y_end_l = (patch.y_end + level_size - 1) / level_size;
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) firstprivate(it)
+#endif
+        for(int z = z_begin_l; z < z_end_l; ++z) {
+            const int zp_begin = std::max(z * level_size, patch.z_begin) - patch.z_begin;
+            const int zp_end = std::min((z+1) * level_size, patch.z_end) - patch.z_begin;
+
+            for(int x = x_begin_l; x < x_end_l; ++x) {
+
+                const int xp_begin = std::max(x * level_size, patch.x_begin) - patch.x_begin;
+                const int xp_end = std::min((x+1) * level_size, patch.x_end) - patch.x_begin;
+
+                // find start of y region
+                it.begin(level, z, x);
+                while(it.y() < y_begin_l && it < it.end()) { ++it; }
+
+                // find max in y region
+                float row_max = std::numeric_limits<float>::min();
+                for(; (it < it.end()) && (it.y() < y_end_l); ++it) {
+                    row_max = (row_max < parts[it]) ? parts[it] : row_max;
+                }
+
+                // compare to projection
+                for (int i = zp_begin; i < zp_end; ++i) {
+                    for (int j = xp_begin; j < xp_end; ++j) {
+                        mip(i, j) = (mip(i, j) < row_max) ? row_max : mip(i, j);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+template<typename T>
+void maximum_projection_x_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, ReconPatch& patch) {
+    // assumes proj is of shape (z_num, y_num) initialized to 0
+    auto mip = proj.mutable_unchecked<2>();
+    auto it = apr.apr.iterator();
+
+    int tmp = patch.level_delta;
+    patch.level_delta = 0;
+    check_patch(patch, apr);
+    patch.level_delta = tmp;
+
+    for(int level = it.level_max(); level > it.level_min(); --level) {
+        const int level_size = it.level_size(level);
+
+        const int z_begin_l = patch.z_begin / level_size;
+        const int x_begin_l = patch.x_begin / level_size;
+        const int y_begin_l = patch.y_begin / level_size;
+        const int z_end_l = (patch.z_end + level_size - 1) / level_size;
+        const int x_end_l = (patch.x_end + level_size - 1) / level_size;
+        const int y_end_l = (patch.y_end + level_size - 1) / level_size;
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) firstprivate(it)
+#endif
+        for(int z = z_begin_l; z < z_end_l; ++z) {
+            const int zp_begin = std::max(z * level_size, patch.z_begin) - patch.z_begin;
+            const int zp_end = std::min((z+1) * level_size, patch.z_end) - patch.z_begin;
+
+            for(int x = x_begin_l; x < x_end_l; ++x) {
+
+                // find start of y region
+                it.begin(level, z, x);
+                while(it.y() < y_begin_l && it < it.end()) { ++it; }
+
+                // iterate over y region and project
+                for(; (it < it.end()) && (it.y() < y_end_l); ++it) {
+                    const int yp_begin = std::max(it.y() * level_size, patch.y_begin) - patch.y_begin;
+                    const int yp_end = std::min((it.y()+1) * level_size, patch.y_end) - patch.y_begin;
+
+                    for (int i = zp_begin; i < zp_end; ++i) {
+                        for (int j = yp_begin; j < yp_end; ++j) {
+                            mip(i, j) = (mip(i, j) < parts[it]) ? parts[it] : mip(i, j);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+template<typename T>
+void maximum_projection_z_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, ReconPatch& patch) {
+    // assumes proj is of shape (z_num, y_num) initialized to 0
+    auto mip = proj.mutable_unchecked<2>();
+    auto it = apr.apr.iterator();
+
+    int tmp = patch.level_delta;
+    patch.level_delta = 0;
+    check_patch(patch, apr);
+    patch.level_delta = tmp;
+
+    for(int level = it.level_max(); level > it.level_min(); --level) {
+        const int level_size = it.level_size(level);
+
+        const int z_begin_l = patch.z_begin / level_size;
+        const int x_begin_l = patch.x_begin / level_size;
+        const int y_begin_l = patch.y_begin / level_size;
+        const int z_end_l = (patch.z_end + level_size - 1) / level_size;
+        const int x_end_l = (patch.x_end + level_size - 1) / level_size;
+        const int y_end_l = (patch.y_end + level_size - 1) / level_size;
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) firstprivate(it)
+#endif
+        for(int x = x_begin_l; x < x_end_l; ++x) {  // swapped x and z loops to avoid race conditions
+            const int xp_begin = std::max(x * level_size, patch.x_begin) - patch.x_begin;
+            const int xp_end = std::min((x+1) * level_size, patch.x_end) - patch.x_begin;
+
+            for(int z = z_begin_l; z < z_end_l; ++z) {
+
+                // find start of y region
+                it.begin(level, z, x);
+                while(it.y() < y_begin_l && it < it.end()) { ++it; }
+
+                // iterate over y region and project
+                for(; (it < it.end()) && (it.y() < y_end_l); ++it) {
+                    const int yp_begin = std::max(it.y() * level_size, patch.y_begin) - patch.y_begin;
+                    const int yp_end = std::min((it.y()+1) * level_size, patch.y_end) - patch.y_begin;
+
+                    for (int i = xp_begin; i < xp_end; ++i) {
+                        for (int j = yp_begin; j < yp_end; ++j) {
+                            mip(i, j) = (mip(i, j) < parts[it]) ? parts[it] : mip(i, j);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
 
 void AddPyAPRTransform(py::module &m, const std::string &modulename) {
 
@@ -468,20 +632,38 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
     m2.def("remove_small_objects", &remove_small_objects, py::arg("apr"), py::arg("object_labels"), py::arg("min_volume"));
     m2.def("find_objects_cpp", &find_objects, py::arg("apr"), py::arg("labels"), py::arg("min_coords").noconvert(), py::arg("max_coords").noconvert());
 
+    /// y projection
     m2.def("max_projection_y", &maximum_projection_y<float>, "maximum projection along y axis",
             py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
     m2.def("max_projection_y", &maximum_projection_y<uint16_t>, "maximum projection along y axis",
            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
 
+    m2.def("max_projection_y", &maximum_projection_y_patch<float>, "maximum projection along y axis",
+           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert(), py::arg("patch"));
+    m2.def("max_projection_y", &maximum_projection_y_patch<uint16_t>, "maximum projection along y axis",
+           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert(), py::arg("patch"));
+
+    /// x projection
     m2.def("max_projection_x", &maximum_projection_x<float>, "maximum projection along x axis",
            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
     m2.def("max_projection_x", &maximum_projection_x<uint16_t>, "maximum projection along x axis",
            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
 
+    m2.def("max_projection_x", &maximum_projection_x_patch<float>, "maximum projection along x axis",
+           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert(), py::arg("patch"));
+    m2.def("max_projection_x", &maximum_projection_x_patch<uint16_t>, "maximum projection along x axis",
+           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert(), py::arg("patch"));
+
+    /// z projection
     m2.def("max_projection_z", &maximum_projection_z<float>, "maximum projection along z axis",
            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
     m2.def("max_projection_z", &maximum_projection_z<uint16_t>, "maximum projection along z axis",
            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+
+    m2.def("max_projection_z", &maximum_projection_z_patch<float>, "maximum projection along z axis",
+           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert(), py::arg("patch"));
+    m2.def("max_projection_z", &maximum_projection_z_patch<uint16_t>, "maximum projection along z axis",
+           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert(), py::arg("patch"));
 }
 
 #endif //PYLIBAPR_PYAPRTRANSFORM_HPP
