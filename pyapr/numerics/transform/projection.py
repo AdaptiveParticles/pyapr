@@ -84,6 +84,11 @@ def maximum_projection_patch(apr: pyapr.APR,
     if patch.level_delta != 0:
         print('Warning: maximum_projection_patch is not yet implemented for level_delta != 0. Proceeding with level_delta = 0.')
 
+    tmp = patch.level_delta
+    patch.level_delta = 0
+    pyapr.check_patch(patch, apr)
+    patch.level_delta = tmp
+
     if dim == 0:
         out = np.zeros((patch.z_end - patch.z_begin, patch.x_end - patch.x_begin), dtype=np.float32)
         pyapr.numerics.transform.max_projection_y(apr, parts, out, patch)
