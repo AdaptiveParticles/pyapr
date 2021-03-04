@@ -7,31 +7,22 @@
 
 #include "numerics/APRReconstruction.hpp"
 
-inline void _check_patch(ReconPatch& patch, APR& apr) {
 
-    int max_img_y = ceil(apr.org_dims(0)*pow(2.0, patch.level_delta));
-    int max_img_x = ceil(apr.org_dims(1)*pow(2.0, patch.level_delta));
-    int max_img_z = ceil(apr.org_dims(2)*pow(2.0, patch.level_delta));
-
-    patch.y_begin = std::max(0, patch.y_begin);
-    patch.x_begin = std::max(0, patch.x_begin);
-    patch.z_begin = std::max(0, patch.z_begin);
-
-    patch.y_end = patch.y_end < 0 ? max_img_y : std::min(max_img_y, patch.y_end);
-    patch.x_end = patch.x_end < 0 ? max_img_x : std::min(max_img_x, patch.x_end);
-    patch.z_end = patch.z_end < 0 ? max_img_z : std::min(max_img_z, patch.z_end);
-
-    if(patch.y_begin >= patch.y_end || patch.x_begin >= patch.x_end || patch.z_begin >= patch.z_end) {
-        std::wcerr << "ReconPatch expects begin < end in all dimensions" << std::endl;
+struct PyReconPatch : ReconPatch {
+    inline bool check_limits_py(PyAPR& apr) {
+        return check_limits(apr.apr);
     }
-}
 
-void check_patch(ReconPatch& patch, PyAPR& apr) {
-    _check_patch(patch, apr.apr);
-}
+    inline size_t size() {
+        return (size_t)(z_end-z_begin)*(x_end-x_begin)*(y_end-y_begin);
+    }
+};
 
 void AddReconPatch(pybind11::module &m) {
-    py::class_<ReconPatch>(m, "ReconPatch")
+
+    py::class_<ReconPatch>(m, "_ReconPatchCPP");
+
+    py::class_<PyReconPatch, ReconPatch>(m, "ReconPatch")
             .def(py::init())
             .def("__repr__", [](ReconPatch& p) {
                 return "ReconPatch: z: [" + std::to_string(p.z_begin) + ", " + std::to_string(p.z_end) + ")" +
@@ -39,15 +30,15 @@ void AddReconPatch(pybind11::module &m) {
                         ", y: [" + std::to_string(p.y_begin) + ", " + std::to_string(p.y_end) + ")" +
                         ", level_delta = " + std::to_string(p.level_delta);
             })
-            .def_readwrite("z_begin", &ReconPatch::z_begin)
-            .def_readwrite("z_end", &ReconPatch::z_end)
-            .def_readwrite("x_begin", &ReconPatch::x_begin)
-            .def_readwrite("x_end", &ReconPatch::x_end)
-            .def_readwrite("y_begin", &ReconPatch::y_begin)
-            .def_readwrite("y_end", &ReconPatch::y_end)
-            .def_readwrite("level_delta", &ReconPatch::level_delta);
-
-    m.def("check_patch", &check_patch);
+            .def_readwrite("z_begin", &PyReconPatch::z_begin)
+            .def_readwrite("z_end", &PyReconPatch::z_end)
+            .def_readwrite("x_begin", &PyReconPatch::x_begin)
+            .def_readwrite("x_end", &PyReconPatch::x_end)
+            .def_readwrite("y_begin", &PyReconPatch::y_begin)
+            .def_readwrite("y_end", &PyReconPatch::y_end)
+            .def_readwrite("level_delta", &PyReconPatch::level_delta)
+            .def("check_limits", &PyReconPatch::check_limits_py, "check patch limits against APR dimensions")
+            .def("size", &PyReconPatch::size, "return the number of pixels in the patch region");
 }
 
 
