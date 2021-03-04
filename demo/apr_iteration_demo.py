@@ -62,8 +62,7 @@ def main():
 
     # Compare to the c++ reconstruction
     start = time()
-    tmp = pyapr.numerics.reconstruction.recon_pc(apr, parts)
-    cpp_recon = np.array(tmp, copy=False)
+    cpp_recon = pyapr.numerics.reconstruction.reconstruct_constant(apr, parts)
     cpp_time = time()-start
     print('c++ reconstruction took {} seconds'.format(cpp_time))
     print('c++ was {} times faster'.format(py_time / cpp_time))

@@ -442,14 +442,14 @@ void maximum_projection_z(PyAPR& apr, PyParticleData<T>& parts, py::array_t<floa
 /// maximum projections in a subregion of the image, specified by a ReconPatch struct
 
 template<typename T>
-void maximum_projection_y_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, ReconPatch& patch) {
+void maximum_projection_y_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, PyReconPatch& patch) {
     // assumes proj is of shape (z_num, x_num) initialized to 0
     auto mip = proj.mutable_unchecked<2>();
     auto it = apr.apr.iterator();
 
     int tmp = patch.level_delta;
     patch.level_delta = 0;
-    check_patch(patch, apr);
+    patch.check_limits(apr.apr);
     patch.level_delta = tmp;
 
     for(int level = it.level_max(); level > it.level_min(); --level) {
@@ -497,14 +497,14 @@ void maximum_projection_y_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_
 
 
 template<typename T>
-void maximum_projection_x_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, ReconPatch& patch) {
+void maximum_projection_x_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, PyReconPatch& patch) {
     // assumes proj is of shape (z_num, y_num) initialized to 0
     auto mip = proj.mutable_unchecked<2>();
     auto it = apr.apr.iterator();
 
     int tmp = patch.level_delta;
     patch.level_delta = 0;
-    check_patch(patch, apr);
+    patch.check_limits(apr.apr);
     patch.level_delta = tmp;
 
     for(int level = it.level_max(); level > it.level_min(); --level) {
@@ -548,14 +548,14 @@ void maximum_projection_x_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_
 
 
 template<typename T>
-void maximum_projection_z_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, ReconPatch& patch) {
+void maximum_projection_z_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, PyReconPatch& patch) {
     // assumes proj is of shape (z_num, y_num) initialized to 0
     auto mip = proj.mutable_unchecked<2>();
     auto it = apr.apr.iterator();
 
     int tmp = patch.level_delta;
     patch.level_delta = 0;
-    check_patch(patch, apr);
+    patch.check_limits(apr.apr);
     patch.level_delta = tmp;
 
     for(int level = it.level_max(); level > it.level_min(); --level) {

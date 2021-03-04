@@ -84,9 +84,11 @@ def maximum_projection_patch(apr: pyapr.APR,
     if patch.level_delta != 0:
         print('Warning: maximum_projection_patch is not yet implemented for level_delta != 0. Proceeding with level_delta = 0.')
 
+    # temporarily set level_delta to 0 TODO: make it allow non-zero level delta
     tmp = patch.level_delta
     patch.level_delta = 0
-    pyapr.check_patch(patch, apr)
+    if not patch.check_limits(apr):
+        return None
     patch.level_delta = tmp
 
     if dim == 0:
