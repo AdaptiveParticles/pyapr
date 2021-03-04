@@ -17,6 +17,7 @@
 #include "data_containers/ReconPatch.hpp"
 #include "data_containers/iterators/PyLinearIterator.hpp"
 #include "numerics/PyAPRNumerics.hpp"
+#include "numerics/PyAPRTreeNumerics.hpp"
 #include "numerics/reconstruction/PyAPRReconstruction.hpp"
 #include "numerics/filter/PyAPRFilter.hpp"
 #include "numerics/segmentation/PyAPRSegmentation.hpp"
@@ -65,6 +66,7 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     // wrap numerics module and submodules
     py::module numerics = m.def_submodule("numerics");
     AddPyAPRNumerics(numerics, "aprnumerics");
+    AddPyAPRTreeNumerics(numerics, "treenumerics");
     AddPyAPRReconstruction(numerics, "reconstruction");
     AddPyAPRFilter(numerics, "filter");
     AddPyAPRSegmentation(numerics, "segmentation");
