@@ -5,4 +5,4 @@ from .compressInteractive import *
 from .raycastViewer import *
 from .particleScatterPlot import particle_scatter_plot
 
-from ._apr_napari_layer import get_napari_layer
+from ._apr_napari_layer import apr_to_napari_Image, apr_to_napari_Labels
