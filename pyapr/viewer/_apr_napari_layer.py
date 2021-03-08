@@ -1,14 +1,14 @@
 import pyapr
 import numpy as np
-from napari.layers import Image
+from napari.layers import Image, Labels
 from numbers import Integral
 
 
-def get_napari_layer(apr: pyapr.APR,
-                     parts: (pyapr.ShortParticles, pyapr.FloatParticles),
-                     mode: str = 'constant',
-                     level_delta: int = 0,
-                     name: str = 'APR'):
+def apr_to_napari_Image(apr: pyapr.APR,
+                        parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+                        mode: str = 'constant',
+                        level_delta: int = 0,
+                        **kwargs):
     """
     Construct a napari 'Image' layer from an APR. Pixel values are reconstructed on the fly via the APRSlicer class.
 
@@ -28,9 +28,7 @@ def get_napari_layer(apr: pyapr.APR,
         Sets the resolution of the reconstruction. The size of the image domain is multiplied by a factor of 2**level_delta.
         Thus, a value of 0 corresponds to the original pixel image resolution, -1 halves the resolution and +1 doubles it.
         (default: 0)
-    name: str
-        Name of the output Image layer
-        (default: 'APR')
+
     Returns
     -------
     out : napari.layers.Image
@@ -40,7 +38,41 @@ def get_napari_layer(apr: pyapr.APR,
     cmin = apr.level_min() if mode == 'level' else parts.min()
     cmax = apr.level_max() if mode == 'level' else parts.max()
     return Image(data=APRSlicer(apr, parts, mode=mode, level_delta=level_delta),
-                 rgb=False, multiscale=False, name=name, contrast_limits=[cmin, cmax])
+                 rgb=False, multiscale=False, contrast_limits=[cmin, cmax], **kwargs)
+
+
+def apr_to_napari_Labels(apr: pyapr.APR,
+                        parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+                        mode: str = 'constant',
+                        level_delta: int = 0,
+                        **kwargs):
+    """
+    Construct a napari 'Layers' layer from an APR. Pixel values are reconstructed on the fly via the APRSlicer class.
+
+    Parameters
+    ----------
+    apr : pyapr.APR
+        Input APR data structure
+    parts : pyapr.FloatParticles or pyapr.ShortParticles
+        Input particle intensities
+    mode: str
+        Interpolation mode to reconstruct pixel values. Supported values are
+            constant:   piecewise constant interpolation
+            smooth:     smooth interpolation (via level-adaptive separable smoothing). Note: significantly slower than constant.
+            level:      interpolate the particle levels to the pixels
+        (default: constant)
+    level_delta: int
+        Sets the resolution of the reconstruction. The size of the image domain is multiplied by a factor of 2**level_delta.
+        Thus, a value of 0 corresponds to the original pixel image resolution, -1 halves the resolution and +1 doubles it.
+        (default: 0)
+
+    Returns
+    -------
+    out : napari.layers.Image
+        A Labels layer of the APR that can be viewed in napari.
+    """
+
+    return Labels(data=APRSlicer(apr, parts, mode=mode, level_delta=level_delta), multiscale=False, **kwargs)
 
 
 class APRSlicer:
@@ -94,7 +126,7 @@ class APRSlicer:
             self._slice = self.recon(self.apr, patch=self.patch, out_arr=self._slice)
         else:
             self._slice = self.recon(self.apr, self.parts, tree_parts=self.tree_parts, patch=self.patch, out_arr=self._slice)
-        return self._slice
+        return self._slice.squeeze()
 
     def __getitem__(self, item):
         if isinstance(item, slice):
