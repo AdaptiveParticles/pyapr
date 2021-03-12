@@ -12,7 +12,6 @@ class APRSlicer:
         self.apr = apr
         self.parts = parts
         self.mode = mode
-        self.dims = [np.ceil(x * pow(2, level_delta)) for x in apr.org_dims()]
 
         if self.mode == 'level':
             self.dtype = np.uint8
@@ -23,6 +22,9 @@ class APRSlicer:
         self.patch.level_delta = level_delta
         self.patch.z_end = 1
         self.patch.check_limits(self.apr)
+
+        self.dims = []
+        self.update_dims()
 
         self.tree_parts = pyapr.FloatParticles()
         pyapr.numerics.fill_tree_mean(self.apr, self.parts, self.tree_parts)
@@ -47,7 +49,14 @@ class APRSlicer:
         return 3
 
     def new_empty_slice(self):
-        return np.empty((self.patch.x_end-self.patch.x_begin, self.patch.y_end-self.patch.y_begin), dtype=self.dtype)
+        return np.empty((self.patch.z_end-self.patch.z_begin, self.patch.x_end-self.patch.x_begin, self.patch.y_end-self.patch.y_begin), dtype=self.dtype)
+
+    def update_dims(self):
+        self.dims = [np.ceil(x * pow(2, self.patch.level_delta)) for x in self.apr.org_dims()]
+
+    def set_level_delta(self, level_delta):
+        self.patch.level_delta = level_delta
+        self.update_dims()
 
     def reconstruct(self):
         if self.mode == 'level':
@@ -58,20 +67,23 @@ class APRSlicer:
 
     def __getitem__(self, item):
         if isinstance(item, slice):
-            self.patch.z_begin = item.start
-            self.patch.z_end = item.stop
+            self.patch.z_begin = int(item.start) if item.start is not None else -1
+            self.patch.z_end = int(item.stop) if item.stop is not None else -1
         elif isinstance(item, tuple):
             limits = [-1, -1, -1, -1, -1, -1]
             for i in range(len(item)):
                 if isinstance(item[i], slice):
-                    limits[2*i] = item[i].start if item[i].start is not None else -1
-                    limits[2*i+1] = item[i].stop if item[i].stop is not None else -1
+                    limits[2*i] = int(item[i].start) if item[i].start is not None else -1
+                    limits[2*i+1] = int(item[i].stop) if item[i].stop is not None else -1
                 elif isinstance(item[i], Integral):
                     limits[2*i] = item[i]
                     limits[2*i+1] = item[i]+1
+                elif isinstance(item[i], float):
+                    limits[2*i] = int(item[i])
+                    limits[2*i+1] = int(item[i]+1)
             self.patch.z_begin, self.patch.z_end, self.patch.x_begin, self.patch.x_end, self.patch.y_begin, self.patch.y_end = limits
         else:
-            self.patch.z_begin = item
-            self.patch.z_end = item+1
+            self.patch.z_begin = int(item)
+            self.patch.z_end = int(item+1)
         self.patch.check_limits(self.apr)
         return self.reconstruct()
