@@ -8,7 +8,7 @@ class APRSlicer:
     Helper class allowing (3D) slice indexing. Pixel values in the slice range are reconstructed
     on the fly and returned as an array.
     """
-    def __init__(self, apr, parts, mode='constant', level_delta=0):
+    def __init__(self, apr, parts, mode='constant', level_delta=0, tree_mode='mean'):
         self.apr = apr
         self.parts = parts
         self.mode = mode
@@ -27,7 +27,12 @@ class APRSlicer:
         self.update_dims()
 
         self.tree_parts = pyapr.FloatParticles()
-        pyapr.numerics.fill_tree_mean(self.apr, self.parts, self.tree_parts)
+        if tree_mode == 'mean':
+            pyapr.numerics.fill_tree_mean(self.apr, self.parts, self.tree_parts)
+        elif tree_mode == 'max':
+            pyapr.numerics.fill_tree_max(self.apr, self.parts, self.tree_parts)
+        else:
+            raise ValueError('Unknown tree mode.')
 
         self._slice = self.new_empty_slice()
 
