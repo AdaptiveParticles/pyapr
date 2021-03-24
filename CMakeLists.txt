@@ -15,25 +15,9 @@ find_package(TIFF REQUIRED)
 set(CMAKE_C_FLAGS "${CMAKE_CFLAGS} -DHAVE_LIBTIFF")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXXFLAGS} -DHAVE_LIBTIFF")
 
-###############################################################################
-# Build LibAPR
-###############################################################################
-message(STATUS "PyAPR: Building LibAPR")
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${HDF5_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${TIFF_INCLUDE_DIR})
 
-set(APR_TESTS OFF CACHE BOOL "" FORCE)
-set(APR_BUILD_STATIC_LIB ON CACHE BOOL "" FORCE)
-set(APR_BUILD_SHARED_LIB OFF CACHE BOOL "" FORCE)
-set(APR_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(APR_BUILD_PYTHON_WRAPPERS OFF CACHE BOOL "" FORCE)
-set(APR_USE_LIBTIFF ON CACHE BOOL "" FORCE)
-set(APR_USE_OPENMP ${PYAPR_USE_OPENMP} CACHE BOOL "" FORCE)
-set(APR_USE_CUDA ${PYAPR_USE_CUDA} CACHE BOOL "" FORCE)
-
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/LibAPR ${HDF5_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${TIFF_INCLUDE_DIR})
-
-add_subdirectory("LibAPR")
-include_directories(LibAPR/src)
-include_directories("LibAPR/external/glm")
+find_package(APR REQUIRED)
 
 ###############################################################################
 # Handle OpenMP
@@ -106,7 +90,7 @@ set(APR_PYTHON_MODULE_NAME _pyaprwrapper)
 add_definitions(-DAPR_PYTHON_MODULE_NAME=${APR_PYTHON_MODULE_NAME})
 pybind11_add_module(${APR_PYTHON_MODULE_NAME} MODULE wrappers/pythonBind.cpp)
 target_include_directories(${APR_PYTHON_MODULE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/wrappers ${CMAKE_CURRENT_SOURCE_DIR}/pyapr ${CMAKE_CURRENT_SOURCE_DIR}/external)
-target_link_libraries(${APR_PYTHON_MODULE_NAME} PRIVATE staticLib pybind11::module ${HDF5_LIBRARIES} ${TIFF_LIBRARIES} ${BLOSC_LIBRARIES} ${ZLIB_LIBRARIES} maxflow)
+target_link_libraries(${APR_PYTHON_MODULE_NAME} PRIVATE apr::sharedLib pybind11::module ${HDF5_LIBRARIES} ${TIFF_LIBRARIES} ${BLOSC_LIBRARIES} ${ZLIB_LIBRARIES} maxflow)
 set_target_properties(${APR_PYTHON_MODULE_NAME} PROPERTIES OUTPUT_NAME ${APR_PYTHON_MODULE_NAME})
 set_target_properties(${APR_PYTHON_MODULE_NAME} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
         SUFFIX "${PYTHON_MODULE_EXTENSION}")

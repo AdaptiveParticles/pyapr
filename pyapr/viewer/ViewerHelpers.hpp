@@ -7,7 +7,6 @@
 #include "data_containers/PyAPR.hpp"
 #include "numerics/APRReconstruction.hpp"
 #include "numerics/APRCompress.hpp"
-#include "numerics/APRRaycaster.hpp"
 #include "numerics/APRTreeNumerics.hpp"
 
 namespace py = pybind11;
