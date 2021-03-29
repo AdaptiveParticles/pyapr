@@ -25,9 +25,11 @@ find_package(APR REQUIRED)
 find_package(OpenMP)
 if(NOT OPENMP_FOUND OR NOT PYAPR_USE_OPENMP)
     message(WARNING "OpenMP support not found or disabled with current compiler. While PyAPR can compile like this, performance might not be optimal. Please see README.md for instructions.")
+    set(OPENMP_LINK "")
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPYAPR_HAVE_OPENMP -DHAVE_OPENMP ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPYAPR_HAVE_OPENMP -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}")
+    set(OPENMP_LINK "OpenMP::OpenMP_CXX")
 endif()
 
 
@@ -53,18 +55,38 @@ endif()
 # If you ever want to compile with Intel's icc (or any other compiler) provide
 # compiler names/paths in cmake command like this:
 # CC="icc" CXX="icc" CXXFLAGS="-O3" cmake -DAPR_TESTS=1
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic ")
-if(CMAKE_COMPILER_IS_GNUCC)
-    set(CMAKE_CXX_FLAGS_RELEASE "-O4 -ffast-math")
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Bdynamic")
-    if(NOT WIN32)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ldl -lz")
+
+if(WIN32)
+
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN_COMPILE")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWIN_COMPILE")
+
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        message(STATUS "Compiling on windows with CLANG!")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xclang -fcxx-exceptions")
+        set(CMAKE_CXX_FLAGS_DEBUG "/MD /Z7")
+        set(CMAKE_CXX_FLAGS_RELEASE "/MD /EHsc /std:c++17 /arch:AVX2 -Xclang -O3 /nologo /fp:fast") #-flto=thin -march=native /O2 /Ob2
     endif()
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ffast-math")
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lz")
+
+    if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        message(STATUS "Compiling on windows with MSVC!")
+        set(CMAKE_CXX_FLAGS_RELEASE "/MD /EHsc /std:c++17 /arch:AVX2 /O2 /Ob2 /nologo /fp:fast")
+        set(CMAKE_CXX_FLAGS_DEBUG "/MD /Z7")
+    endif()
+
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic ")
+    if(CMAKE_COMPILER_IS_GNUCC)
+        set(CMAKE_CXX_FLAGS_RELEASE "-O4 -ffast-math")
+        set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Bdynamic")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ldl -lz")
+        
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ffast-math")
+        set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lz")
+    endif()
 endif()
 
 ###############################################################################
@@ -75,6 +97,8 @@ message(STATUS "PyAPR: Building PYTHON wrappers")
 set(PYBIND11_PYTHON_VERSION 3)
 find_package( PythonInterp ${PYTHON_VERSION} REQUIRED )
 find_package( PythonLibs ${PYTHON_VERSION} REQUIRED )
+
+include_directories(LibAPR/external/glm)
 
 add_subdirectory("pybind11")
 add_library(maxflow SHARED
@@ -90,7 +114,7 @@ set(APR_PYTHON_MODULE_NAME _pyaprwrapper)
 add_definitions(-DAPR_PYTHON_MODULE_NAME=${APR_PYTHON_MODULE_NAME})
 pybind11_add_module(${APR_PYTHON_MODULE_NAME} MODULE wrappers/pythonBind.cpp)
 target_include_directories(${APR_PYTHON_MODULE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/wrappers ${CMAKE_CURRENT_SOURCE_DIR}/pyapr ${CMAKE_CURRENT_SOURCE_DIR}/external)
-target_link_libraries(${APR_PYTHON_MODULE_NAME} PRIVATE apr::sharedLib pybind11::module ${HDF5_LIBRARIES} ${TIFF_LIBRARIES} ${BLOSC_LIBRARIES} ${ZLIB_LIBRARIES} maxflow)
+target_link_libraries(${APR_PYTHON_MODULE_NAME} PRIVATE APR::staticLib pybind11::module ${HDF5_LIBRARIES} ${TIFF_LIBRARIES} ${BLOSC_LIBRARIES} ${ZLIB_LIBRARIES} maxflow  ${OPENMP_LINK})
 set_target_properties(${APR_PYTHON_MODULE_NAME} PROPERTIES OUTPUT_NAME ${APR_PYTHON_MODULE_NAME})
 set_target_properties(${APR_PYTHON_MODULE_NAME} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
         SUFFIX "${PYTHON_MODULE_EXTENSION}")
