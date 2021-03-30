@@ -76,7 +76,7 @@ set(PYBIND11_PYTHON_VERSION 3)
 find_package( PythonInterp ${PYTHON_VERSION} REQUIRED )
 find_package( PythonLibs ${PYTHON_VERSION} REQUIRED )
 
-add_subdirectory("pybind11")
+add_subdirectory(external/pybind11)
 add_library(maxflow SHARED
             external/maxflow-v3.04.src/graph.cpp
             external/maxflow-v3.04.src/maxflow.cpp)
