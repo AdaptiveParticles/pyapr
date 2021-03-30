@@ -2,3 +2,8 @@
 	path = external/pybind11
 	url = https://github.com/pybind/pybind11.git
 	branch = master
+[submodule "external/LibAPR"]
+	path = external/LibAPR
+	url = https://github.com/AdaptiveParticles/LibAPR.git
+	branch = develop_joel
+
