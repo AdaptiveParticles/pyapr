@@ -14,12 +14,12 @@ namespace py = pybind11;
 
 
 template<typename T>
-void dilation_py(PyAPR& apr, PyParticleData<T>& parts, bool binary=false, int radius=1) {
+void dilation_py(APR& apr, PyParticleData<T>& parts, bool binary=false, int radius=1) {
 
     if(binary) {
-        dilation_binary(apr.apr, parts.parts, radius);
+        dilation_binary(apr, parts, radius);
     } else {
-        dilation(apr.apr, parts.parts, radius);
+        dilation(apr, parts, radius);
     }
 }
 
@@ -103,12 +103,12 @@ void dilation_binary(APR& apr, ParticleData<T>& parts, const int radius) {
 
 
 template<typename T>
-void erosion_py(PyAPR& apr, PyParticleData<T>& parts, bool binary=false, int radius=1) {
+void erosion_py(APR& apr, PyParticleData<T>& parts, bool binary=false, int radius=1) {
 
     if(binary) {
-        erosion_binary(apr.apr, parts.parts, radius);
+        erosion_binary(apr, parts, radius);
     } else {
-        erosion(apr.apr, parts.parts, radius);
+        erosion(apr, parts, radius);
     }
 }
 
@@ -233,14 +233,9 @@ inline bool find_positive_neighbour(APRIteratorType& apr_it, NeighbourIteratorTy
 }
 
 
-template<typename T>
-void find_perimeter_py(PyAPR& apr, PyParticleData<T>& parts, PyParticleData<T>& perimeter) {
-    find_perimeter(apr.apr, parts.parts, perimeter.parts);
-}
-
 
 template<typename T>
-void find_perimeter(APR& apr, ParticleData<T>& parts, ParticleData<T>& perimeter) {
+void find_perimeter(APR& apr, PyParticleData<T>& parts, PyParticleData<T>& perimeter) {
     auto apr_it = apr.random_iterator();
     auto neigh_it = apr.random_iterator();
 
@@ -275,11 +270,11 @@ void find_perimeter(APR& apr, ParticleData<T>& parts, ParticleData<T>& perimeter
  * @param object_labels
  * @param min_volume
  */
-void remove_small_objects(PyAPR& apr, PyParticleData<uint16_t>& object_labels, const int min_volume) {
+void remove_small_objects(APR& apr, PyParticleData<uint16_t>& object_labels, const int min_volume) {
     auto max_label = object_labels.max();
 
     std::vector<uint16_t> bin_counts(max_label+1, 0);
-    auto it = apr.apr.iterator();
+    auto it = apr.iterator();
     const int ndim = it.number_dimensions();
 
     for(int level = it.level_min(); level <= it.level_max(); ++level) {
@@ -301,12 +296,12 @@ void remove_small_objects(PyAPR& apr, PyParticleData<uint16_t>& object_labels, c
 }
 
 
-void find_objects(PyAPR& apr, PyParticleData<uint16_t>& labels, py::array_t<int>& min_coords, py::array_t<int>& max_coords) {
+void find_objects(APR& apr, PyParticleData<uint16_t>& labels, py::array_t<int>& min_coords, py::array_t<int>& max_coords) {
     // assumes min_coords initialized to a >= the maximum (original) dimension and max_coords to 0
     auto minc = min_coords.mutable_unchecked<2>(); // Will throw if ndim != 2 or flags.writeable is false
     auto maxc = max_coords.mutable_unchecked<2>();
 
-    auto it = apr.apr.iterator();
+    auto it = apr.iterator();
     const int z_num = it.z_num(it.level_max());
     const int x_num = it.x_num(it.level_max());
     const int y_num = it.y_num(it.level_max());
@@ -341,10 +336,10 @@ void find_objects(PyAPR& apr, PyParticleData<uint16_t>& labels, py::array_t<int>
 
 
 template<typename T>
-void maximum_projection_y(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
+void maximum_projection_y(APR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
     // assumes proj is of shape (z_num, x_num) initialized to 0
     auto mip = proj.mutable_unchecked<2>();
-    auto it = apr.apr.iterator();
+    auto it = apr.iterator();
 
     const int z_num = it.z_num(it.level_max());
     const int x_num = it.x_num(it.level_max());
@@ -376,10 +371,10 @@ void maximum_projection_y(PyAPR& apr, PyParticleData<T>& parts, py::array_t<floa
 
 
 template<typename T>
-void maximum_projection_x(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
+void maximum_projection_x(APR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
     // assumes proj is of shape (z_num, y_num) initialized to 0
     auto mip = proj.mutable_unchecked<2>();
-    auto it = apr.apr.iterator();
+    auto it = apr.iterator();
 
     const int z_num = it.z_num(it.level_max());
     const int y_num = it.y_num(it.level_max());
@@ -408,10 +403,10 @@ void maximum_projection_x(PyAPR& apr, PyParticleData<T>& parts, py::array_t<floa
 
 
 template<typename T>
-void maximum_projection_z(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
+void maximum_projection_z(APR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
     // assumes proj is of shape (z_num, y_num) initialized to 0
     auto mip = proj.mutable_unchecked<2>();
-    auto it = apr.apr.iterator();
+    auto it = apr.iterator();
 
     const int x_num = it.x_num(it.level_max());
     const int y_num = it.y_num(it.level_max());
@@ -442,14 +437,14 @@ void maximum_projection_z(PyAPR& apr, PyParticleData<T>& parts, py::array_t<floa
 /// maximum projections in a subregion of the image, specified by a ReconPatch struct
 
 template<typename T>
-void maximum_projection_y_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, PyReconPatch& patch) {
+void maximum_projection_y_patch(APR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, ReconPatch& patch) {
     // assumes proj is of shape (z_num, x_num) initialized to 0
     auto mip = proj.mutable_unchecked<2>();
-    auto it = apr.apr.iterator();
+    auto it = apr.iterator();
 
     int tmp = patch.level_delta;
     patch.level_delta = 0;
-    patch.check_limits(apr.apr);
+    patch.check_limits(apr);
     patch.level_delta = tmp;
 
     for(int level = it.level_max(); level > it.level_min(); --level) {
@@ -497,14 +492,14 @@ void maximum_projection_y_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_
 
 
 template<typename T>
-void maximum_projection_x_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, PyReconPatch& patch) {
+void maximum_projection_x_patch(APR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, ReconPatch& patch) {
     // assumes proj is of shape (z_num, y_num) initialized to 0
     auto mip = proj.mutable_unchecked<2>();
-    auto it = apr.apr.iterator();
+    auto it = apr.iterator();
 
     int tmp = patch.level_delta;
     patch.level_delta = 0;
-    patch.check_limits(apr.apr);
+    patch.check_limits(apr);
     patch.level_delta = tmp;
 
     for(int level = it.level_max(); level > it.level_min(); --level) {
@@ -548,14 +543,14 @@ void maximum_projection_x_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_
 
 
 template<typename T>
-void maximum_projection_z_patch(PyAPR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, PyReconPatch& patch) {
+void maximum_projection_z_patch(APR& apr, PyParticleData<T>& parts, py::array_t<float>& proj, ReconPatch& patch) {
     // assumes proj is of shape (z_num, y_num) initialized to 0
     auto mip = proj.mutable_unchecked<2>();
-    auto it = apr.apr.iterator();
+    auto it = apr.iterator();
 
     int tmp = patch.level_delta;
     patch.level_delta = 0;
-    patch.check_limits(apr.apr);
+    patch.check_limits(apr);
     patch.level_delta = tmp;
 
     for(int level = it.level_max(); level > it.level_min(); --level) {
@@ -617,9 +612,9 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
            "computes a morphological erosion of the input. each particle takes the value of the minimum of its face-side neighbbours",
            py::arg("apr"), py::arg("parts"), py::arg("binary")=false, py::arg("radius")=1);
 
-    m2.def("find_perimeter", &find_perimeter_py<uint16_t>, "find all positive particles with at least one zero neighbour",
+    m2.def("find_perimeter", &find_perimeter<uint16_t>, "find all positive particles with at least one zero neighbour",
            py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
-    m2.def("find_perimeter", &find_perimeter_py<float>, "find all positive particles with at least one zero neighbour",
+    m2.def("find_perimeter", &find_perimeter<float>, "find all positive particles with at least one zero neighbour",
            py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
 
     m2.def("remove_small_objects", &remove_small_objects, py::arg("apr"), py::arg("object_labels"), py::arg("min_volume"));

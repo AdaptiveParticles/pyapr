@@ -10,18 +10,18 @@
 
 namespace PyAPRTreeNumerics {
     template<typename S,typename T>
-    void fill_tree_mean(PyAPR &apr, const PyParticleData<S>& particle_data, PyParticleData<T>& tree_data) {
-        APRTreeNumerics::fill_tree_mean(apr.apr, particle_data.parts, tree_data.parts);
+    void fill_tree_mean(APR &apr, const PyParticleData<S>& particle_data, PyParticleData<T>& tree_data) {
+        APRTreeNumerics::fill_tree_mean(apr, particle_data, tree_data);
     }
 
     template<typename S,typename T>
-    void fill_tree_min(PyAPR &apr, const PyParticleData<S>& particle_data, PyParticleData<T>& tree_data) {
-        APRTreeNumerics::fill_tree_min(apr.apr, particle_data.parts, tree_data.parts);
+    void fill_tree_min(APR &apr, const PyParticleData<S>& particle_data, PyParticleData<T>& tree_data) {
+        APRTreeNumerics::fill_tree_min(apr, particle_data, tree_data);
     }
 
     template<typename S,typename T>
-    void fill_tree_max(PyAPR &apr, const PyParticleData<S>& particle_data, PyParticleData<T>& tree_data) {
-        APRTreeNumerics::fill_tree_max(apr.apr, particle_data.parts, tree_data.parts);
+    void fill_tree_max(APR &apr, const PyParticleData<S>& particle_data, PyParticleData<T>& tree_data) {
+        APRTreeNumerics::fill_tree_max(apr, particle_data, tree_data);
     }
 }
 

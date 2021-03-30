@@ -2,7 +2,6 @@
 #ifndef PYLIBAPR_PYAPRRECONSTRUCTION_HPP
 #define PYLIBAPR_PYAPRRECONSTRUCTION_HPP
 
-#include "data_structures/APR/APR.hpp"
 #include "data_containers/PyPixelData.hpp"
 #include "data_containers/PyAPR.hpp"
 #include "numerics/APRReconstruction.hpp"
@@ -17,56 +16,56 @@ namespace PyAPRReconstruction {
      * Constant reconstruction (full volume)
      */
     template<typename S, typename T>
-    void reconstruct_constant_inplace(PyAPR &aPyAPR, PyParticleData<S> &intensities, py::array_t<T>& arr) {
+    void reconstruct_constant_inplace(APR& apr, PyParticleData<S>& parts, py::array_t<T, py::array::c_style>& arr) {
 
         auto buf = arr.request(true);
         auto* ptr = static_cast<T*>(buf.ptr);
         PixelData<T> recon;
-        recon.init_from_mesh(aPyAPR.apr.org_dims(0), aPyAPR.apr.org_dims(1), aPyAPR.apr.org_dims(2), ptr);
+        recon.init_from_mesh(apr.org_dims(0), apr.org_dims(1), apr.org_dims(2), ptr);
 
         const size_t size_alloc = std::accumulate(buf.shape.begin(), buf.shape.end(), 1, std::multiplies<size_t>());
         if(recon.mesh.size() != size_alloc) {
             throw std::invalid_argument("input array size does not agree with APR dimensions");
         }
 
-        APRReconstruction::reconstruct_constant(aPyAPR.apr, recon, intensities.parts);
+        APRReconstruction::reconstruct_constant(apr, recon, parts);
     }
 
     /**
      * Level reconstruction (full volume)
      */
     template<typename S>
-    void reconstruct_level_inplace(PyAPR &aPyAPR, py::array_t<S>& arr) {
+    void reconstruct_level_inplace(APR& apr, py::array_t<S, py::array::c_style>& arr) {
 
         auto buf = arr.request(true);
         auto* ptr = static_cast<S*>(buf.ptr);
         PixelData<S> recon;
-        recon.init_from_mesh(aPyAPR.apr.org_dims(0), aPyAPR.apr.org_dims(1), aPyAPR.apr.org_dims(2), ptr);
+        recon.init_from_mesh(apr.org_dims(0), apr.org_dims(1), apr.org_dims(2), ptr);
 
         const size_t size_alloc = std::accumulate(buf.shape.begin(), buf.shape.end(), 1, std::multiplies<size_t>());
         if(recon.mesh.size() != size_alloc) {
             throw std::invalid_argument("input array size does not agree with APR dimensions");
         }
-        APRReconstruction::reconstruct_level(aPyAPR.apr, recon);
+        APRReconstruction::reconstruct_level(apr, recon);
     }
 
     /**
      * Smooth reconstruction (full volume)
      */
     template<typename S, typename T>
-    void reconstruct_smooth_inplace(PyAPR &aPyAPR, PyParticleData<S> &intensities, py::array_t<T>& arr) {
+    void reconstruct_smooth_inplace(APR& apr, PyParticleData<S>& parts, py::array_t<T, py::array::c_style>& arr) {
 
         auto buf = arr.request(true);
         auto* ptr = static_cast<T*>(buf.ptr);
         PixelData<T> recon;
-        recon.init_from_mesh(aPyAPR.apr.org_dims(0), aPyAPR.apr.org_dims(1), aPyAPR.apr.org_dims(2), ptr);
+        recon.init_from_mesh(apr.org_dims(0), apr.org_dims(1), apr.org_dims(2), ptr);
 
         const size_t size_alloc = std::accumulate(buf.shape.begin(), buf.shape.end(), 1, std::multiplies<size_t>());
         if(recon.mesh.size() != size_alloc) {
             throw std::invalid_argument("input array size does not agree with APR dimensions");
         }
 
-        APRReconstruction::reconstruct_constant(aPyAPR.apr, recon, intensities.parts);
+        APRReconstruction::reconstruct_smooth(apr, recon, parts);
     }
 
     /**
@@ -74,7 +73,8 @@ namespace PyAPRReconstruction {
      */
     template<typename S, typename T>
     void
-    reconstruct_constant_patch_inplace(PyAPR &aPyAPR, PyParticleData<S> &parts, PyParticleData<T> &tree_parts, PyReconPatch &patch, py::array_t<S> &arr) {
+    reconstruct_constant_patch_inplace(APR& apr, PyParticleData<S>& parts, PyParticleData<T>& tree_parts,
+                                       ReconPatch& patch, py::array_t<S, py::array::c_style>& arr) {
         auto buf = arr.request(true);
         auto* ptr = static_cast<S*>(buf.ptr);
         PixelData<S> recon;
@@ -97,7 +97,7 @@ namespace PyAPRReconstruction {
             throw std::invalid_argument("input array must agree with patch size!");
         }
 
-        APRReconstruction::reconstruct_constant(aPyAPR.apr, recon, parts.parts, tree_parts.parts, patch);
+        APRReconstruction::reconstruct_constant(apr, recon, parts, tree_parts, patch);
     }
 
 
@@ -106,7 +106,7 @@ namespace PyAPRReconstruction {
      */
     template<typename S>
     void
-    reconstruct_level_patch_inplace(PyAPR &aPyAPR, PyReconPatch &patch, py::array_t<S> &arr) {
+    reconstruct_level_patch_inplace(APR& apr, ReconPatch& patch, py::array_t<S, py::array::c_style>& arr) {
         auto buf = arr.request(true);
         auto* ptr = static_cast<S*>(buf.ptr);
         PixelData<S> recon;
@@ -129,7 +129,7 @@ namespace PyAPRReconstruction {
             throw std::invalid_argument("input array must agree with patch size!");
         }
 
-        APRReconstruction::reconstruct_level(aPyAPR.apr, recon, patch);
+        APRReconstruction::reconstruct_level(apr, recon, patch);
     }
 
 
@@ -138,7 +138,8 @@ namespace PyAPRReconstruction {
      */
     template<typename S, typename T>
     void
-    reconstruct_smooth_patch_inplace(PyAPR &aPyAPR, PyParticleData<S> &parts, PyParticleData<T> &tree_parts, PyReconPatch &patch, py::array_t<S> &arr) {
+    reconstruct_smooth_patch_inplace(APR& apr, PyParticleData<S>& parts, PyParticleData<T>& tree_parts,
+                                     ReconPatch& patch, py::array_t<S, py::array::c_style>& arr) {
         auto buf = arr.request(true);
         auto* ptr = static_cast<S*>(buf.ptr);
         PixelData<S> recon;
@@ -161,7 +162,7 @@ namespace PyAPRReconstruction {
             throw std::invalid_argument("input array must agree with patch size!");
         }
 
-        APRReconstruction::reconstruct_smooth(aPyAPR.apr, recon, parts.parts, tree_parts.parts, patch);
+        APRReconstruction::reconstruct_smooth(apr, recon, parts, tree_parts, patch);
     }
 
 }

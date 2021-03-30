@@ -7,8 +7,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
-#include "ConfigAPR.h"
-#include "data_structures/APR/APR.hpp"
+#include <ConfigAPR.h>
 
 #include "data_containers/PyPixelData.hpp"
 #include "data_containers/PyAPR.hpp"

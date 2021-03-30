@@ -19,39 +19,32 @@ namespace py = pybind11;
 namespace PyAPRNumerics {
 
     template<typename inputType, typename stencilType>
-    void gradient(PyAPR &apr, const PyParticleData <inputType> &input_parts, PyParticleData <stencilType> &output_parts,
+    void gradient(APR &apr, const PyParticleData <inputType> &input_parts, PyParticleData <stencilType> &output_parts,
                   int dimension, float delta, bool sobel = false) {
         if (sobel) {
-            APRNumerics::gradient_sobel(apr.apr, input_parts.parts, output_parts.parts, dimension, delta);
+            APRNumerics::gradient_sobel(apr, input_parts, output_parts, dimension, delta);
         } else {
-            APRNumerics::gradient_cfd(apr.apr, input_parts.parts, output_parts.parts, dimension, delta);
+            APRNumerics::gradient_cfd(apr, input_parts, output_parts, dimension, delta);
         }
     }
 
 
     template<typename inputType, typename stencilType>
-    void gradient_magnitude(PyAPR &apr, const PyParticleData <inputType> &input_parts,
+    void gradient_magnitude(APR &apr, const PyParticleData <inputType> &input_parts,
                             PyParticleData <stencilType> &output_parts,
                             const std::vector<float> &deltas = {1.0f, 1.0f, 1.0f}, bool sobel = false) {
 
         if (sobel) {
-            APRNumerics::gradient_magnitude_sobel(apr.apr, input_parts.parts, output_parts.parts, deltas);
+            APRNumerics::gradient_magnitude_sobel(apr, input_parts, output_parts, deltas);
         } else {
-            APRNumerics::gradient_magnitude_cfd(apr.apr, input_parts.parts, output_parts.parts, deltas);
+            APRNumerics::gradient_magnitude_cfd(apr, input_parts, output_parts, deltas);
         }
-    }
-
-
-    template<typename inputType, typename outputType>
-    void local_std(PyAPR &apr, const PyParticleData <inputType> &input_parts, PyParticleData <outputType> &output_parts,
-                   const std::vector<int> &size = {3, 3, 3}) {
-        APRNumerics::local_std(apr.apr, input_parts.parts, output_parts.parts, size);
     }
 
 
     template<typename inputType, typename stencilType>
     void
-    richardson_lucy_cpu(PyAPR &apr, PyParticleData <inputType> &input_parts, PyParticleData <stencilType> &output_parts,
+    richardson_lucy_cpu(APR &apr, PyParticleData <inputType> &input_parts, PyParticleData <stencilType> &output_parts,
                         py::array_t <stencilType> &stencil, int niter, bool use_stencil_downsample,
                         bool normalize_stencil, bool resume) {
 
@@ -60,13 +53,12 @@ namespace PyAPRNumerics {
         PixelData <stencilType> psf;
         psf.init_from_mesh(stencil_buf.shape[2], stencil_buf.shape[1], stencil_buf.shape[0], stencil_ptr);
 
-        APRNumerics::richardson_lucy(apr.apr, input_parts.parts, output_parts.parts, psf, niter,
-                                     use_stencil_downsample, normalize_stencil, resume);
+        APRNumerics::richardson_lucy(apr, input_parts, output_parts, psf, niter, use_stencil_downsample, normalize_stencil, resume);
     }
 
 
     template<typename inputType, typename stencilType>
-    void richardson_lucy_tv_cpu(PyAPR &apr, PyParticleData <inputType> &input_parts,
+    void richardson_lucy_tv_cpu(APR &apr, PyParticleData <inputType> &input_parts,
                                 PyParticleData <stencilType> &output_parts,
                                 py::array_t <stencilType> &stencil, int niter, float reg_factor,
                                 bool use_stencil_downsample,
@@ -77,55 +69,15 @@ namespace PyAPRNumerics {
         PixelData<float> psf;
         psf.init_from_mesh(stencil_buf.shape[2], stencil_buf.shape[1], stencil_buf.shape[0], stencil_ptr);
 
-        APRNumerics::richardson_lucy_tv(apr.apr, input_parts.parts, output_parts.parts, psf, niter, reg_factor,
+        APRNumerics::richardson_lucy_tv(apr, input_parts, output_parts, psf, niter, reg_factor,
                                         use_stencil_downsample, normalize_stencil, resume);
-    }
-
-
-    template<typename InputType, typename OutputType>
-    void
-    adaptive_min(PyAPR &apr, const PyParticleData <InputType> &input_parts, PyParticleData <OutputType> &output_parts,
-                 int num_tree_smooth = 3, int level_delta = 1, int num_part_smooth = 2) {
-
-        APRNumerics::adaptive_min(apr.apr, input_parts.parts, output_parts.parts, num_tree_smooth, level_delta,
-                                  num_part_smooth);
-    }
-
-
-    template<typename InputType, typename OutputType>
-    void
-    adaptive_max(PyAPR &apr, const PyParticleData <InputType> &input_parts, PyParticleData <OutputType> &output_parts,
-                 int num_tree_smooth = 3, int level_delta = 1, int num_part_smooth = 2) {
-
-        APRNumerics::adaptive_max(apr.apr, input_parts.parts, output_parts.parts, num_tree_smooth, level_delta,
-                                  num_part_smooth);
-    }
-
-
-/**
- * Apply a filter to each particle and its face-side neighbours in a given dimension.
- */
-    template<typename S, typename U>
-    void face_neighbour_filter(PyAPR &apr, const PyParticleData <S> &input_parts, PyParticleData <U> &output_parts,
-                               const std::vector<float> &filter, int dimension) {
-        APRNumerics::face_neighbour_filter(apr.apr, input_parts.parts, output_parts.parts, filter, dimension);
-    }
-
-/**
- * Successively apply a filter to each particle and its face-side neighbours in each dimension (y -> x -> z)
- */
-    template<typename S, typename U>
-    void
-    seperable_face_neighbour_filter(PyAPR &apr, const PyParticleData <S> &input_parts, PyParticleData <U> &output_parts,
-                                    const std::vector<float> &filter, int repeats = 1) {
-        APRNumerics::seperable_face_neighbour_filter(apr.apr, input_parts.parts, output_parts.parts, filter, repeats);
     }
 
 
 #ifdef PYAPR_USE_CUDA
 
     template<typename inputType, typename stencilType>
-    void richardson_lucy_cuda(PyAPR& apr, PyParticleData<inputType>& input_parts, PyParticleData<stencilType>& output_parts,
+    void richardson_lucy_cuda(APR& apr, PyParticleData<inputType>& input_parts, PyParticleData<stencilType>& output_parts,
                               py::array_t<stencilType>& stencil, int niter, bool use_stencil_downsample, bool normalize_stencil,
                               bool resume) {
 
@@ -146,10 +98,10 @@ namespace PyAPRNumerics {
         PixelData<stencilType> stencil_pd;
         stencil_pd.init_from_mesh(stencil_size, stencil_size, stencil_size, stencil_ptr);
 
-        auto access = apr.apr.gpuAPRHelper();
-        auto tree_access = apr.apr.gpuTreeHelper();
+        auto access = apr.gpuAPRHelper();
+        auto tree_access = apr.gpuTreeHelper();
 
-        richardson_lucy(access, tree_access, input_parts.parts.data, output_parts.parts.data, stencil_pd, niter,
+        richardson_lucy(access, tree_access, input_parts.data, output_parts.data, stencil_pd, niter,
                         use_stencil_downsample, normalize_stencil, resume);
     }
 
@@ -214,9 +166,9 @@ void AddPyAPRNumerics(py::module &p, const std::string &modulename) {
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"),
           py::arg("deltas"), py::arg("sobel")=false);
 
-    m.def("local_std", &PyAPRNumerics::local_std<uint16_t, float>, "compute local standard deviation around each particle",
+    m.def("local_std", &APRNumerics::local_std<uint16_t, float>, "compute local standard deviation around each particle",
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("size"));
-    m.def("local_std", &PyAPRNumerics::local_std<float, float>, "compute local standard deviation around each particle",
+    m.def("local_std", &APRNumerics::local_std<float, float>, "compute local standard deviation around each particle",
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("size"));
 
     m.def("richardson_lucy", &PyAPRNumerics::richardson_lucy_cpu<float, float>, "APR LR deconvolution",
@@ -233,28 +185,28 @@ void AddPyAPRNumerics(py::module &p, const std::string &modulename) {
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"), py::arg("niter"),
           py::arg("reg_factor"), py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("resume")=false);
 
-    m.def("adaptive_min", &PyAPRNumerics::adaptive_min<uint16_t, float>, "computes a smoothed local minimum at each particle location",
+    m.def("adaptive_min", &APRNumerics::adaptive_min<uint16_t, float>, "computes a smoothed local minimum at each particle location",
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("num_tree_smooth")=3, py::arg("level_delta")=1,
           py::arg("num_part_smooth")=2);
-    m.def("adaptive_min", &PyAPRNumerics::adaptive_min<float, float>, "computes a smoothed local minimum at each particle location",
-          py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("num_tree_smooth")=3, py::arg("level_delta")=1,
-          py::arg("num_part_smooth")=2);
-
-    m.def("adaptive_max", &PyAPRNumerics::adaptive_max<uint16_t, float>, "computes a smoothed local maximum at each particle location",
-          py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("num_tree_smooth")=3, py::arg("level_delta")=1,
-          py::arg("num_part_smooth")=2);
-    m.def("adaptive_max", &PyAPRNumerics::adaptive_max<float, float>, "computes a smoothed local maximum at each particle location",
+    m.def("adaptive_min", &APRNumerics::adaptive_min<float, float>, "computes a smoothed local minimum at each particle location",
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("num_tree_smooth")=3, py::arg("level_delta")=1,
           py::arg("num_part_smooth")=2);
 
-    m.def("face_neighbour_filter", &PyAPRNumerics::face_neighbour_filter<uint16_t, float>, "apply a filter to each particle and its face-side neighbours in a given dimension",
+    m.def("adaptive_max", &APRNumerics::adaptive_max<uint16_t, float>, "computes a smoothed local maximum at each particle location",
+          py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("num_tree_smooth")=3, py::arg("level_delta")=1,
+          py::arg("num_part_smooth")=2);
+    m.def("adaptive_max", &APRNumerics::adaptive_max<float, float>, "computes a smoothed local maximum at each particle location",
+          py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("num_tree_smooth")=3, py::arg("level_delta")=1,
+          py::arg("num_part_smooth")=2);
+
+    m.def("face_neighbour_filter", &APRNumerics::face_neighbour_filter<uint16_t, float>, "apply a filter to each particle and its face-side neighbours in a given dimension",
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("filter"), py::arg("dimension"));
-    m.def("face_neighbour_filter", &PyAPRNumerics::face_neighbour_filter<float, float>, "apply a filter to each particle and its face-side neighbours in a given dimension",
+    m.def("face_neighbour_filter", &APRNumerics::face_neighbour_filter<float, float>, "apply a filter to each particle and its face-side neighbours in a given dimension",
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("filter"), py::arg("dimension"));
 
-    m.def("seperable_face_neighbour_filter", &PyAPRNumerics::seperable_face_neighbour_filter<uint16_t, float>, "apply face_neighbour_filter separably in each dimension",
+    m.def("seperable_face_neighbour_filter", &APRNumerics::seperable_face_neighbour_filter<uint16_t, float>, "apply face_neighbour_filter separably in each dimension",
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("filter"), py::arg("repeats")=1);
-    m.def("seperable_face_neighbour_filter", &PyAPRNumerics::seperable_face_neighbour_filter<float, float>, "apply face_neighbour_filter separably in each dimension",
+    m.def("seperable_face_neighbour_filter", &APRNumerics::seperable_face_neighbour_filter<float, float>, "apply face_neighbour_filter separably in each dimension",
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("filter"), py::arg("repeats")=1);
 
 #ifdef PYAPR_USE_CUDA
