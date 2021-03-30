@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 14)
 # APR build options:
 option(PYAPR_USE_OPENMP "Use OpenMP for PyAPR functionality" ON)
 option(PYAPR_USE_CUDA "Use CUDA for PyAPR functionality" OFF)
+option(PYAPR_PREFER_EXTERNAL_LIBAPR "Use installed LibAPR rather than building from submodules" OFF)
 
 ##------------- Required libraries -------------##
 find_package(HDF5 REQUIRED)
@@ -17,7 +18,36 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXXFLAGS} -DHAVE_LIBTIFF")
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${HDF5_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${TIFF_INCLUDE_DIR})
 
-find_package(APR REQUIRED)
+###############################################################################
+# Find or build LibAPR
+###############################################################################
+if(PYAPR_PREFER_EXTERNAL_LIBAPR)
+    find_package(APR)
+    if(APR_FOUND)
+        message(STATUS "Found LibAPR - version ${APR_VERSION}")
+        set(APR_LIBRARIES apr::staticLib)
+    endif()
+endif()
+
+if(NOT PYAPR_PREFER_EXTERNAL_LIBAPR OR NOT APR_FOUND)
+    message(STATUS "PyAPR: Building LibAPR from submodules")
+
+    set(APR_TESTS OFF CACHE BOOL "" FORCE)
+    set(APR_BUILD_STATIC_LIB ON CACHE BOOL "" FORCE)
+    set(APR_BUILD_SHARED_LIB OFF CACHE BOOL "" FORCE)
+    set(APR_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(APR_BENCHMARK OFF CACHE BOOL "" FORCE)
+    set(APR_DENOISE OFF CACHE BOOL "" FORCE)
+    set(APR_USE_LIBTIFF ON CACHE BOOL "" FORCE)
+    set(APR_USE_OPENMP ${PYAPR_USE_OPENMP} CACHE BOOL "" FORCE)
+    set(APR_USE_CUDA ${PYAPR_USE_CUDA} CACHE BOOL "" FORCE)
+
+    add_subdirectory(external/LibAPR)
+    include_directories(LibAPR/src)
+    set(APR_LIBRARIES staticLib)
+endif()
+
+
 
 ###############################################################################
 # Handle OpenMP
@@ -90,7 +120,7 @@ set(APR_PYTHON_MODULE_NAME _pyaprwrapper)
 add_definitions(-DAPR_PYTHON_MODULE_NAME=${APR_PYTHON_MODULE_NAME})
 pybind11_add_module(${APR_PYTHON_MODULE_NAME} MODULE wrappers/pythonBind.cpp)
 target_include_directories(${APR_PYTHON_MODULE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/wrappers ${CMAKE_CURRENT_SOURCE_DIR}/pyapr ${CMAKE_CURRENT_SOURCE_DIR}/external)
-target_link_libraries(${APR_PYTHON_MODULE_NAME} PRIVATE apr::sharedLib pybind11::module ${HDF5_LIBRARIES} ${TIFF_LIBRARIES} ${BLOSC_LIBRARIES} ${ZLIB_LIBRARIES} maxflow)
+target_link_libraries(${APR_PYTHON_MODULE_NAME} PRIVATE ${APR_LIBRARIES} pybind11::module ${HDF5_LIBRARIES} ${TIFF_LIBRARIES} ${BLOSC_LIBRARIES} ${ZLIB_LIBRARIES} maxflow)
 set_target_properties(${APR_PYTHON_MODULE_NAME} PROPERTIES OUTPUT_NAME ${APR_PYTHON_MODULE_NAME})
 set_target_properties(${APR_PYTHON_MODULE_NAME} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
         SUFFIX "${PYTHON_MODULE_EXTENSION}")
