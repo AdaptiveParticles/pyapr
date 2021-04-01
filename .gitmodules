@@ -5,5 +5,5 @@
 [submodule "external/LibAPR"]
 	path = external/LibAPR
 	url = https://github.com/AdaptiveParticles/LibAPR.git
-	branch = develop_joel
+	branch = tmp_install_windows_joel
 
