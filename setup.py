@@ -2,7 +2,6 @@
 import os
 import sys
 import subprocess
-from cmake_setuptools import CMakeExtension, CMakeBuildExt
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
@@ -34,6 +33,8 @@ class CMakeBuild(build_ext):
 
         build_type = "Debug" if self.debug else "Release"
 
+        build_args = ['--config', build_type]
+
         # CMake lets you override the generator - we need to check this.
         # Can be set with Conda-Build, for example.
         cmake_generator = os.environ.get("CMAKE_GENERATOR", "")
@@ -52,19 +53,10 @@ class CMakeBuild(build_ext):
         cmake_args.extend([x for x in os.environ.get('EXTRA_CMAKE_ARGS', '').split(' ') if x])
 
         if self.compiler.compiler_type == "msvc":
-            # cmake_args += ["-A"]
-            #  cmake_args +=  ["x64"]
-            # cmake_args += ["-DCMAKE_TOOLCHAIN_FILE=\"C:/Users/bevan/APR/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake\""]
-            # cmake_args += ["-DVCPKG_TARGET_TRIPLET=x64-windows"]
-            # cmake_args += ["-T ClangCL"]
 
-            # cmake_args += ["cmake"]
-            # cmake_args += [".."]
-
-            # cmake_args += ["-A", PLAT_TO_CMAKE[self.plat_name]]
-            cmake_args += ["-A"]
-            cmake_args += ["x64"]
-            cmake_args += ["-DCMAKE_TOOLCHAIN_FILE=C:\\Users\\bevan\\APR\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"]
+            # Must provide -DCMAKE_TOOLCHAIN_FILE=C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake
+            # via environment variable EXTRA_CMAKE_ARGS
+            cmake_args += ["-A", PLAT_TO_CMAKE[self.plat_name]]
             cmake_args += ["-DVCPKG_TARGET_TRIPLET=x64-windows"]
             cmake_args += ["-T"]
             cmake_args += ["ClangCL"]
@@ -74,11 +66,6 @@ class CMakeBuild(build_ext):
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
 
-
-        # subprocess.check_call(
-        #     ["cmake", ext.sourcedir], cwd=self.build_temp
-        # )
-
         print("******************************************************************************")
         print( ext.sourcedir)
         print( self.build_temp)
@@ -87,7 +74,7 @@ class CMakeBuild(build_ext):
             ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp
         )
         subprocess.check_call(
-            ["cmake", "--build", ".", "--config", build_type], cwd=self.build_temp
+            ["cmake", "--build", "."] + build_args, cwd=self.build_temp
         )
 
 
