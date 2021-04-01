@@ -2,7 +2,7 @@
 import os
 import sys
 import subprocess
-
+from cmake_setuptools import CMakeExtension, CMakeBuildExt
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
@@ -14,6 +14,7 @@ PLAT_TO_CMAKE = {
     "win-arm64": "ARM64",
 }
 
+
 # A CMakeExtension needs a sourcedir instead of a file list.
 # The name must be the _single_ output extension from the CMake build.
 # If you need multiple extensions, see scikit-build.
@@ -21,6 +22,7 @@ class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=""):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
+
 
 class CMakeBuild(build_ext):
     def build_extension(self, ext):
@@ -30,7 +32,7 @@ class CMakeBuild(build_ext):
         if not extdir.endswith(os.path.sep):
             extdir += os.path.sep
 
-        cfg = "Debug" if self.debug else "Release"
+        build_type = "Debug" if self.debug else "Release"
 
         # CMake lets you override the generator - we need to check this.
         # Can be set with Conda-Build, for example.
@@ -40,42 +42,32 @@ class CMakeBuild(build_ext):
         # EXAMPLE_VERSION_INFO shows you how to pass a value into the C++ code
         # from Python.
 
-        # cmake_args = []
-        # cmake_args = [
-            # "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(extdir),
-            # "-DPYTHON_EXECUTABLE={}".format(sys.executable),
-            # "-DEXAMPLE_VERSION_INFO={}".format(self.distribution.get_version()),
-            # "-DCMAKE_BUILD_TYPE={}".format(cfg),  # not used on MSVC, but no harm
-        # ]
-        build_args = []
+        cmake_args = [
+            "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(extdir),
+            "-DPYTHON_EXECUTABLE={}".format(sys.executable),
+            "-DCMAKE_BUILD_TYPE={}".format(build_type),  # not used on MSVC, but no harm
+        ]
 
-        if self.compiler.compiler_type != "msvc":
-            # Using Ninja-build since it a) is available as a wheel and b)
-            # multithreads automatically. MSVC would require all variables be
-            # exported for Ninja to pick it up, which is a little tricky to do.
-            # Users can override the generator with CMAKE_GENERATOR in CMake
-            # 3.15+.
-            x = 1
-        else:
+        # Pass CMake arguments via the environment variable 'EXTRA_CMAKE_ARGS'
+        cmake_args.extend([x for x in os.environ.get('EXTRA_CMAKE_ARGS', '').split(' ') if x])
+
+        if self.compiler.compiler_type == "msvc":
             # cmake_args += ["-A"]
             #  cmake_args +=  ["x64"]
             # cmake_args += ["-DCMAKE_TOOLCHAIN_FILE=\"C:/Users/bevan/APR/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake\""]
             # cmake_args += ["-DVCPKG_TARGET_TRIPLET=x64-windows"]
             # cmake_args += ["-T ClangCL"]
 
-            cmake_args = []
             # cmake_args += ["cmake"]
             # cmake_args += [".."]
+
+            # cmake_args += ["-A", PLAT_TO_CMAKE[self.plat_name]]
             cmake_args += ["-A"]
-            cmake_args +=  ["x64"]
+            cmake_args += ["x64"]
             cmake_args += ["-DCMAKE_TOOLCHAIN_FILE=C:\\Users\\bevan\\APR\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"]
             cmake_args += ["-DVCPKG_TARGET_TRIPLET=x64-windows"]
             cmake_args += ["-T"]
             cmake_args += ["ClangCL"]
-
-            x = 1
-
-        build_args = "--config Release"
 
         print(cmake_args)
 
@@ -95,7 +87,7 @@ class CMakeBuild(build_ext):
             ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp
         )
         subprocess.check_call(
-            ["cmake", "--build", ".","--config","Release"], cwd=self.build_temp
+            ["cmake", "--build", ".", "--config", build_type], cwd=self.build_temp
         )
 
 
