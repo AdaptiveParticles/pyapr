@@ -1,2 +1,4 @@
 #!/bin/sh
-apt-get install cmake libhdf5-dev libtiff5
+yum check-update
+yum update
+yum update cmake
