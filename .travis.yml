@@ -2,7 +2,7 @@ env:
   global:
   # websockets only works on Python >= 3.6.
     - CIBW_BUILD="cp36-* cp37-* cp38-*"
-    - CIBW_BEFORE_BUILD_LINUX="./build_linux.sh"
+    - CIBW_BEFORE_BUILD_LINUX="bash build_linux.sh"
     - CIBW_ARCHS="auto64"
 
 matrix:
