@@ -4,9 +4,17 @@ jobs:
   include:
     # perform a linux build
     - services: docker
+        addons:
+          apt:
+            packages:
+              - cmake
+              - cmake-data
+              - clang-3.6
+              - libhdf5-dev
+              - libtiff5
     # perform a linux ARMv8 build
-    - services: docker
-      arch: arm64
+   # - services: docker
+#      arch: arm64
     # perform a linux PPC64LE build
  #   - services: docker
  #     arch: ppc64le
