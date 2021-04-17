@@ -2,14 +2,17 @@ env:
   global:
   # websockets only works on Python >= 3.6.
     - CIBW_BUILD="cp36-* cp37-* cp38-*"
-    - CIBW_BEFORE_BUILD_LINUX="yum install -y cmake libhdf5-dev libtiff5"
+    - CIBW_BEFORE_BUILD_LINUX="build_linux.sh"
 
-language: python
-
-jobs:
+matrix:
   include:
-    # perform a linux build
-    - services: docker
+    - language: python
+      dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
+      sudo: required
+      python: "3.7"
+      services:
+        - docker
+
     # perform a linux ARMv8 build
    # - services: docker
 #      arch: arm64
