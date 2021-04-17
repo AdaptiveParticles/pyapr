@@ -1,17 +1,14 @@
+env:
+  global:
+  # websockets only works on Python >= 3.6.
+    - CIBW_BUILD="cp36-* cp37-* cp38-*"
+
 language: python
 
 jobs:
   include:
     # perform a linux build
     - services: docker
-      addons:
-      apt:
-      packages:
-      - cmake
-      - cmake-data
-      - clang-3.6
-      - libhdf5-dev
-      - libtiff5
     # perform a linux ARMv8 build
    # - services: docker
 #      arch: arm64
