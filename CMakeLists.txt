@@ -132,7 +132,7 @@ find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 
 add_subdirectory(external/pybind11)
 
-add_library(maxflow SHARED
+add_library(maxflow STATIC
             external/maxflow-v3.04.src/graph.cpp
             external/maxflow-v3.04.src/maxflow.cpp)
 
