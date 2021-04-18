@@ -19,7 +19,7 @@ script:
 deploy:
   provider: pypi
   username: __token__
-  server: https://testpypi.python.org/pypi # Remove for deployment to official PyPi repo
+  server: https://test.pypi.org/legacy/ # Remove for deployment to official PyPi repo
   skip_cleanup: true
   on:
     tags: false
