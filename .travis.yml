@@ -20,7 +20,7 @@ script:
 
 after_success:
 - python3 -m pip install twine
-- python3 -m twine upload wheelhouse/*.whl
+- python3 -m twine upload --repository testpypi wheelhouse/*.whl
 #deploy:
 #  provider: pypi
 #  username: __token__
