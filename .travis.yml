@@ -21,6 +21,7 @@ deploy:
   username: __token__
   server: https://test.pypi.org/legacy/ # Remove for deployment to official PyPi repo
   skip_cleanup: true
+  skip_existing: true
   on:
     tags: false
     all_branches: true
