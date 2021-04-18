@@ -22,6 +22,6 @@ deploy:
   server: https://testpypi.python.org/pypi # Remove for deployment to official PyPi repo
   skip_cleanup: true
   on:
-    tags: true
+    tags: false
   password:
     secure: Gc5PjyfB4Km9LTcUHvbCUBnLZv2lEYNaLccxPPdvxbQd4gxkp3wL1RF+SfpfAZv6+SYFbEQXLvC617jxiWFsgftMyTF8yvtw7a/CN40IPW+xqoJNiO3iGRekhtvVlJi4AYH69X+S34qM3RrsYyNtFdo5BJavk9B+MRWH042iln6aCZ1oNoIEQcy5rdLX648tVDKJrpejcNSWVOQ7o+21Z+jYW0a93sGZHdGfLG4yUfpnIiamhcnt+zxyajWq/WWzgG4Y2yDipSGXsnaEGr+fU2m2xYsTZXDhf5B/J8Dl62bK9urIkg6rIPgx0aBOhW9Dus6qUGA42/IP89L5X4IaGihhJSzhxg2kpqQTguTncAd8tjGUI+PpRhpPr5mncbfH9TD0vbhGPK3wCmqAb57jBFcyj1srscsy3V0x/USjnEScrGSk9vYfSNGzyeRYKQuI6tpQgRXsYv4zcmaDEmzIOO3kBrZV4XZZlj0/xFk1jqL8GqpLsGYzbWhacbxxtYZwl2l9/EHm2aYIQFXaQc1mMkJTjsd0lAREXKecQKTeHg745UkemMTW/Ml5RdOAJWWkWAfKbDM35VpdET5IH7e79uCoAgGNQzC79h2NkkiEtuq3SU+9N6m6vKNUxzKRa0udxtJs192/o1wg1ilcss0QOpGyQyWxeCPcTWbeZpaFGQs=
