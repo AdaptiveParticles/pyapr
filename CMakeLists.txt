@@ -135,6 +135,7 @@ add_subdirectory(external/pybind11)
 add_library(maxflow STATIC
             external/maxflow-v3.04.src/graph.cpp
             external/maxflow-v3.04.src/maxflow.cpp)
+set_target_properties(maxflow PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 include_directories(pyapr)
 include_directories(external)
