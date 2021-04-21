@@ -43,7 +43,7 @@ if(NOT PYAPR_PREFER_EXTERNAL_LIBAPR OR NOT APR_FOUND)
     set(APR_USE_CUDA ${PYAPR_USE_CUDA} CACHE BOOL "" FORCE)
 
     add_subdirectory(external/LibAPR)
-    include_directories(LibAPR/src)
+    include_directories(external/LibAPR/src)
     set(APR_LIBRARIES staticLib)
 endif()
 
