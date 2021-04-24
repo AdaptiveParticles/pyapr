@@ -41,7 +41,12 @@ if(NOT PYAPR_PREFER_EXTERNAL_LIBAPR OR NOT APR_FOUND)
     set(APR_USE_LIBTIFF ON CACHE BOOL "" FORCE)
     set(APR_USE_OPENMP ${PYAPR_USE_OPENMP} CACHE BOOL "" FORCE)
     set(APR_USE_CUDA ${PYAPR_USE_CUDA} CACHE BOOL "" FORCE)
-    set(APR_PREFER_EXTERNAL_BLOSC OFF CACHE BOOL "" FORCE)
+
+    if(WIN32)
+        set(APR_PREFER_EXTERNAL_BLOSC ON CACHE BOOL "" FORCE)
+    else()
+        set(APR_PREFER_EXTERNAL_BLOSC OFF CACHE BOOL "" FORCE)
+    endif()
 
     add_subdirectory(external/LibAPR)
     include_directories(external/LibAPR/src)
