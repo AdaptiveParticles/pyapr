@@ -16,7 +16,7 @@ matrix:
   - os: windows
     language: bash
     before_install:
-      - export EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=/c/Users/travis/build/AdaptiveParticles/PyLibAPR\vcpkg\scripts\buildsystems\vcpkg.cmake"
+      - export EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=/c/Users/travis/build/AdaptiveParticles/PyLibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake"
       - choco install python --version 3.8.6
       - travis_wait 10 choco install visualstudio2019buildtools --params "--add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.VC.Llvm.Clang --add Microsoft.VisualStudio.Component.VC.Llvm.ClangToolset --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Llvm.Clang --add Microsoft.VisualStudio.Component.Windows10SDK.19041	--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC.BuildTools"
       - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
