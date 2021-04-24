@@ -22,9 +22,10 @@ matrix:
       # make sure it's on PATH as 'python3'
       - ln -s /c/Python38/python.exe /c/Python38/python3.exe
       - travis_wait 20 sh travis_windows_setup.sh
-      - powershell $vcpkg_path = Resolve-Path "\vcpkg\scripts\buildsystems\vcpkg.cmake"
-      - powershell $cmake_arg = "-DCMAKE_TOOLCHAIN_FILE=" + $vcpkg_path
-      - powershell $env:EXTRA_CMAKE_ARGS = $cmake_arg
+      - pwd
+      #- powershell $vcpkg_path = Resolve-Path "\vcpkg\scripts\buildsystems\vcpkg.cmake"
+      #- powershell $cmake_arg = "-DCMAKE_TOOLCHAIN_FILE=" + $vcpkg_path
+      #- powershell $env:EXTRA_CMAKE_ARGS = $cmake_arg
 install:
 - python3 -m pip install cibuildwheel==1.10.0
 script:
