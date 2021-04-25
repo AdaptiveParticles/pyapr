@@ -14,6 +14,14 @@ matrix:
     python: '3.7'
     services:
     - docker
+    install:
+      - python3 -m pip install cibuildwheel==1.10.0
+    script:
+      - python3 -m cibuildwheel --output-dir wheelhouse
+    after_success:
+      - python3 -m pip install twine
+      - python3 -m twine upload --skip-existing --repository testpypi wheelhouse/*.whl
+
   - os: windows
     language: bash
     cache:
@@ -22,18 +30,16 @@ matrix:
         - vcpkg
     before_install:
       - export EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=/c/Users/travis/build/AdaptiveParticles/PyLibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      - choco install python --version 3.8.6
-      - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
+      #- choco install python --version 3.8.6
+      #- export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
       # make sure it's on PATH as 'python3'
-      - ln -s /c/Python38/python.exe /c/Python38/python3.exe
+      #- ln -s /c/Python38/python.exe /c/Python38/python3.exe
+      - choco install python --version 3.9.4
       - choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' #need cmake > 3.18
       - travis_wait 10 choco install visualstudio2019buildtools --params "--add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.VC.Llvm.Clang --add Microsoft.VisualStudio.Component.VC.Llvm.ClangToolset --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Llvm.Clang --add Microsoft.VisualStudio.Component.Windows10SDK.19041	--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC.BuildTools"
-
       - travis_wait 20 sh travis_windows_setup.sh
-install:
-- python3 -m pip install cibuildwheel==1.10.0
-script:
-- python3 -m cibuildwheel --output-dir wheelhouse
-after_success:
-- python3 -m pip install twine
-- python3 -m twine upload --skip-existing --repository testpypi wheelhouse/*.whl
+    script:
+      - py -m build
+    after_success:
+      - python3 -m pip install twine
+      - python3 -m twine upload --skip-existing --repository testpypi dist/*.whl
