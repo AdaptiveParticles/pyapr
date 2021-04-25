@@ -43,10 +43,10 @@ matrix:
     install:
       - py -m pip install build
     script:
+      - py -m pip install wheel
       - py -m build
       - py -m pip install delvewheel
-      - py -m pip install wheel
-    after_success:
       - py fix_windows_wheel.py
+    after_success:
       - py -m pip install twine
       - py -m twine upload --skip-existing --repository testpypi dist/wheelhouse/*.whl

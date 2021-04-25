@@ -17,6 +17,7 @@ for f in files:
 
     folders = glob.glob('PyLibAPR_test-*/')
 
+    print('going to loop')
     for folder in folders:
         path = folder + 'Release' + '/*'
         files_2_copy = glob.glob(path)
