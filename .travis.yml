@@ -44,6 +44,8 @@ matrix:
       - py -m pip install build
     script:
       - py -m build
+      - py -m pip install delvewheel
     after_success:
+      - py fix_windows_wheel.py
       - py -m pip install twine
-      - py -m twine upload --skip-existing --repository testpypi dist/*.whl
+      - py -m twine upload --skip-existing --repository testpypi dist/wheelhouse/*.whl
