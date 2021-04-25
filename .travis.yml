@@ -45,5 +45,5 @@ matrix:
     script:
       - py -m build
     after_success:
-      - python -m pip install twine
-      - python -m twine upload --skip-existing --repository testpypi dist/*.whl
+      - py -m pip install twine
+      - py -m twine upload --skip-existing --repository testpypi dist/*.whl
