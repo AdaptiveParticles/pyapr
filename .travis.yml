@@ -36,9 +36,9 @@ matrix:
       #- ln -s /c/Python38/python.exe /c/Python38/python3.exe
       - choco install python --version 3.9.4
       - choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' #need cmake > 3.18
+      - python -m pip install build
       - travis_wait 10 choco install visualstudio2019buildtools --params "--add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.VC.Llvm.Clang --add Microsoft.VisualStudio.Component.VC.Llvm.ClangToolset --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Llvm.Clang --add Microsoft.VisualStudio.Component.Windows10SDK.19041	--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC.BuildTools"
       - travis_wait 20 sh travis_windows_setup.sh
-      - python -m pip install --upgrade build
     script:
       - python -m build
     after_success:
