@@ -45,6 +45,7 @@ matrix:
     script:
       - py -m build
       - py -m pip install delvewheel
+      - py -m pip install wheel
     after_success:
       - py fix_windows_wheel.py
       - py -m pip install twine
