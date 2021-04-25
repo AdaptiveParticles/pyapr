@@ -27,7 +27,7 @@ matrix:
     cache:
       directories:
         - $HOME/AppData/Local/Temp/chocolatey
-        - vcpkg
+      #  - vcpkg
     before_install:
       - export EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=/c/Users/travis/build/AdaptiveParticles/PyLibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake"
       #- choco install python --version 3.8.6
