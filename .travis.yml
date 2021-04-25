@@ -37,10 +37,9 @@ matrix:
       - choco install python3
       #- export PATH="/c/Python39:/c/Python39/Scripts:$PATH"
       #- ln -s /c/Python39/python.exe /c/Python39/python3.exe
-     # - choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' #need cmake > 3.18
-
-     # - travis_wait 10 choco install visualstudio2019buildtools --params "--add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.VC.Llvm.Clang --add Microsoft.VisualStudio.Component.VC.Llvm.ClangToolset --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Llvm.Clang --add Microsoft.VisualStudio.Component.Windows10SDK.19041	--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC.BuildTools"
-    #  - travis_wait 20 sh travis_windows_setup.sh
+      - choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' #need cmake > 3.18
+      - travis_wait 10 choco install visualstudio2019buildtools --params "--add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.VC.Llvm.Clang --add Microsoft.VisualStudio.Component.VC.Llvm.ClangToolset --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Llvm.Clang --add Microsoft.VisualStudio.Component.Windows10SDK.19041	--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC.BuildTools"
+      - travis_wait 20 sh travis_windows_setup.sh
     install:
       - py -m pip install build
     script:
