@@ -40,7 +40,7 @@ matrix:
      # - travis_wait 10 choco install visualstudio2019buildtools --params "--add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.VC.Llvm.Clang --add Microsoft.VisualStudio.Component.VC.Llvm.ClangToolset --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Llvm.Clang --add Microsoft.VisualStudio.Component.Windows10SDK.19041	--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC.BuildTools"
     #  - travis_wait 20 sh travis_windows_setup.sh
     install:
-      pip install build
+      - python -m pip install build
     script:
       - python -m build
     after_success:
