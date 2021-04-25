@@ -28,8 +28,8 @@ matrix:
       directories:
         - $HOME/AppData/Local/Temp/chocolatey
         - $HOME/AppData/Local/vcpkg/archives
-        - C:\ProgramData\chocolatey\bin
-        - C:\ProgramData\chocolatey\lib
+        - /C/ProgramData/chocolatey/bin
+        - /C/ProgramData/chocolatey/lib
     before_install:
       - export VCPKG_FEATURE_FLAGS="binarycaching"
       - export EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=/c/Users/travis/build/AdaptiveParticles/PyLibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake"
