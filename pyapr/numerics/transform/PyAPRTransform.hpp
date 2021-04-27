@@ -629,7 +629,82 @@ void maximum_projection_z_patch(APR& apr, PyParticleData<T>& parts, py::array_t<
 }
 
 
+template<typename T>
+void find_label_centers_cpp(APR& apr, PyParticleData<T>& object_labels, py::array_t<double>& coords) {
+    auto res = coords.mutable_unchecked<2>();
+    auto it = apr.iterator();
+    const int ndim = it.number_dimensions();
+    std::vector<float> denominator(res.shape(0), 0.0f);
 
+    for(int level = it.level_min(); level <= it.level_max(); ++level) {
+        const float psize = std::pow(it.level_size(level), ndim);
+        for(int z = 0; z < it.z_num(level); ++z) {
+            for(int x = 0; x < it.x_num(level); ++x) {
+                for(it.begin(level, z, x); it < it.end(); ++it) {
+                    if(object_labels[it] > 0) {
+                        res(object_labels[it], 0) += it.z_global(level, z) * psize;
+                        res(object_labels[it], 1) += it.x_global(level, x) * psize;
+                        res(object_labels[it], 2) += it.y_global(level, it.y()) * psize;
+                        denominator[object_labels[it]] += psize;
+                    }
+                }
+            }
+        }
+    }
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for default(shared)
+#endif
+    for(size_t i = 0; i < (size_t) res.shape(0); ++i) {
+        if(denominator[i] > 1e-3) {
+            res(i, 0) /= denominator[i];
+            res(i, 1) /= denominator[i];
+            res(i, 2) /= denominator[i];
+        } else {
+            res(i, 0) = 0;
+            res(i, 1) = 0;
+            res(i, 2) = 0;
+        }
+    }
+}
+
+
+template<typename T, typename S>
+void find_label_centers_weighted_cpp(APR& apr, PyParticleData<T>& object_labels, py::array_t<double>& coords, PyParticleData<S>& weights) {
+    auto res = coords.mutable_unchecked<2>();
+    auto it = apr.iterator();
+    const int ndim = it.number_dimensions();
+    std::vector<float> denominator(res.shape(0), 0.0f);
+
+    for(int level = it.level_min(); level <= it.level_max(); ++level) {
+        const float psize = std::pow(it.level_size(level), ndim);
+        for(int z = 0; z < it.z_num(level); ++z) {
+            for(int x = 0; x < it.x_num(level); ++x) {
+                for(it.begin(level, z, x); it < it.end(); ++it) {
+                    if(object_labels[it] > 0) {
+                        res(object_labels[it], 0) += it.z_global(level, z) * psize * weights[it];
+                        res(object_labels[it], 1) += it.x_global(level, x) * psize * weights[it];
+                        res(object_labels[it], 2) += it.y_global(level, it.y()) * psize * weights[it];
+                        denominator[object_labels[it]] += psize * weights[it];
+                    }
+                }
+            }
+        }
+    }
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for default(shared)
+#endif
+    for(size_t i = 0; i < (size_t) res.shape(0); ++i) {
+        if(denominator[i] > 1e-3) {
+            res(i, 0) /= denominator[i];
+            res(i, 1) /= denominator[i];
+            res(i, 2) /= denominator[i];
+        } else {
+            res(i, 0) = -1;
+            res(i, 1) = -1;
+            res(i, 2) = -1;
+        }
+    }
+}
 
 
 void AddPyAPRTransform(py::module &m, const std::string &modulename) {
@@ -702,6 +777,20 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert(), py::arg("patch"));
     m2.def("max_projection_z", &maximum_projection_z_patch<uint16_t>, "maximum projection along z axis",
            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert(), py::arg("patch"));
+
+    m2.def("find_label_centers_cpp", &find_label_centers_cpp<uint16_t>, "find object centers by volumetric average of label coordinates",
+           py::arg("apr"), py::arg("object_labels"), py::arg("coords"));
+    m2.def("find_label_centers_cpp", &find_label_centers_cpp<uint64_t>, "find object centers by volumetric average of label coordinates",
+           py::arg("apr"), py::arg("object_labels"), py::arg("coords"));
+
+    m2.def("find_label_centers_weighted_cpp", &find_label_centers_weighted_cpp<uint16_t, uint16_t>, "find object centers by weighted average of label coordinates",
+           py::arg("apr"), py::arg("object_labels"), py::arg("coords"), py::arg("weights"));
+    m2.def("find_label_centers_weighted_cpp", &find_label_centers_weighted_cpp<uint16_t, float>, "find object centers by weighted average of label coordinates",
+           py::arg("apr"), py::arg("object_labels"), py::arg("coords"), py::arg("weights"));
+    m2.def("find_label_centers_weighted_cpp", &find_label_centers_weighted_cpp<uint64_t, uint16_t>, "find object centers by weighted average of label coordinates",
+           py::arg("apr"), py::arg("object_labels"), py::arg("coords"), py::arg("weights"));
+    m2.def("find_label_centers_weighted_cpp", &find_label_centers_weighted_cpp<uint64_t, float>, "find object centers by weighted average of label coordinates",
+           py::arg("apr"), py::arg("object_labels"), py::arg("coords"), py::arg("weights"));
 }
 
 #endif //PYLIBAPR_PYAPRTRANSFORM_HPP
