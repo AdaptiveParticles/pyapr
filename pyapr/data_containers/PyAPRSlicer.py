@@ -16,7 +16,14 @@ class APRSlicer:
         if self.mode == 'level':
             self.dtype = np.uint8
         else:
-            self.dtype = np.float32 if isinstance(parts, pyapr.FloatParticles) else np.uint16
+            if isinstance(parts, pyapr.FloatParticles):
+                self.dtype = np.float32
+            elif isinstance(parts, pyapr.LongParticles):
+                self.dtype = np.uint64
+            elif isinstance(parts, pyapr.ShortParticles):
+                self.dtype = np.uint16
+            else:
+                raise('Error: parts type not recognized')
 
         self.patch = pyapr.ReconPatch()
         self.patch.level_delta = level_delta
@@ -26,7 +33,13 @@ class APRSlicer:
         self.dims = []
         self.update_dims()
 
-        self.tree_parts = pyapr.FloatParticles()
+        if isinstance(parts, pyapr.FloatParticles):
+            self.tree_parts = pyapr.FloatParticles()
+        elif isinstance(parts, pyapr.LongParticles):
+            self.tree_parts = pyapr.LongParticles()
+        elif isinstance(parts, pyapr.ShortParticles):
+            self.tree_parts = pyapr.ShortParticles()
+
         if tree_mode == 'mean':
             pyapr.numerics.fill_tree_mean(self.apr, self.parts, self.tree_parts)
         elif tree_mode == 'max':

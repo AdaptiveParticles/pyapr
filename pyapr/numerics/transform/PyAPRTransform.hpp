@@ -270,10 +270,11 @@ void find_perimeter(APR& apr, PyParticleData<T>& parts, PyParticleData<T>& perim
  * @param object_labels
  * @param min_volume
  */
-void remove_small_objects(APR& apr, PyParticleData<uint16_t>& object_labels, const int min_volume) {
+template<typename T>
+void remove_small_objects(APR& apr, PyParticleData<T>& object_labels, const uint64_t min_volume) {
     auto max_label = object_labels.max();
 
-    std::vector<uint16_t> bin_counts(max_label+1, 0);
+    std::vector<uint64_t> bin_counts(max_label+1, 0);
     auto it = apr.iterator();
     const int ndim = it.number_dimensions();
 
@@ -290,6 +291,41 @@ void remove_small_objects(APR& apr, PyParticleData<uint16_t>& object_labels, con
 #endif
     for(size_t idx = 0; idx < it.total_number_particles(); ++idx) {
         if(bin_counts[object_labels[idx]] < min_volume) {
+            object_labels[idx] = 0;
+        }
+    }
+}
+
+
+
+/**
+ * Remove objects larger than a given volume (in pixels). Assumes that each object is labeled with a distinct number,
+ * for example the output of connected_component.
+ * @param apr
+ * @param object_labels
+ * @param min_volume
+ */
+template<typename T>
+void remove_large_objects(APR& apr, PyParticleData<T>& object_labels, const uint64_t max_volume) {
+    auto max_label = object_labels.max();
+
+    std::vector<uint64_t> bin_counts(max_label+1, 0);
+    auto it = apr.iterator();
+    const int ndim = it.number_dimensions();
+
+    for(int level = it.level_min(); level <= it.level_max(); ++level) {
+        const int particle_volume = std::pow(2, ndim*(it.level_max() - level));
+
+        for(uint64_t idx = it.particles_level_begin(level); idx < it.particles_level_end(level); ++idx) {
+            bin_counts[object_labels[idx]] += particle_volume;
+        }
+    }
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+    for(size_t idx = 0; idx < it.total_number_particles(); ++idx) {
+        if(bin_counts[object_labels[idx]] > max_volume) {
             object_labels[idx] = 0;
         }
     }
@@ -602,10 +638,17 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
     m2.def("dilation", &dilation_py<uint16_t>,
            "computes a morphological dilation of the input. each particle takes the value of the maximum of its face-side neighbbours",
            py::arg("apr"), py::arg("parts"), py::arg("binary")=false, py::arg("radius")=1);
+    m2.def("dilation", &dilation_py<uint64_t>,
+           "computes a morphological dilation of the input. each particle takes the value of the maximum of its face-side neighbbours",
+           py::arg("apr"), py::arg("parts"), py::arg("binary")=false, py::arg("radius")=1);
     m2.def("dilation", &dilation_py<float>,
            "computes a morphological dilation of the input. each particle takes the value of the maximum of its face-side neighbbours",
            py::arg("apr"), py::arg("parts"), py::arg("binary")=false, py::arg("radius")=1);
+
     m2.def("erosion", &erosion_py<uint16_t>,
+           "computes a morphological erosion of the input. each particle takes the value of the minimum of its face-side neighbbours",
+           py::arg("apr"), py::arg("parts"), py::arg("binary")=false, py::arg("radius")=1);
+    m2.def("erosion", &erosion_py<uint64_t>,
            "computes a morphological erosion of the input. each particle takes the value of the minimum of its face-side neighbbours",
            py::arg("apr"), py::arg("parts"), py::arg("binary")=false, py::arg("radius")=1);
     m2.def("erosion", &erosion_py<float>,
@@ -614,10 +657,17 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
 
     m2.def("find_perimeter", &find_perimeter<uint16_t>, "find all positive particles with at least one zero neighbour",
            py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
+    m2.def("find_perimeter", &find_perimeter<uint64_t>, "find all positive particles with at least one zero neighbour",
+           py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
     m2.def("find_perimeter", &find_perimeter<float>, "find all positive particles with at least one zero neighbour",
            py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
 
-    m2.def("remove_small_objects", &remove_small_objects, py::arg("apr"), py::arg("object_labels"), py::arg("min_volume"));
+    m2.def("remove_small_objects", &remove_small_objects<uint16_t>, py::arg("apr"), py::arg("object_labels"), py::arg("min_volume"));
+    m2.def("remove_small_objects", &remove_small_objects<uint64_t>, py::arg("apr"), py::arg("object_labels"), py::arg("min_volume"));
+
+    m2.def("remove_large_objects", &remove_large_objects<uint16_t>, py::arg("apr"), py::arg("object_labels"), py::arg("max_volume"));
+    m2.def("remove_large_objects", &remove_large_objects<uint64_t>, py::arg("apr"), py::arg("object_labels"), py::arg("max_volume"));
+
     m2.def("find_objects_cpp", &find_objects, py::arg("apr"), py::arg("labels"), py::arg("min_coords").noconvert(), py::arg("max_coords").noconvert());
 
     /// y projection
