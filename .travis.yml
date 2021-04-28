@@ -23,11 +23,14 @@ matrix:
       - python3 -m twine upload --skip-existing --repository testpypi wheelhouse/*.whl
   - os: osx
     language: python
+    osx_image: xcode11.4
+    addons:
+      homebrew:
+        packages:
+        - c-blosc
+        - cmake
+        - llvm
     install:
-      - brew update
-      - brew install c-blosc
-      - brew install cmake || brew upgrade cmake
-      - brew install llvm
       - python3 -m pip install cibuildwheel==1.10.0
     script:
       - python3 -m cibuildwheel --output-dir wheelhouse
