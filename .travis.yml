@@ -30,8 +30,8 @@ matrix:
         - c-blosc
         - cmake
         - llvm
-        update: true
     install:
+      - brew update cmake
       - python3 -m pip install cibuildwheel==1.10.0
     script:
       - python3 -m cibuildwheel --output-dir wheelhouse
