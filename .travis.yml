@@ -22,8 +22,8 @@ matrix:
       - python3 -m pip install twine
       - python3 -m twine upload --skip-existing --repository testpypi wheelhouse/*.whl
   - os: osx
-    language: python
     osx_image: xcode11.4
+    language: cpp
     addons:
       homebrew:
         packages:
