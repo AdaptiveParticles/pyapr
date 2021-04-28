@@ -30,6 +30,7 @@ matrix:
         - c-blosc
         - cmake
         - llvm
+        update: true
     install:
       - python3 -m pip install cibuildwheel==1.10.0
     script:
