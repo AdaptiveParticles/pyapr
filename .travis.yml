@@ -31,7 +31,7 @@ matrix:
         - cmake
         - llvm
     install:
-      - brew update cmake
+      - brew upgrade cmake
       - python3 -m pip install cibuildwheel==1.10.0
     script:
       - python3 -m cibuildwheel --output-dir wheelhouse
