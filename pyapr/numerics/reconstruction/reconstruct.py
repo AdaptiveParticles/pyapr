@@ -4,13 +4,14 @@ from _pyaprwrapper.numerics.reconstruction import reconstruct_constant_inplace, 
                                                   reconstruct_constant_patch_inplace, \
                                                   reconstruct_level_patch_inplace, \
                                                   reconstruct_smooth_patch_inplace
+
 import numpy as np
 import pyapr
 
 
 def reconstruct_constant(apr: pyapr.APR,
-                         parts: (pyapr.ShortParticles, pyapr.FloatParticles),
-                         tree_parts: (None, pyapr.ShortParticles, pyapr.FloatParticles) = None,
+                         parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
+                         tree_parts: (None, pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles) = None,
                          patch: (None, pyapr.ReconPatch) = None,
                          out_arr: (None, np.ndarray) = None):
     """
@@ -29,7 +30,7 @@ def reconstruct_constant(apr: pyapr.APR,
         (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
         at original pixel resolution. (default: None)
     out_arr: None, np.ndarray
-        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions and/or patch limits),
+        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or patch limits),
         memory for the output is reallocated. (default: None)
     Returns
     -------
@@ -37,14 +38,21 @@ def reconstruct_constant(apr: pyapr.APR,
         the reconstructed pixel values
     """
 
-    _dtype = np.float32 if isinstance(parts, pyapr.FloatParticles) else np.uint16
+    if isinstance(parts, pyapr.FloatParticles):
+        _dtype = np.float32
+    elif isinstance(parts, pyapr.LongParticles):
+        _dtype = np.uint64
+    elif isinstance(parts, pyapr.ShortParticles):
+        _dtype = np.uint16
+    else:
+        raise ('Error: parts type not recognized')
 
     if patch is not None:
         if not patch.check_limits(apr):
             return None
 
         if out_arr is None or out_arr.size != patch.size():
-            out_arr = np.empty(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
+            out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
                                dtype=_dtype)
 
         if tree_parts is None:
@@ -52,18 +60,17 @@ def reconstruct_constant(apr: pyapr.APR,
 
         reconstruct_constant_patch_inplace(apr, parts, tree_parts, patch, out_arr)
     else:
-        _dims = apr.org_dims()
-        _shape = [_dims[2], _dims[1], _dims[0]]
+        _shape = [apr.org_dims(2), apr.org_dims(1), apr.org_dims(0)]
         if out_arr is None or out_arr.size != np.prod(_shape):
-            out_arr = np.empty(shape=_shape, dtype=_dtype)
+            out_arr = np.zeros(shape=_shape, dtype=_dtype)
 
         reconstruct_constant_inplace(apr, parts, out_arr)
     return out_arr
 
 
 def reconstruct_smooth(apr: pyapr.APR,
-                       parts: (pyapr.ShortParticles, pyapr.FloatParticles),
-                       tree_parts: (None, pyapr.ShortParticles, pyapr.FloatParticles) = None,
+                       parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
+                       tree_parts: (None, pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles) = None,
                        patch: (None, pyapr.ReconPatch) = None,
                        out_arr: (None, np.ndarray) = None):
     """
@@ -82,7 +89,7 @@ def reconstruct_smooth(apr: pyapr.APR,
         (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
         at original pixel resolution. (default: None)
     out_arr: None, np.ndarray
-        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions and/or patch limits),
+        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or patch limits),
         memory for the output is reallocated. (default: None)
     Returns
     -------
@@ -90,14 +97,21 @@ def reconstruct_smooth(apr: pyapr.APR,
         the reconstructed pixel values
     """
 
-    _dtype = np.float if isinstance(parts, pyapr.FloatParticles) else np.uint16
+    if isinstance(parts, pyapr.FloatParticles):
+        _dtype = np.float32
+    elif isinstance(parts, pyapr.LongParticles):
+        _dtype = np.uint64
+    elif isinstance(parts, pyapr.ShortParticles):
+        _dtype = np.uint16
+    else:
+        raise ('Error: parts type not recognized')
 
     if patch is not None:
         if not patch.check_limits(apr):
             return None
 
         if out_arr is None or out_arr.size != patch.size():
-            out_arr = np.empty(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
+            out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
                                dtype=_dtype)
 
         if tree_parts is None:
@@ -105,10 +119,9 @@ def reconstruct_smooth(apr: pyapr.APR,
 
         reconstruct_smooth_patch_inplace(apr, parts, tree_parts, patch, out_arr)
     else:
-        _dims = apr.org_dims()
-        _shape = [_dims[2], _dims[1], _dims[0]]
+        _shape = [apr.org_dims(2), apr.org_dims(1), apr.org_dims(0)]
         if out_arr is None or out_arr.size != np.prod(_shape):
-            out_arr = np.empty(shape=_shape, dtype=_dtype)
+            out_arr = np.zeros(shape=_shape, dtype=_dtype)
 
         reconstruct_smooth_inplace(apr, parts, out_arr)
     return out_arr
@@ -128,7 +141,7 @@ def reconstruct_level(apr: pyapr.APR,
         (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
         at original pixel resolution. (default: None)
     out_arr: None, np.ndarray
-        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions and/or patch limits),
+        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or patch limits),
         memory for the output is reallocated. (default: None)
     Returns
     -------
@@ -141,15 +154,14 @@ def reconstruct_level(apr: pyapr.APR,
             return None
 
         if out_arr is None or out_arr.size != patch.size():
-            out_arr = np.empty(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
+            out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
                                dtype=np.uint8)
 
         reconstruct_level_patch_inplace(apr, patch, out_arr)
     else:
-        _dims = apr.org_dims()
-        _shape = [_dims[2], _dims[1], _dims[0]]
+        _shape = [apr.org_dims(2), apr.org_dims(1), apr.org_dims(0)]
         if out_arr is None or out_arr.size == np.prod(_shape):
-            out_arr = np.empty(shape=_shape, dtype=np.uint8)
+            out_arr = np.zeros(shape=_shape, dtype=np.uint8)
 
         reconstruct_level_inplace(apr, out_arr)
     return out_arr

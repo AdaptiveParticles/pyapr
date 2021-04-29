@@ -7,8 +7,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
-#include "ConfigAPR.h"
-#include "data_structures/APR/APR.hpp"
+#include <ConfigAPR.h>
 
 #include "data_containers/PyPixelData.hpp"
 #include "data_containers/PyAPR.hpp"
@@ -57,6 +56,7 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     AddPyParticleData<uint8_t>(data_containers, "Byte");
     AddPyParticleData<float>(data_containers, "Float");
     AddPyParticleData<uint16_t>(data_containers, "Short");
+    AddPyParticleData<uint64_t>(data_containers, "Long");
 
     AddReconPatch(data_containers);
 
