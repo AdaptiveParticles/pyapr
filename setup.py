@@ -81,7 +81,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='PyLibAPR-test',
-    version='0.1.5.4',
+    version='0.1.5.5',
     ext_modules=[CMakeExtension('_pyaprwrapper')],
     cmdclass={
         'build_ext': CMakeBuild,
@@ -91,7 +91,6 @@ setup(
     install_requires=[
         'numpy',
         'scikit-image',
-        'libtiff',
         'PyQt5',
         'pyqtgraph',
         'matplotlib'
