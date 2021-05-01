@@ -553,7 +553,7 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
                 }
                 return result;
             })
-            .def("__setitem__", [](TypeParticles &p, py::slice slice, const py::array_t<DataType> &value) {
+            .def("__setitem__", [](TypeParticles &p, py::slice slice, py::array_t<DataType> &value) {
                 size_t start, stop, step, slicelength;
                 if (!slice.compute(p.size(), &start, &stop, &step, &slicelength))
                     throw py::error_already_set();
