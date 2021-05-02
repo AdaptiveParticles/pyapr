@@ -34,9 +34,9 @@ matrix:
         - llvm
         - libomp
     install:
-      - echo 'export PATH="/usr/local/opt/llvm/bin:$PATH"' >> ~/.zshrc
-      - export LDFLAGS="-L/usr/local/opt/llvm/lib"
-      - export CPPFLAGS="-I/usr/local/opt/llvm/include"
+      #- echo 'export PATH="/usr/local/opt/llvm/bin:$PATH"' >> ~/.zshrc
+      #- export LDFLAGS="-L/usr/local/opt/llvm/lib"
+      #- export CPPFLAGS="-I/usr/local/opt/llvm/include"
       - brew upgrade cmake
       - python3 -m pip install cibuildwheel==1.10.0
     script:
@@ -56,22 +56,24 @@ matrix:
     before_install:
       - export VCPKG_FEATURE_FLAGS="binarycaching"
       - export EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=/c/Users/travis/build/AdaptiveParticles/PyLibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      #- choco install python --version 3.8.6
-#      - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
+      - choco install python --version 3.8.6
+      - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
       # make sure it's on PATH as 'python3'
-      #- ln -s /c/Python38/python.exe /c/Python38/python3.exe
-      - choco install python3 #TODO: add python version restriction
-      - export PATH="/c/Python39:/c/Python39/Scripts:$PATH"
-      - ln -s /c/Python39/python.exe /c/Python39/python3.exe
+      - ln -s /c/Python38/python.exe /c/Python38/python3.exe
+      #- choco install python3 #TODO: add python version restriction
+      #- export PATH="/c/Python39:/c/Python39/Scripts:$PATH"
+      #- ln -s /c/Python39/python.exe /c/Python39/python3.exe
       - choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' #need cmake > 3.18
       - travis_wait 10 choco install visualstudio2019buildtools --params "--add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.VC.Llvm.Clang --add Microsoft.VisualStudio.Component.VC.Llvm.ClangToolset --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Llvm.Clang --add Microsoft.VisualStudio.Component.Windows10SDK.19041	--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC.BuildTools"
       - travis_wait 20 sh travis_windows_setup.sh
+      - python3 -m pip install cibuildwheel==1.10.0
     install:
       - py -m pip install build
-    script:
-      - py -m pip install wheel
-      - py -m build
       - py -m pip install delvewheel
+      - py -m pip install wheel
+    script:
+      #- py -m build
+      - py -m cibuildwheel --output-dir wheelhouse
       - py fix_windows_wheel.py
     after_success:
       - py -m pip install twine
