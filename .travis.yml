@@ -77,4 +77,4 @@ matrix:
       - py fix_windows_wheel.py
     after_success:
       - py -m pip install twine
-      - py -m twine upload --skip-existing --repository testpypi dist/wheelhouse/*.whl
+      - py -m twine upload --skip-existing --repository testpypi wheelhouse/wheelhouse/*.whl

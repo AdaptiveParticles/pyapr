@@ -8,7 +8,7 @@ import shutil
 #   then repacking the wheel and then using delvewheel to fix dependencies.
 #
 
-os.chdir('dist')
+os.chdir('wheelhouse')
 files = glob.glob('*.whl')
 print(files)
 
