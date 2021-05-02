@@ -32,9 +32,9 @@ matrix:
         packages:
         - c-blosc
         - cmake
-        - llvm
-        - libomp
     install:
+      - travis_wait 20 brew install llvm
+      - brew install libomp
       - brew upgrade cmake
       - python3 -m pip install cibuildwheel==1.10.0
     script:
