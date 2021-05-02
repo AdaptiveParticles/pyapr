@@ -7,6 +7,8 @@ env:
   - TWINE_USERNAME=__token__
   - CIBW_BUILD_VERBOSITY=3
   - CIBW_REPAIR_WHEEL_COMMAND_MACOS="pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
+  - CIBW_BEFORE_TEST="pip install -r requirements.txt"
+  - CIBW_TEST_COMMAND="python3 -m unittest"
 
 matrix:
   include:
