@@ -131,9 +131,13 @@ endif()
 message(STATUS "PyAPR: Building PYTHON wrappers")
 
 set(PYBIND11_PYTHON_VERSION 3)
-#find_package( PythonInterp ${PYTHON_VERSION} REQUIRED )
-#find_package( PythonLibs ${PYTHON_VERSION} REQUIRED )
-find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
+
+if(CMAKE_MINOR_VERSION < 18) #detection syntax changed
+    find_package( PythonInterp ${PYTHON_VERSION} REQUIRED )
+    find_package( PythonLibs ${PYTHON_VERSION} REQUIRED )
+else()
+    find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
+endif()
 
 add_subdirectory(external/pybind11)
 
