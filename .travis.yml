@@ -34,9 +34,9 @@ matrix:
         packages:
         - c-blosc
         - cmake
+        - llvm
+        - libomp
     install:
-      - travis_wait 20 brew install llvm
-      - brew install libomp
       - brew upgrade cmake
       - python3 -m pip install cibuildwheel==1.10.0
     script:
@@ -61,7 +61,7 @@ matrix:
       - travis_wait 10 choco install visualstudio2019buildtools --params "--add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.VC.Llvm.Clang --add Microsoft.VisualStudio.Component.VC.Llvm.ClangToolset --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Llvm.Clang --add Microsoft.VisualStudio.Component.Windows10SDK.19041	--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC.BuildTools"
       - travis_wait 20 sh travis_windows_setup.sh
     script:
-      - choco install python3 --version 3.9.2
+      - choco install python3 --version 3.9.2 #gross hard-coded as couldn't fix issues with cibuildwheel
       - py -m pip install build
       - py -m build
       - choco uninstall python3
@@ -79,7 +79,7 @@ matrix:
     after_success:
       - py -m pip install wheel
       - py -m pip install delvewheel
-      - export PATH="/c/Python36:/c/Python36/Scripts:$PATH"
+      - export PATH="/c/Python36:/c/Python36/Scripts:$PATH" #note this is dependent on the last called python
       - ln -s /c/Python36/python.exe /c/Python36/python3.exe
       - py fix_windows_wheel.py
       - py -m pip install twine
