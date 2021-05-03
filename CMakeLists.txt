@@ -132,7 +132,7 @@ message(STATUS "PyAPR: Building PYTHON wrappers")
 
 set(PYBIND11_PYTHON_VERSION 3)
 
-if(CMAKE_MINOR_VERSION < 18) #detection syntax changed
+if(${CMAKE_VERSION} VERSION_LESS "3.18.0") #detection syntax changed
     find_package( PythonInterp ${PYTHON_VERSION} REQUIRED )
     find_package( PythonLibs ${PYTHON_VERSION} REQUIRED )
 else()
