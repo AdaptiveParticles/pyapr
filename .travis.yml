@@ -60,27 +60,15 @@ matrix:
       - choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' #need cmake > 3.18
       - travis_wait 10 choco install visualstudio2019buildtools --params "--add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.VC.Llvm.Clang --add Microsoft.VisualStudio.Component.VC.Llvm.ClangToolset --add Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Llvm.Clang --add Microsoft.VisualStudio.Component.Windows10SDK.19041	--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC.BuildTools"
       - travis_wait 20 sh travis_windows_setup.sh
-    script:
-      - choco install python3 --version 3.9.2 #gross hard-coded as couldn't fix issues with cibuildwheel
-      - py -m pip install build
-      - py -m build
-      - choco uninstall python3
       - choco install python3 -y --version 3.8.6
-      - py -m pip install build
-      - py -m build
-      - choco uninstall python3
-      - choco install python3 -y --version 3.7
-      - py -m pip install build
-      - py -m build
-      - choco uninstall python3
-      - choco install python3 -y --version 3.6
-      - py -m pip install build
-      - py -m build
+      - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
+      - ln -s /c/Python38/python.exe /c/Python38/python3.exe
+      - python3 -m pip install cibuildwheel==1.10.0
+    script:
+      - python3 -m cibuildwheel --output-dir dist
     after_success:
       - py -m pip install wheel
       - py -m pip install delvewheel
-      - export PATH="/c/Python36:/c/Python36/Scripts:$PATH" #note this is dependent on the last called python
-      - ln -s /c/Python36/python.exe /c/Python36/python3.exe
       - py fix_windows_wheel.py
       - py -m pip install twine
       - py -m twine upload --skip-existing --repository testpypi dist/wheelhouse/*.whl
