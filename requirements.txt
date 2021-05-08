@@ -1,6 +1,6 @@
-cmake-setuptools
 numpy
 scikit-image
+tifffile
 PyQt5
 pyqtgraph
 matplotlib
