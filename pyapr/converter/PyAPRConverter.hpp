@@ -158,7 +158,7 @@ public:
                    _lis = par.sigma_th;
                }
 
-               if(_intensity < par.Ip_th){
+               if(_intensity < par.Ip_th + this->bspline_offset){
                    _grad = 0;
                }
 
