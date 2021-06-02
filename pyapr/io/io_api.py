@@ -1,22 +1,25 @@
 import pyapr
 
 
-def read(fpath, apr, parts, t=0, channel_name='t', parts_name='particles', tree_parts=None, read_tree=True):
+def read(fpath, apr=None, parts=None, t=0, channel_name='t', parts_name='particles', read_tree=True):
 
     # Initialize APRFile for I/O
     aprfile = pyapr.io.APRFile()
     aprfile.set_read_write_tree(read_tree)
-
-    # Read APR and particles from file
     aprfile.open(fpath, 'READ')
+
+    # initialize output objects if not given
+    apr = apr or pyapr.APR()
+    if parts is None:
+        dtype = aprfile.get_particle_type(parts_name, apr_or_tree=True, t=t, channel_name=channel_name)
+        parts = initialize_particles_type(dtype)
+
+    # read APR and particle data from file
     aprfile.read_apr(apr, t=t, channel_name=channel_name)
     aprfile.read_particles(apr, parts_name, parts, apr_or_tree=True, t=t, channel_name=channel_name)
 
-    if tree_parts is not None and read_tree:
-        assert isinstance(tree_parts, (pyapr.ShortParticles, pyapr.FloatParticles))
-        aprfile.read_particles(apr, parts_name, tree_parts, apr_or_tree=False, t=t, channel_name=channel_name)
-
     aprfile.close()
+    return apr, parts
 
 
 def write(fpath, apr, parts, t=0, channel_name='t', parts_name='particles', write_linear=True, write_tree=True, tree_parts=None):
@@ -58,20 +61,18 @@ def read_particles(fpath, apr=None, parts=None, t=0, channel_name='t', parts_nam
     aprfile.set_read_write_tree(tree)
     aprfile.open(fpath, 'READ')
 
+    if parts is None:
+        dtype = aprfile.get_particle_type(parts_name, apr_or_tree=(not tree), t=t, channel_name=channel_name)
+        parts = initialize_particles_type(dtype)
+
     if apr is not None:
-        if parts is not None:
-            aprfile.read_particles(apr, parts_name, parts, apr_or_tree=(not tree), t=t, channel_name=channel_name)
-            aprfile.close()
-            return parts
-        else:
-            raise NotImplementedError
-    else:
-        if parts is not None:
-            aprfile.read_particles(parts_name, parts, apr_or_tree=(not tree), t=t, channel_name=channel_name)
-            aprfile.close()
-            return parts
-        else:
-            raise NotImplementedError
+        aprfile.read_particles(apr, parts_name, parts, apr_or_tree=(not tree), t=t, channel_name=channel_name)
+        aprfile.close()
+        return parts
+
+    aprfile.read_particles(parts_name, parts, apr_or_tree=(not tree), t=t, channel_name=channel_name)
+    aprfile.close()
+    return parts
 
 
 def write_apr(fpath, apr, t=0, channel_name='t', write_linear=True, write_tree=True):
@@ -98,6 +99,35 @@ def read_apr(fpath, apr=None, t=0, channel_name='t', read_tree=True):
     return apr
 
 
+def get_particle_names(fpath, t=0, channel_name='t', tree=False):
+    aprfile = pyapr.io.APRFile()
+    aprfile.open(fpath, 'READ')
+    names = aprfile.get_particles_names(apr_or_tree=(not tree), t=t, channel_name=channel_name)
+    aprfile.close()
+    return names
+
+
+def get_particle_type(fpath, t=0, channel_name='t', parts_name='particles', tree=False):
+    aprfile = pyapr.io.APRFile()
+    aprfile.open(fpath, 'READ')
+    dtype = aprfile.get_particle_type(parts_name, apr_or_tree=(not tree), t=t, channel_name=channel_name)
+    aprfile.close()
+    return dtype
+
+
+def initialize_particles_type(typestr):
+    if typestr == 'uint16':
+        return pyapr.ShortParticles()
+    if typestr == 'float':
+        return pyapr.FloatParticles()
+    if typestr == 'uint8':
+        return pyapr.ByteParticles()
+
+    print('deduced datatype {} is currently not supported - returning None'.format(typestr))
+    return None
+
+
+# TODO: update these
 def write_multichannel(fpath, apr, parts_list, t=0, channel_name='t', channel_names_parts=None):
 
     if not fpath:
