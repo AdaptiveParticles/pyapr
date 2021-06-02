@@ -42,6 +42,62 @@ def write(fpath, apr, parts, t=0, channel_name='t', parts_name='particles', writ
     aprfile.close()
 
 
+def write_particles(fpath, parts, t=0, channel_name='t', parts_name='particles', tree=False, append=True):
+    if not fpath:
+        print('Empty path given. Ignoring call to pyapr.io.write_particles')
+        return
+
+    aprfile = pyapr.io.APRFile()
+    aprfile.open(fpath, 'READWRITE' if append else 'WRITE')
+    aprfile.write_particles(parts_name, parts, apr_or_tree=(not tree), t=t, channel_name=channel_name)
+    aprfile.close()
+
+
+def read_particles(fpath, apr=None, parts=None, t=0, channel_name='t', parts_name='particles', tree=False):
+    aprfile = pyapr.io.APRFile()
+    aprfile.set_read_write_tree(tree)
+    aprfile.open(fpath, 'READ')
+
+    if apr is not None:
+        if parts is not None:
+            aprfile.read_particles(apr, parts_name, parts, apr_or_tree=(not tree), t=t, channel_name=channel_name)
+            aprfile.close()
+            return parts
+        else:
+            raise NotImplementedError
+    else:
+        if parts is not None:
+            aprfile.read_particles(parts_name, parts, apr_or_tree=(not tree), t=t, channel_name=channel_name)
+            aprfile.close()
+            return parts
+        else:
+            raise NotImplementedError
+
+
+def write_apr(fpath, apr, t=0, channel_name='t', write_linear=True, write_tree=True):
+
+    if not fpath:
+        print('Empty path given. Ignoring call to pyapr.io.write_apr')
+        return
+
+    aprfile = pyapr.io.APRFile()
+    aprfile.set_read_write_tree(write_tree)
+    aprfile.set_write_linear_flag(write_linear)
+    aprfile.open(fpath, 'WRITE')
+    aprfile.write_apr(apr, t=t, channel_name=channel_name)
+    aprfile.close()
+
+
+def read_apr(fpath, apr=None, t=0, channel_name='t', read_tree=True):
+    apr = apr or pyapr.APR()
+    aprfile = pyapr.io.APRFile()
+    aprfile.set_read_write_tree(read_tree)
+    aprfile.open(fpath, 'READ')
+    aprfile.read_apr(apr, t=t, channel_name=channel_name)
+    aprfile.close()
+    return apr
+
+
 def write_multichannel(fpath, apr, parts_list, t=0, channel_name='t', channel_names_parts=None):
 
     if not fpath:
