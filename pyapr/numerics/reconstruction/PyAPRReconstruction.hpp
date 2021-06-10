@@ -90,9 +90,10 @@ namespace PyAPRReconstruction {
         }
 
         //patch.check_limits(aPyAPR);   // assuming check_limits has been called from python to initialize array
-        const size_t psize = (patch.z_end-patch.z_begin) *
-                             (patch.x_end-patch.x_begin) *
-                             (patch.y_end-patch.y_begin);
+        const size_t psize = size_t (patch.z_end-patch.z_begin) *
+                             size_t (patch.x_end-patch.x_begin) *
+                             size_t (patch.y_end-patch.y_begin);
+
         if(recon.mesh.size() != psize) {
             throw std::invalid_argument("input array must agree with patch size!");
         }
