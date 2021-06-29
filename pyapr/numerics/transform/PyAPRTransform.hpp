@@ -336,13 +336,13 @@ void find_objects(APR& apr, PyParticleData<uint16_t>& labels, py::array_t<int>& 
 
 
 template<typename T>
-void maximum_projection_y(APR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
-    // assumes proj is of shape (z_num, x_num) initialized to 0
-    auto mip = proj.mutable_unchecked<2>();
+PixelData<T> maximum_projection_y(APR& apr, PyParticleData<T>& parts) {
     auto it = apr.iterator();
 
     const int z_num = it.z_num(it.level_max());
     const int x_num = it.x_num(it.level_max());
+    const T minval = std::numeric_limits<T>::min();
+    PixelData<T> mip(x_num, z_num, 1, minval);
 
     for(int level = it.level_max(); level >= it.level_min(); --level) {
         const int level_size = it.level_size(level);
@@ -350,34 +350,38 @@ void maximum_projection_y(APR& apr, PyParticleData<T>& parts, py::array_t<float>
 #pragma omp parallel for schedule(dynamic) firstprivate(it)
 #endif
         for(int z = 0; z < it.z_num(level); ++z) {
-            const int z_m = z * level_size;
             for(int x = 0; x < it.x_num(level); ++x) {
-                const int x_m = x * level_size;
 
-                float row_max = std::numeric_limits<float>::min();
-                for(it.begin(level, z, x); it < it.end(); ++it) {
-                    row_max = row_max < parts[it] ? parts[it] : row_max;
-                }
+                const size_t offset_begin = it.begin(level, z, x);
+                const size_t offset_end = it.end();
 
-                for (int i = z_m; i < std::min(z_m + level_size, z_num); ++i) {
-                    for (int j = x_m; j < std::min(x_m + level_size, x_num); ++j) {
-                        mip(i, j) = (mip(i, j) < row_max) ? row_max : mip(i, j);
+                if(offset_begin < offset_end) {
+                    const T row_max = *std::max_element(parts.begin()+offset_begin, parts.begin()+offset_end);
+
+                    const int z_m = z * level_size;
+                    const int x_m = x * level_size;
+
+                    for (int i = z_m; i < std::min(z_m + level_size, z_num); ++i) {
+                        for (int j = x_m; j < std::min(x_m + level_size, x_num); ++j) {
+                            mip.at(j, i, 0) = std::max(mip.at(j, i, 0), row_max);
+                        }
                     }
                 }
             }
         }
     }
+    return mip;
 }
 
 
 template<typename T>
-void maximum_projection_x(APR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
-    // assumes proj is of shape (z_num, y_num) initialized to 0
-    auto mip = proj.mutable_unchecked<2>();
+PixelData<T> maximum_projection_x(APR& apr, PyParticleData<T>& parts) {
     auto it = apr.iterator();
 
     const int z_num = it.z_num(it.level_max());
     const int y_num = it.y_num(it.level_max());
+    const T minval = std::numeric_limits<T>::min();
+    PixelData<T> mip(y_num, z_num, 1, minval);
 
     for(int level = it.level_max(); level >= it.level_min(); --level) {
         const int level_size = it.level_size(level);
@@ -392,24 +396,25 @@ void maximum_projection_x(APR& apr, PyParticleData<T>& parts, py::array_t<float>
                     const int y_m = it.y() * level_size;
                     for (int i = z_m; i < std::min(z_m + level_size, z_num); ++i) {
                         for (int j = y_m; j < std::min(y_m + level_size, y_num); ++j) {
-                            mip(i, j) = (mip(i, j) < parts[it]) ? parts[it] : mip(i, j);
+                            mip.at(j, i, 0) = std::max(mip.at(j, i, 0), parts[it]);
                         }
                     }
                 }
             }
         }
     }
+    return mip;
 }
 
 
 template<typename T>
-void maximum_projection_z(APR& apr, PyParticleData<T>& parts, py::array_t<float>& proj) {
-    // assumes proj is of shape (z_num, y_num) initialized to 0
-    auto mip = proj.mutable_unchecked<2>();
+PixelData<T> maximum_projection_z(APR& apr, PyParticleData<T>& parts) {
     auto it = apr.iterator();
 
     const int x_num = it.x_num(it.level_max());
     const int y_num = it.y_num(it.level_max());
+    const T minval = std::numeric_limits<T>::min();
+    PixelData<T> mip(y_num, x_num, 1, minval);
 
     for(int level = it.level_max(); level >= it.level_min(); --level) {
         const int level_size = it.level_size(level);
@@ -424,13 +429,14 @@ void maximum_projection_z(APR& apr, PyParticleData<T>& parts, py::array_t<float>
                     const int y_m = it.y() * level_size;
                     for (int i = x_m; i < std::min(x_m + level_size, x_num); ++i) {
                         for (int j = y_m; j < std::min(y_m + level_size, y_num); ++j) {
-                            mip(i, j) = (mip(i, j) < parts[it]) ? parts[it] : mip(i, j);
+                            mip.at(j, i, 0) = std::max(mip.at(j, i, 0), parts[it]);
                         }
                     }
                 }
             }
         }
     }
+    return mip;
 }
 
 
@@ -593,6 +599,149 @@ void maximum_projection_z_patch(APR& apr, PyParticleData<T>& parts, py::array_t<
 }
 
 
+template<typename T>
+PixelData<T> maximum_projection_y_alt(APR& apr, PyParticleData<T>& parts) {
+    auto it = apr.iterator();
+
+    std::vector<PixelData<T>> image_vec;
+    image_vec.resize(it.level_max()+1);
+    const T minval = std::numeric_limits<T>::min();
+    for(int level = it.level_min(); level <= it.level_max(); ++level) {
+        image_vec[level].initWithValue(it.x_num(level), it.z_num(level), 1, minval);
+    }
+
+    for(int level = it.level_max(); level >= it.level_min(); --level) {
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) firstprivate(it)
+#endif
+        for(int z = 0; z < it.z_num(level); ++z) {
+            for (int x = 0; x < it.x_num(level); ++x) {
+                const size_t offset_begin = it.begin(level, z, x);
+                const size_t offset_end = it.end();
+                if(offset_begin < offset_end) {
+                    const T row_max = *std::max_element(parts.begin()+offset_begin, parts.begin()+offset_end);
+                    image_vec[level].at(x, z, 0) = row_max;
+                }
+            }
+        }
+    }
+
+    const int l_max = it.level_max();
+    const int z_num = it.z_num(l_max);
+    const int x_num = it.x_num(l_max);
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+    for(int z = 0; z < z_num; ++z) {
+
+        for(int level = it.level_max()-1; level >= it.level_min(); --level) {
+            const int level_size = it.level_size(level);
+            const int z_l = z / level_size;
+            for (int x = 0; x < x_num; ++x) {
+                const int x_l = x / level_size;
+                image_vec[l_max].at(x, z, 0) = std::max(image_vec[l_max].at(x, z, 0), image_vec[level].at(x_l, z_l, 0));
+            }
+        }
+    }
+    PixelData<T> res;
+    res.swap(image_vec[l_max]);
+    return res;
+}
+
+
+template<typename T>
+PixelData<T> maximum_projection_x_alt(APR& apr, PyParticleData<T>& parts) {
+    auto it = apr.iterator();
+
+    std::vector<PixelData<T>> image_vec;
+    image_vec.resize(it.level_max()+1);
+    const T minval = std::numeric_limits<T>::min();
+    for(int level = it.level_min(); level <= it.level_max(); ++level) {
+        image_vec[level].initWithValue(it.y_num(level), it.z_num(level), 1, minval);
+    }
+
+    for(int level = it.level_max(); level >= it.level_min(); --level) {
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) firstprivate(it)
+#endif
+        for(int z = 0; z < it.z_num(level); ++z) {
+            for (int x = 0; x < it.x_num(level); ++x) {
+                for(it.begin(level, z, x); it < it.end(); ++it) {
+                    image_vec[level].at(it.y(), z, 0) = std::max(image_vec[level].at(it.y(), z, 0), parts[it]);
+                }
+            }
+        }
+    }
+
+    const int l_max = it.level_max();
+    const int z_num = it.z_num(l_max);
+    const int y_num = it.y_num(l_max);
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+    for(int z = 0; z < z_num; ++z) {
+
+        for(int level = it.level_max()-1; level >= it.level_min(); --level) {
+            const int level_size = it.level_size(level);
+            const int z_l = z / level_size;
+            for (int y = 0; y < y_num; ++y) {
+                const int y_l = y / level_size;
+                image_vec[l_max].at(y, z, 0) = std::max(image_vec[l_max].at(y, z, 0), image_vec[level].at(y_l, z_l, 0));
+            }
+        }
+    }
+    PixelData<T> res;
+    res.swap(image_vec[l_max]);
+    return res;
+}
+
+
+template<typename T>
+PixelData<T> maximum_projection_z_alt(APR& apr, PyParticleData<T>& parts) {
+    auto it = apr.iterator();
+
+    std::vector<PixelData<T>> image_vec;
+    image_vec.resize(it.level_max()+1);
+    const T minval = std::numeric_limits<T>::min();
+    for(int level = it.level_min(); level <= it.level_max(); ++level) {
+        image_vec[level].initWithValue(it.y_num(level), it.x_num(level), 1, minval);
+    }
+
+    for(int level = it.level_max(); level >= it.level_min(); --level) {
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) firstprivate(it)
+#endif
+        for (int x = 0; x < it.x_num(level); ++x) {
+            for (int z = 0; z < it.z_num(level); ++z) {
+                for(it.begin(level, z, x); it < it.end(); ++it) {
+                    image_vec[level].at(it.y(), x, 0) = std::max(image_vec[level].at(it.y(), x, 0), parts[it]);
+                }
+            }
+        }
+    }
+
+    const int l_max = it.level_max();
+    const int x_num = it.x_num(l_max);
+    const int y_num = it.y_num(l_max);
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+    for(int x = 0; x < x_num; ++x) {
+
+        for(int level = it.level_max()-1; level >= it.level_min(); --level) {
+            const int level_size = it.level_size(level);
+            const int x_l = x / level_size;
+            for (int y = 0; y < y_num; ++y) {
+                const int y_l = y / level_size;
+                image_vec[l_max].at(y, x, 0) = std::max(image_vec[l_max].at(y, x, 0), image_vec[level].at(y_l, x_l, 0));
+            }
+        }
+    }
+    PixelData<T> res;
+    res.swap(image_vec[l_max]);
+    return res;
+}
+
 
 
 
@@ -622,9 +771,14 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
 
     /// y projection
     m2.def("max_projection_y", &maximum_projection_y<float>, "maximum projection along y axis",
-            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+            py::arg("apr"), py::arg("parts"));
     m2.def("max_projection_y", &maximum_projection_y<uint16_t>, "maximum projection along y axis",
-           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+           py::arg("apr"), py::arg("parts"));
+
+    m2.def("max_projection_y_alt", &maximum_projection_y_alt<float>, "maximum projection along y axis",
+           py::arg("apr"), py::arg("parts"));
+    m2.def("max_projection_y_alt", &maximum_projection_y_alt<uint16_t>, "maximum projection along y axis",
+           py::arg("apr"), py::arg("parts"));
 
     m2.def("max_projection_y", &maximum_projection_y_patch<float>, "maximum projection along y axis",
            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert(), py::arg("patch"));
@@ -633,9 +787,14 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
 
     /// x projection
     m2.def("max_projection_x", &maximum_projection_x<float>, "maximum projection along x axis",
-           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+           py::arg("apr"), py::arg("parts"));
     m2.def("max_projection_x", &maximum_projection_x<uint16_t>, "maximum projection along x axis",
-           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+           py::arg("apr"), py::arg("parts"));
+
+    m2.def("max_projection_x_alt", &maximum_projection_x_alt<float>, "maximum projection along x axis",
+           py::arg("apr"), py::arg("parts"));
+    m2.def("max_projection_x_alt", &maximum_projection_x_alt<uint16_t>, "maximum projection along x axis",
+           py::arg("apr"), py::arg("parts"));
 
     m2.def("max_projection_x", &maximum_projection_x_patch<float>, "maximum projection along x axis",
            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert(), py::arg("patch"));
@@ -644,9 +803,14 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
 
     /// z projection
     m2.def("max_projection_z", &maximum_projection_z<float>, "maximum projection along z axis",
-           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+           py::arg("apr"), py::arg("parts"));
     m2.def("max_projection_z", &maximum_projection_z<uint16_t>, "maximum projection along z axis",
-           py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert());
+           py::arg("apr"), py::arg("parts"));
+
+    m2.def("max_projection_z_alt", &maximum_projection_z_alt<float>, "maximum projection along z axis",
+           py::arg("apr"), py::arg("parts"));
+    m2.def("max_projection_z_alt", &maximum_projection_z_alt<uint16_t>, "maximum projection along z axis",
+           py::arg("apr"), py::arg("parts"));
 
     m2.def("max_projection_z", &maximum_projection_z_patch<float>, "maximum projection along z axis",
            py::arg("apr"), py::arg("parts"), py::arg("proj").noconvert(), py::arg("patch"));
