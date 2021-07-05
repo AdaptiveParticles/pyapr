@@ -171,8 +171,12 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
 
     auto m2 = m.def_submodule(modulename.c_str());
 
-    /// constant reconstruction (full volume) into preallocated numpy array
+        /// constant reconstruction (full volume) into preallocated numpy array
     m2.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<uint16_t, uint16_t>, "Piecewise constant reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("arr"));
+    m2.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<uint64_t, uint64_t>, "Piecewise constant reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("arr"));
+    m2.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<uint64_t, float>, "Piecewise constant reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("arr"));
     m2.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<uint16_t, float>, "Piecewise constant reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("arr"));
@@ -190,6 +194,10 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
     /// smooth reconstruction (full volume) into preallocated numpy array
     m2.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<uint16_t, uint16_t>, "Smooth reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("arr"));
+    m2.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<uint64_t, uint64_t>, "Smooth reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("arr"));
+    m2.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<uint64_t, float>, "Smooth reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("arr"));
     m2.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<uint16_t, float>, "Smooth reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("arr"));
     m2.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<float, float>, "Smooth reconstruction",
@@ -198,6 +206,12 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
 
     /// constant reconstruction (patch) into preallocated numpy array
     m2.def("reconstruct_constant_patch_inplace", &PyAPRReconstruction::reconstruct_constant_patch_inplace<uint16_t, uint16_t>,
+           "Piecewise constant patch reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
+    m2.def("reconstruct_constant_patch_inplace", &PyAPRReconstruction::reconstruct_constant_patch_inplace<uint64_t, uint64_t>,
+           "Piecewise constant patch reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
+    m2.def("reconstruct_constant_patch_inplace", &PyAPRReconstruction::reconstruct_constant_patch_inplace<uint64_t, float>,
            "Piecewise constant patch reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
     m2.def("reconstruct_constant_patch_inplace", &PyAPRReconstruction::reconstruct_constant_patch_inplace<uint16_t, float>,
@@ -217,6 +231,12 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
 
     /// smooth reconstruction (patch) into preallocated numpy array
     m2.def("reconstruct_smooth_patch_inplace", &PyAPRReconstruction::reconstruct_smooth_patch_inplace<uint16_t, uint16_t>,
+           "Smooth patch reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
+    m2.def("reconstruct_smooth_patch_inplace", &PyAPRReconstruction::reconstruct_smooth_patch_inplace<uint64_t, uint64_t>,
+           "Smooth patch reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
+    m2.def("reconstruct_smooth_patch_inplace", &PyAPRReconstruction::reconstruct_smooth_patch_inplace<uint64_t, float>,
            "Smooth patch reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
     m2.def("reconstruct_smooth_patch_inplace", &PyAPRReconstruction::reconstruct_smooth_patch_inplace<uint16_t, float>,

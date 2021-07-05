@@ -95,3 +95,16 @@ def find_objects(apr: pyapr.APR,
     pyapr.numerics.transform.find_objects_cpp(apr, labels, min_coords, max_coords)
 
     return min_coords, max_coords
+
+
+def find_label_centers(apr: pyapr.APR,
+                       labels: (pyapr.ShortParticles, pyapr.LongParticles),
+                       weights: (None, pyapr.ShortParticles, pyapr.FloatParticles) = None):
+
+    max_label = labels.max()
+    coords = np.zeros((max_label+1, 3), dtype=np.float64)
+    if weights is not None:
+        pyapr.numerics.transform.find_label_centers_weighted_cpp(apr, labels, coords, weights)
+    else:
+        pyapr.numerics.transform.find_label_centers_cpp(apr, labels, coords)
+    return coords[np.any(coords > 0, axis=1), :]

@@ -535,7 +535,8 @@ inline int uf_make_set(std::vector<int>& labels) {
  * @param binary_mask
  * @param component_labels
  */
-void calc_connected_component(APR& apr, PyParticleData<uint16_t>& binary_mask, PyParticleData<uint16_t>& component_labels) {
+template<typename T>
+void calc_connected_component(APR& apr, PyParticleData<uint16_t>& binary_mask, PyParticleData<T>& component_labels) {
 
     component_labels.init(apr);
 
@@ -651,7 +652,9 @@ void AddPyAPRSegmentation(py::module &m, const std::string &modulename) {
 
     m2.def("get_terminal_energies", &get_terminal_energies, "Compute terminal edges (useful for debugging or fine-tuning)");
 
-    m2.def("connected_component", &calc_connected_component, "Compute connected components from a binary particle mask",
+    m2.def("connected_component", &calc_connected_component<uint16_t>, "Compute connected components from a binary particle mask",
+           py::arg("apr"), py::arg("binary_mask"), py::arg("component_labels"));
+    m2.def("connected_component", &calc_connected_component<uint64_t>, "Compute connected components from a binary particle mask",
            py::arg("apr"), py::arg("binary_mask"), py::arg("component_labels"));
 
 }
