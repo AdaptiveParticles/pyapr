@@ -137,3 +137,57 @@ def maximum_projection_patch(apr: pyapr.APR,
         pyapr.numerics.transform.max_projection_z(apr, parts, out, patch)
 
     return out
+
+
+def maximum_projection_alt_patch(apr: pyapr.APR,
+                                 parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+                                 dim: int,
+                                 patch: pyapr.ReconPatch):
+    """
+    Compute the maximum intensity projection along an axis, in a subdomain of the image specified by 'patch'.
+
+    Note: assumes that all particle values are non-negative
+
+    Parameters
+    ----------
+    apr : pyapr.APR
+        input APR data structure
+    parts : pyapr.FloatParticles or pyapr.ShortParticles
+        input particle intensities
+    dim : int
+        dimension along which to compute the projection.
+        dim=0: project along Y to produce a ZX plane
+        dim=1: project along X to produce a ZY plane
+        dim=2: project along Z to produce an XY plane
+    patch: pyapr.ReconPatch
+        specify the image region to project in. Note: patch.level_delta is enforced to be 0 in the current implementation
+    Returns
+    -------
+    out : numpy.ndarray
+        the computed maximum intensity projection
+    """
+
+    if dim not in (0, 1, 2):
+        raise ValueError("dim must be 0, 1 or 2 corresponding to projection along y, x or z")
+
+    if not isinstance(parts, (pyapr.ShortParticles, pyapr.FloatParticles)):
+        raise TypeError("input particles must be ShortParticles or FloatParticles")
+
+    if patch.level_delta != 0:
+        print('Warning: maximum_projection_patch is not yet implemented for level_delta != 0. Proceeding with level_delta = 0.')
+
+    # temporarily set level_delta to 0 TODO: make it allow non-zero level delta
+    tmp = patch.level_delta
+    patch.level_delta = 0
+    if not patch.check_limits(apr):
+        return None
+    patch.level_delta = tmp
+
+    if dim == 0:
+        return np.array(pyapr.numerics.transform.max_projection_y_alt(apr, parts, patch), copy=False).squeeze()
+    elif dim == 1:
+        return np.array(pyapr.numerics.transform.max_projection_x_alt(apr, parts, patch), copy=False).squeeze()
+    else:
+        return np.array(pyapr.numerics.transform.max_projection_z_alt(apr, parts, patch), copy=False).squeeze()
+
+    return out
