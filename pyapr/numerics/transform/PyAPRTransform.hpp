@@ -1080,7 +1080,7 @@ template<typename T>
 void find_label_volume_cpp(APR& apr, PyParticleData<T>& object_labels, py::array_t<uint64_t>& volume) {
 
     auto max_label = object_labels.max();
-    auto res = volume.mutable_unchecked<2>();
+    auto res = volume.mutable_unchecked<1>();
 
     std::vector<uint64_t> bin_counts(max_label+1, 0);
     auto it = apr.iterator();
@@ -1090,7 +1090,7 @@ void find_label_volume_cpp(APR& apr, PyParticleData<T>& object_labels, py::array
         const int particle_volume = std::pow(2, ndim*(it.level_max() - level));
 
         for(uint64_t idx = it.particles_level_begin(level); idx < it.particles_level_end(level); ++idx) {
-            res(object_labels[idx], 0) += particle_volume;
+            res(object_labels[idx]) += particle_volume;
         }
     }
 }
