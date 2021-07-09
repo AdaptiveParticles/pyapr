@@ -86,13 +86,16 @@ def remove_small_holes(apr: pyapr.APR,
 
 
 def find_objects(apr: pyapr.APR,
-                 labels: pyapr.ShortParticles):
+                 labels: (pyapr.ShortParticles, pyapr.LongParticles)):
 
     max_label = labels.max()
-    max_dim = max(apr.org_dims())
+    max_dim = max([apr.org_dims(x) for x in range(3)])
     min_coords = np.full((max_label+1, 3), max_dim+1, dtype=np.int32)
     max_coords = np.zeros((max_label+1, 3), dtype=np.int32)
     pyapr.numerics.transform.find_objects_cpp(apr, labels, min_coords, max_coords)
+
+    max_coords[0, :] = [apr.org_dims(x) for x in range(3)]
+    min_coords[0, :] = 0
 
     return min_coords, max_coords
 
