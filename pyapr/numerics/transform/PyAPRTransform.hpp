@@ -1076,6 +1076,26 @@ void find_label_centers_weighted_cpp(APR& apr, PyParticleData<T>& object_labels,
 }
 
 
+template<typename T>
+void find_label_volume_cpp(APR& apr, PyParticleData<T>& object_labels, py::array_t<uint64_t>& volume) {
+
+    auto max_label = object_labels.max();
+    auto res = volume.mutable_unchecked<2>();
+
+    std::vector<uint64_t> bin_counts(max_label+1, 0);
+    auto it = apr.iterator();
+    const int ndim = it.number_dimensions();
+
+    for(int level = it.level_min(); level <= it.level_max(); ++level) {
+        const int particle_volume = std::pow(2, ndim*(it.level_max() - level));
+
+        for(uint64_t idx = it.particles_level_begin(level); idx < it.particles_level_end(level); ++idx) {
+            res(object_labels[idx], 0) += particle_volume;
+        }
+    }
+}
+
+
 void AddPyAPRTransform(py::module &m, const std::string &modulename) {
 
     auto m2 = m.def_submodule(modulename.c_str());
@@ -1188,6 +1208,11 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
            py::arg("apr"), py::arg("object_labels"), py::arg("coords"), py::arg("weights"));
     m2.def("find_label_centers_weighted_cpp", &find_label_centers_weighted_cpp<uint64_t, float>, "find object centers by weighted average of label coordinates",
            py::arg("apr"), py::arg("object_labels"), py::arg("coords"), py::arg("weights"));
+
+    m2.def("find_label_volume_cpp", &find_label_volume_cpp<uint16_t>, "find object volume",
+           py::arg("apr"), py::arg("object_labels"), py::arg("volume"));
+    m2.def("find_label_volume_cpp", &find_label_volume_cpp<uint64_t>, "find object volume",
+           py::arg("apr"), py::arg("object_labels"), py::arg("volume"));
 }
 
 #endif //PYLIBAPR_PYAPRTRANSFORM_HPP

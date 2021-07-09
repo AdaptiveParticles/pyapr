@@ -111,3 +111,13 @@ def find_label_centers(apr: pyapr.APR,
     else:
         pyapr.numerics.transform.find_label_centers_cpp(apr, labels, coords)
     return coords[np.any(coords > 0, axis=1), :]
+
+
+def find_label_volume(apr: pyapr.APR,
+                       labels: (pyapr.ShortParticles, pyapr.LongParticles)):
+
+    max_label = labels.max()
+    volume = np.zeros((max_label+1, 1), dtype=np.float64)
+    pyapr.numerics.transform.find_label_volume_cpp(apr, labels, volume)
+
+    return volume
