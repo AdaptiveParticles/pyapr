@@ -67,7 +67,7 @@ def bottomhat(apr: pyapr.APR,
 
 
 def remove_small_holes(apr: pyapr.APR,
-                       parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
+                       parts: (pyapr.ShortParticles, pyapr.LongParticles),
                        max_volume: int = 200):
 
     if isinstance(parts, pyapr.ShortParticles):
