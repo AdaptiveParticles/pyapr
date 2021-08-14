@@ -86,9 +86,9 @@ jobs:
       - name: Install vcpkg on windows
         if: contains(matrix.os,'windows')
         run: |
-          - ./${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.bat
-          - ./${{ env.VCPKG_ROOT }}/vcpkg.exe install blosc:x64-windows tiff:x64-windows hdf5:x64-windows szip:x64-windows
-          - export EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
+          ./${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.bat
+          ./${{ env.VCPKG_ROOT }}/vcpkg.exe install blosc:x64-windows tiff:x64-windows hdf5:x64-windows szip:x64-windows
+          export EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
 
       - name: Show content of workspace after cache has been restored
         run: find $RUNNER_WORKSPACE
