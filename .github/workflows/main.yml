@@ -85,4 +85,4 @@ jobs:
 
       - name: Install cibuildwheel
         run: |
-        python -m pip install cibuildwheel
+          python -m pip install cibuildwheel
