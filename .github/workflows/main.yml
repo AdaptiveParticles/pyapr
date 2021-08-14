@@ -88,7 +88,7 @@ jobs:
         run: |
           ./external/LibAPR/vcpkg/bootstrap-vcpkg.bat
           ./external/LibAPR/vcpkg/vcpkg.exe install blosc:x64-windows tiff:x64-windows hdf5:x64-windows szip:x64-windows
-          export EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
+          $Env:EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
 
       - name: Show content of workspace after cache has been restored
         run: find $RUNNER_WORKSPACE
