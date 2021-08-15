@@ -44,6 +44,7 @@ jobs:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
       CIBW_ENVIRONMENT: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_MANIFEST_DIR=${{ github.workspace }}/external/LibAPR/"
+      TEST: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_MANIFEST_DIR=${{ github.workspace }}/external/LibAPR/"
       CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
       CIBW_ARCHS: "auto64"
       CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_24"
@@ -122,4 +123,4 @@ jobs:
 #
       - name: Install dependencies and generate project files
         run: |
-          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" "${{ env.CIBW_ENVIRONMENT}}"
+          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" "${{ env.TEST}}"
