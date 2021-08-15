@@ -61,13 +61,13 @@ class CMakeBuild(build_ext):
             cmake_args += ["-T"]
             cmake_args += ["ClangCL"]
 
-        print(cmake_args)
-
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
 
         print("******************************************************************************")
         print( ext.sourcedir)
+        print("*******************************CMAKE ARGS***********************************************")
+        print(cmake_args)
         print( self.build_temp)
 
         subprocess.check_call(
