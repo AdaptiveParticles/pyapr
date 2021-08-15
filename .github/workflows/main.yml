@@ -108,6 +108,11 @@ jobs:
         run: |
           python -m pip install cibuildwheel==1.10.0
 
+      - name: Configure cibuildwheel
+        shell: bash
+        run: |
+          CIBW_ENVIRONMENT_COMMON=$EXTRA_CMAKE_ARGS
+
       - name: Install OpenMP dependencies with brew for OSX
         if: contains(matrix.os,'macos')
         run: |
