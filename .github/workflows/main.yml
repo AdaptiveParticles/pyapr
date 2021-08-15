@@ -122,10 +122,10 @@ jobs:
 ##          brew install c-blosc
 ##          brew install hdf5
 #
-#      - name: Run cibuildwheel
-#        run: |
-#          python3 -m cibuildwheel --output-dir wheelhouse
-#
-      - name: Install dependencies and generate project files
+      - name: Run cibuildwheel
         run: |
-          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" ${{ env.TEST}}
+          python3 -m cibuildwheel --output-dir wheelhouse
+#
+#      - name: Install dependencies and generate project files
+#        run: |
+#          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" ${{ env.TEST}}
