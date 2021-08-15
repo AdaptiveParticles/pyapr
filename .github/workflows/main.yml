@@ -43,7 +43,7 @@ jobs:
       CMAKE_BUILD_DIR: ${{ github.workspace }}/builddir/
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
-      EXTRA_CMAKE_ARGS: -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      EXTRA_CMAKE_ARGS: -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/external/LibAPR/"
       CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
       CIBW_ARCHS: "auto64"
       CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_24"
@@ -118,7 +118,7 @@ jobs:
 #      - name: Run cibuildwheel
 #        run: |
 #          python3 -m cibuildwheel --output-dir wheelhouse
-
-      - name: Install dependencies and generate project files
-        run: |
-          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/external/LibAPR/"
+#
+#      - name: Install dependencies and generate project files
+#        run: |
+#          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/external/LibAPR/"
