@@ -132,7 +132,4 @@ jobs:
       - name: Publish to test Pypi
         run: |
           python3 -m pip install twine
-          python3 -m twine upload --skip-existing --repository testpypi wheelhouse/*.whl
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          python3 -m twine upload --skip-existing --repository testpypi wheelhouse/*.whl -p ${{ secrets.TEST_PYPI_API_TOKEN }} -u __token__
