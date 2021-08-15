@@ -43,11 +43,11 @@ jobs:
       CMAKE_BUILD_DIR: ${{ github.workspace }}/builddir/
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
-      CIBW_ENVIRONMENT_WINDOWS: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\"
+      CIBW_ENVIRONMENT_WINDOWS: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
 #      CIBW_ENVIRONMENT_LINUX: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=/home/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_MANIFEST_DIR=/home/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/"
 #      CIBW_ENVIRONMENT_MACOS: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=/Users/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_MANIFEST_DIR=/Users/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/"
 #      EXTRA_CMAKE_ARGS: -DCMAKE_TOOLCHAIN_FILE=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\
-      TEST: -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/external/LibAPR/"
+#      TEST: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\"
       CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
       CIBW_ARCHS: "auto64"
       CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_24"
@@ -91,14 +91,11 @@ jobs:
         run: |
           cd ${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/
           ls
-#      - name: Install vcpkg on windows
-#        if: contains(matrix.os,'windows')
-#        run: |
-#          $Env:EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
 
-#           ./external/LibAPR/vcpkg/bootstrap-vcpkg.bat
-#           ./external/LibAPR/vcpkg/vcpkg.exe install blosc:x64-windows tiff:x64-windows hdf5:x64-windows szip:x64-windows
-
+      - name: Install vcpkg on windows
+        if: contains(matrix.os,'windows')
+        run: |
+          ./external/LibAPR/vcpkg/vcpkg.exe install --x-manifest-root=${{ github.workspace }}/external/LibAPR/
 
       - name: Show content of workspace after cache has been restored
         run: find $RUNNER_WORKSPACE
