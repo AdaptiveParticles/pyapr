@@ -115,6 +115,10 @@ jobs:
           brew install c-blosc
           brew install hdf5
 
-      - name: Run cibuildwheel
+#      - name: Run cibuildwheel
+#        run: |
+#          python3 -m cibuildwheel --output-dir wheelhouse
+
+      - name: Install dependencies and generate project files
         run: |
-          python3 -m cibuildwheel --output-dir wheelhouse
+          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
