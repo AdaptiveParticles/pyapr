@@ -84,10 +84,10 @@ jobs:
           key: |
             ${{ hashFiles( 'external/LibAPR/vcpkg.json' ) }}-${{ hashFiles( '.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}-invalidate
 
-      name: check file paths
-      run: |
-        cd ${{ env.VCPKG_ROOT}}
-        ls
+      - name: check file paths
+        run: |
+          cd ${{ env.VCPKG_ROOT}}
+          ls
 #      - name: Install vcpkg on windows
 #        if: contains(matrix.os,'windows')
 #        run: |
