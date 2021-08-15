@@ -122,3 +122,14 @@ jobs:
 #      - name: Install dependencies and generate project files
 #        run: |
 #          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" ${{ env.TEST}}
+      - name: Fix windows wheels
+        if: contains(matrix.os,'windows')
+        run: |
+          py -m pip install wheel
+          py -m pip install delvewheel
+          py fix_windows_wheel.py
+
+      - name: Publish to test Pypi
+        run: |
+          python3 -m pip install twine
+          python3 -m twine upload --skip-existing --repository testpypi wheelhouse/*.whl
