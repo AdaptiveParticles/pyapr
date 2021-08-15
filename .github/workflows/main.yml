@@ -129,7 +129,10 @@ jobs:
           py -m pip install delvewheel
           py fix_windows_wheel.py
 
-      - name: Publish to test Pypi
+      - name: Install twine
         run: |
           python3 -m pip install twine
+
+      - name: Publish to test Pypi
+        run: |
           python3 -m twine upload --skip-existing --repository testpypi wheelhouse/*.whl -p ${{ secrets.TEST_PYPI_API_TOKEN }} -u __token__
