@@ -25,19 +25,14 @@ jobs:
         include:
           - os: windows-latest
             triplet: x64-windows
-            extblosc: ON
             openmp: ON
-            buildargs: -A x64 -T ClangCL
+            builddir: wheelhouse/wheelhouse
           - os: ubuntu-latest
             triplet: x64-linux
-            extblosc: OFF
-            openmp: ON
-            buildargs:
+            builddir: wheelhouse
           - os: macos-latest
             triplet: x64-osx
-            extblosc: OFF
-            openmp: ON
-            buildargs:
+            builddir: wheelhouse
     env:
       # Indicates the CMake build directory where project files and binaries are being produced.
       CMAKE_BUILD_DIR: ${{ github.workspace }}/builddir/
@@ -135,4 +130,4 @@ jobs:
 
       - name: Publish to test Pypi
         run: |
-          python3 -m twine upload --skip-existing --repository testpypi wheelhouse/*.whl -p ${{ secrets.TEST_PYPI_API_TOKEN }}
+          python3 -m twine upload --skip-existing --repository testpypi ${{matrix.builddir}}/*.whl -p ${{ secrets.TEST_PYPI_API_TOKEN }}
