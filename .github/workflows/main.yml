@@ -135,4 +135,4 @@ jobs:
 
       - name: Publish to test Pypi
         run: |
-          python3 -m twine upload --skip-existing --repository testpypi wheelhouse/*.whl -p ${{ secrets.TEST_PYPI_API_TOKEN }} -u __token__
+          python3 -m twine upload --skip-existing --repository testpypi wheelhouse/*.whl -p ${{ secrets.TEST_PYPI_API_TOKEN }}
