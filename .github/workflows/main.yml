@@ -52,7 +52,7 @@ jobs:
       CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
       CIBW_BEFORE_TEST: "pip install -r requirements.txt"
       CIBW_TEST_COMMAND: "python3 -m unittest"
-      CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
+#      CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
 
     steps:
       - uses: actions/checkout@v2
@@ -112,8 +112,8 @@ jobs:
         if: contains(matrix.os,'macos')
         run: |
           brew install libomp
-          brew install c-blosc
-          brew install hdf5
+#          brew install c-blosc
+#          brew install hdf5
 
 #      - name: Run cibuildwheel
 #        run: |
