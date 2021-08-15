@@ -44,6 +44,8 @@ jobs:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
       CIBW_ENVIRONMENT_WINDOWS: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\"
+      CIBW_ENVIRONMENT_LINUX: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE="/home/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="/home/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/"
+      CIBW_ENVIRONMENT_MACOS: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE="/Users/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="/Users/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/"
 #      EXTRA_CMAKE_ARGS: -DCMAKE_TOOLCHAIN_FILE=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\
       TEST: -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/external/LibAPR/"
       CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
