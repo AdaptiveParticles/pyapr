@@ -26,13 +26,16 @@ jobs:
           - os: windows-latest
             triplet: x64-windows
             openmp: ON
-            builddir: wheelhouse/wheelhouse
+            builddir: dist/wheelhouse
+            builddir1: dist
           - os: ubuntu-latest
             triplet: x64-linux
             builddir: wheelhouse
+            builddir1: wheelhouse
           - os: macos-latest
             triplet: x64-osx
             builddir: wheelhouse
+            builddir1: wheelhouse
     env:
       # Indicates the CMake build directory where project files and binaries are being produced.
       CMAKE_BUILD_DIR: ${{ github.workspace }}/builddir/
@@ -112,7 +115,7 @@ jobs:
 #
       - name: Run cibuildwheel
         run: |
-          python3 -m cibuildwheel --output-dir wheelhouse
+          python3 -m cibuildwheel --output-dir ${{matrix.builddir1}}
 #
 #      - name: Install dependencies and generate project files
 #        run: |
