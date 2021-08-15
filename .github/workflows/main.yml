@@ -95,6 +95,7 @@ jobs:
       - name: Install vcpkg on windows
         if: contains(matrix.os,'windows')
         run: |
+          ./external/LibAPR/vcpkg/bootstrap-vcpkg.bat
           ./external/LibAPR/vcpkg/vcpkg.exe install --x-manifest-root=${{ github.workspace }}/external/LibAPR/ --triplet=${{ matrix.triplet }}
 
       - name: Show content of workspace after cache has been restored
