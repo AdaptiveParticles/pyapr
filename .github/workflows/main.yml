@@ -86,7 +86,7 @@ jobs:
 
       - name: check file paths
         run: |
-          cd ${{ env.VCPKG_ROOT}}
+          cd ${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/
           ls
 #      - name: Install vcpkg on windows
 #        if: contains(matrix.os,'windows')
