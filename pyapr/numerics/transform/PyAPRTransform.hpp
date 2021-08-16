@@ -270,8 +270,9 @@ void find_perimeter(APR& apr, PyParticleData<T>& parts, PyParticleData<T>& perim
  * for example the output of connected_component.
  * @param apr
  * @param object_labels
- **/
- template<typename T>
+ * @param min_volume
+ */
+template<typename T>
 void remove_small_objects(APR& apr, PyParticleData<T>& object_labels, const uint64_t min_volume) {
     auto max_label = object_labels.max();
 
@@ -330,6 +331,7 @@ void remove_large_objects(APR& apr, PyParticleData<T>& object_labels, const uint
         }
     }
 }
+
 
 template<typename T>
 void find_objects(APR& apr, PyParticleData<T>& labels, py::array_t<int>& min_coords, py::array_t<int>& max_coords) {
@@ -669,7 +671,6 @@ PixelData<T> maximum_projection_y_alt(APR& apr, PyParticleData<T>& parts) {
 #pragma omp parallel for schedule(static)
 #endif
     for(int z = 0; z < z_num; ++z) {
-
         for(int level = it.level_max()-1; level >= it.level_min(); --level) {
             const int level_size = it.level_size(level);
             const int z_l = z / level_size;
@@ -1029,9 +1030,9 @@ void find_label_centers_cpp(APR& apr, PyParticleData<T>& object_labels, py::arra
             res(i, 1) /= denominator[i];
             res(i, 2) /= denominator[i];
         } else {
-            res(i, 0) = 0;
-            res(i, 1) = 0;
-            res(i, 2) = 0;
+            res(i, 0) = -1;
+            res(i, 1) = -1;
+            res(i, 2) = -1;
         }
     }
 }
@@ -1129,6 +1130,9 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
     m2.def("remove_small_objects", &remove_small_objects<uint16_t>, py::arg("apr"), py::arg("object_labels"), py::arg("min_volume"));
     m2.def("remove_small_objects", &remove_small_objects<uint64_t>, py::arg("apr"), py::arg("object_labels"), py::arg("min_volume"));
 
+    m2.def("remove_large_objects", &remove_large_objects<uint16_t>, py::arg("apr"), py::arg("object_labels"), py::arg("max_volume"));
+    m2.def("remove_large_objects", &remove_large_objects<uint64_t>, py::arg("apr"), py::arg("object_labels"), py::arg("max_volume"));
+
     m2.def("find_objects_cpp", &find_objects<uint16_t>, py::arg("apr"), py::arg("labels"), py::arg("min_coords").noconvert(), py::arg("max_coords").noconvert());
     m2.def("find_objects_cpp", &find_objects<uint64_t>, py::arg("apr"), py::arg("labels"), py::arg("min_coords").noconvert(), py::arg("max_coords").noconvert());
 
@@ -1194,6 +1198,7 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
            py::arg("apr"), py::arg("parts"), py::arg("patch"));
     m2.def("max_projection_z_alt", &maximum_projection_z_alt_patch<uint16_t>, "maximum projection along z axis",
            py::arg("apr"), py::arg("parts"), py::arg("patch"));
+
 
     m2.def("find_label_centers_cpp", &find_label_centers_cpp<uint16_t>, "find object centers by volumetric average of label coordinates",
            py::arg("apr"), py::arg("object_labels"), py::arg("coords"));

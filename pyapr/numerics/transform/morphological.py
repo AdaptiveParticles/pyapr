@@ -3,7 +3,7 @@ import numpy as np
 
 
 def opening(apr: pyapr.APR,
-            parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+            parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
             binary: bool = False,
             radius: int = 1,
             inplace: bool = False):
@@ -23,7 +23,7 @@ def opening(apr: pyapr.APR,
 
 
 def closing(apr: pyapr.APR,
-            parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+            parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
             binary: bool = False,
             radius: int = 1,
             inplace: bool = False):
@@ -43,7 +43,7 @@ def closing(apr: pyapr.APR,
 
 
 def tophat(apr: pyapr.APR,
-           parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+           parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
            binary: bool = False,
            radius: int = 1):
 
@@ -55,7 +55,7 @@ def tophat(apr: pyapr.APR,
 
 
 def bottomhat(apr: pyapr.APR,
-              parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+              parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
               binary: bool = False,
               radius: int = 1):
 
@@ -67,7 +67,7 @@ def bottomhat(apr: pyapr.APR,
 
 
 def remove_small_holes(apr: pyapr.APR,
-                       parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+                       parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
                        min_volume: int = 200):
 
     mask = parts < 1

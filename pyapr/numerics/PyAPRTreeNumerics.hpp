@@ -46,7 +46,6 @@ void AddPyAPRTreeNumerics(py::module &p, const std::string &modulename) {
           "Compute interior tree particle values by average downsampling",
           py::arg("apr"), py::arg("particle_data"), py::arg("tree_data"));
 
-
     m.def("fill_tree_max", &PyAPRTreeNumerics::fill_tree_max<uint16_t, uint16_t>,
           "Compute interior tree particle values by max downsampling",
           py::arg("apr"), py::arg("particle_data"), py::arg("tree_data"));

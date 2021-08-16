@@ -23,7 +23,7 @@ namespace PyAPRReconstruction {
         PixelData<T> recon;
         recon.init_from_mesh(apr.org_dims(0), apr.org_dims(1), apr.org_dims(2), ptr);
 
-        const size_t size_alloc = std::accumulate(buf.shape.begin(), buf.shape.end(), 1, std::multiplies<size_t>());
+        const size_t size_alloc = std::accumulate(buf.shape.begin(), buf.shape.end(), (size_t) 1, std::multiplies<size_t>());
         if(recon.mesh.size() != size_alloc) {
             throw std::invalid_argument("input array size does not agree with APR dimensions");
         }
@@ -90,9 +90,10 @@ namespace PyAPRReconstruction {
         }
 
         //patch.check_limits(aPyAPR);   // assuming check_limits has been called from python to initialize array
-        const size_t psize = (patch.z_end-patch.z_begin) *
-                             (patch.x_end-patch.x_begin) *
-                             (patch.y_end-patch.y_begin);
+        const size_t psize = size_t (patch.z_end-patch.z_begin) *
+                             size_t (patch.x_end-patch.x_begin) *
+                             size_t (patch.y_end-patch.y_begin);
+
         if(recon.mesh.size() != psize) {
             throw std::invalid_argument("input array must agree with patch size!");
         }

@@ -639,7 +639,7 @@ void AddPyAPRSegmentation(py::module &m, const std::string &modulename) {
            py::arg("push_depth")=0, py::arg("intensity_threshold")=0.0f, py::arg("min_var")=0.0f,
            py::arg("std_window_size")=7, py::arg("max_factor")=3.0, py::arg("num_levels")=2);
 
-    m2.def("graphcut_tiled", &segment_apr_tiled<uint16_t>, "compute graphcut segmentation of an APR",
+    m2.def("graphcut_tiled", &segment_apr_tiled<float>, "compute graphcut segmentation of an APR",
            py::arg("apr"), py::arg("input_parts"), py::arg("mask_parts"), py::arg("alpha")=1.0, py::arg("beta")=1.0,
            py::arg("avg_num_neighbours")=3.3, py::arg("z_block_size")=256, py::arg("z_ghost_size")=16,
            py::arg("num_tree_smooth")=1, py::arg("num_part_smooth")=1, py::arg("push_depth")=0, py::arg("intensity_threshold")=0.0f,
