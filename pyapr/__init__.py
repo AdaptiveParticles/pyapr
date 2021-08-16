@@ -30,6 +30,3 @@ from . import numerics
 from . import viewer
 
 __all__ = ['data_containers', 'io', 'viewer', 'converter', 'numerics', 'tests']
-
-
-# __all__ = ['data_containers', 'io' , 'converter', 'numerics', 'tests']
