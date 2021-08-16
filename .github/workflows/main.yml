@@ -46,7 +46,8 @@ jobs:
 #      CIBW_ENVIRONMENT_MACOS: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=/Users/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_MANIFEST_DIR=/Users/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/"
 #      EXTRA_CMAKE_ARGS: -DCMAKE_TOOLCHAIN_FILE=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\
 #      TEST: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\"
-      CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
+#      CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
+      CIBW_BUILD: "cp36-*"
       CIBW_ARCHS: "auto64"
       CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_24"
       TWINE_USERNAME: __token__
@@ -123,9 +124,9 @@ jobs:
       - name: Fix windows wheels
         if: contains(matrix.os,'windows')
         run: |
-          py -m pip install wheel
-          py -m pip install delvewheel
-          py fix_windows_wheel.py
+          python3 -m pip install wheel
+          python3 -m pip install delvewheel
+          python3 fix_windows_wheel.py
 
       - name: Install twine
         run: |
