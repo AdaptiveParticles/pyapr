@@ -6,7 +6,6 @@ name: Quick Test
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-  pull_request:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,30 +22,27 @@ jobs:
         include:
           - os: windows-latest
             triplet: x64-windows
-            openmp: ON
-            builddir: dist/wheelhouse
-            builddir1: dist
+
           - os: ubuntu-latest
             triplet: x64-linux
-            builddir: wheelhouse
-            builddir1: wheelhouse
+
           - os: macos-latest
             triplet: x64-osx
-            builddir: wheelhouse
-            builddir1: wheelhouse
+
     env:
       # Indicates the CMake build directory where project files and binaries are being produced.
       CMAKE_BUILD_DIR: ${{ github.workspace }}/builddir/
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
+      TEST: -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/external/LibAPR/"
 
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
 
-#       - name: Submodule recursive
-#         run: git submodule update --init --recursive
+      - name: Submodule recursive
+        run: git submodule update --init --recursive
 
       # Setup the build machine with the most recent versions of CMake and Ninja. Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
       - uses: lukka/get-cmake@latest
@@ -69,11 +65,6 @@ jobs:
           key: |
             ${{ hashFiles( 'external/LibAPR/vcpkg.json' ) }}-${{ hashFiles( '.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}-invalidate
 
-      - name: check file paths
-        run: |
-          cd ${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/
-          ls
-
       - name: Show content of workspace after cache has been restored
         run: find $RUNNER_WORKSPACE
         shell: bash
@@ -90,5 +81,9 @@ jobs:
         if: contains(matrix.os,'macos')
         run: |
           brew install libomp
+          
+      - name: Install dependencies and generate project files
+        run: |
+          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" ${{ env.TEST}}
 
 
