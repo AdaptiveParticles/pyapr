@@ -23,7 +23,7 @@ namespace PyAPRReconstruction {
         PixelData<T> recon;
         recon.init_from_mesh(apr.org_dims(0), apr.org_dims(1), apr.org_dims(2), ptr);
 
-        const size_t size_alloc = std::accumulate(buf.shape.begin(), buf.shape.end(), 1, std::multiplies<size_t>());
+        const size_t size_alloc = std::accumulate(buf.shape.begin(), buf.shape.end(), (size_t) 1, std::multiplies<size_t>());
         if(recon.mesh.size() != size_alloc) {
             throw std::invalid_argument("input array size does not agree with APR dimensions");
         }
@@ -90,9 +90,10 @@ namespace PyAPRReconstruction {
         }
 
         //patch.check_limits(aPyAPR);   // assuming check_limits has been called from python to initialize array
-        const size_t psize = (patch.z_end-patch.z_begin) *
-                             (patch.x_end-patch.x_begin) *
-                             (patch.y_end-patch.y_begin);
+        const size_t psize = size_t (patch.z_end-patch.z_begin) *
+                             size_t (patch.x_end-patch.x_begin) *
+                             size_t (patch.y_end-patch.y_begin);
+
         if(recon.mesh.size() != psize) {
             throw std::invalid_argument("input array must agree with patch size!");
         }
@@ -174,6 +175,10 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
     /// constant reconstruction (full volume) into preallocated numpy array
     m2.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<uint16_t, uint16_t>, "Piecewise constant reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("arr"));
+    m2.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<uint64_t, uint64_t>, "Piecewise constant reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("arr"));
+    m2.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<uint64_t, float>, "Piecewise constant reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("arr"));
     m2.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<uint16_t, float>, "Piecewise constant reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("arr"));
     m2.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<float, float>, "Piecewise constant reconstruction",
@@ -190,6 +195,10 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
     /// smooth reconstruction (full volume) into preallocated numpy array
     m2.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<uint16_t, uint16_t>, "Smooth reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("arr"));
+    m2.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<uint64_t, uint64_t>, "Smooth reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("arr"));
+    m2.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<uint64_t, float>, "Smooth reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("arr"));
     m2.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<uint16_t, float>, "Smooth reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("arr"));
     m2.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<float, float>, "Smooth reconstruction",
@@ -198,6 +207,12 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
 
     /// constant reconstruction (patch) into preallocated numpy array
     m2.def("reconstruct_constant_patch_inplace", &PyAPRReconstruction::reconstruct_constant_patch_inplace<uint16_t, uint16_t>,
+           "Piecewise constant patch reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
+    m2.def("reconstruct_constant_patch_inplace", &PyAPRReconstruction::reconstruct_constant_patch_inplace<uint64_t, uint64_t>,
+           "Piecewise constant patch reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
+    m2.def("reconstruct_constant_patch_inplace", &PyAPRReconstruction::reconstruct_constant_patch_inplace<uint64_t, float>,
            "Piecewise constant patch reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
     m2.def("reconstruct_constant_patch_inplace", &PyAPRReconstruction::reconstruct_constant_patch_inplace<uint16_t, float>,
@@ -217,6 +232,12 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
 
     /// smooth reconstruction (patch) into preallocated numpy array
     m2.def("reconstruct_smooth_patch_inplace", &PyAPRReconstruction::reconstruct_smooth_patch_inplace<uint16_t, uint16_t>,
+           "Smooth patch reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
+    m2.def("reconstruct_smooth_patch_inplace", &PyAPRReconstruction::reconstruct_smooth_patch_inplace<uint64_t, uint64_t>,
+           "Smooth patch reconstruction",
+           py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
+    m2.def("reconstruct_smooth_patch_inplace", &PyAPRReconstruction::reconstruct_smooth_patch_inplace<uint64_t, float>,
            "Smooth patch reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("tree_parts"), py::arg("patch"), py::arg("arr"));
     m2.def("reconstruct_smooth_patch_inplace", &PyAPRReconstruction::reconstruct_smooth_patch_inplace<uint16_t, float>,
