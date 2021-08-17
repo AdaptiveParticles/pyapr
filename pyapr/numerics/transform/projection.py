@@ -1,5 +1,6 @@
 import pyapr
 import numpy as np
+from warnings import warn
 
 
 def maximum_projection(apr: pyapr.APR,
@@ -64,3 +65,13 @@ def maximum_projection(apr: pyapr.APR,
     else:
         return np.array(pyapr.numerics.transform.max_projection_x(*args), copy=False).squeeze() if method == 'direct' \
             else np.array(pyapr.numerics.transform.max_projection_x_alt(*args), copy=False).squeeze()
+
+
+def maximum_projection_patch(apr: pyapr.APR,
+                             parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+                             dim: int,
+                             patch: pyapr.ReconPatch,
+                             method: str = 'auto'):
+    warn('\'maximum_projection_patch\' is deprecated and will be removed in a future release. '
+         'Returning \'maximum_projection\' with the same arguments.', DeprecationWarning)
+    return maximum_projection(apr, parts, dim, patch, method)
