@@ -45,7 +45,7 @@ def reconstruct_constant(apr: pyapr.APR,
     elif isinstance(parts, pyapr.ShortParticles):
         _dtype = np.uint16
     else:
-        raise ('Error: parts type not recognized')
+        raise ValueError('parts type not recognized')
 
     if patch is not None:
         if not patch.check_limits(apr):
@@ -104,7 +104,7 @@ def reconstruct_smooth(apr: pyapr.APR,
     elif isinstance(parts, pyapr.ShortParticles):
         _dtype = np.uint16
     else:
-        raise ('Error: parts type not recognized')
+        raise ValueError('parts type not recognized')
 
     if patch is not None:
         if not patch.check_limits(apr):

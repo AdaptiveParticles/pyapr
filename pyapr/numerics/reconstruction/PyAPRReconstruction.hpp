@@ -172,7 +172,7 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
 
     auto m2 = m.def_submodule(modulename.c_str());
 
-    /// constant reconstruction (full volume) into preallocated numpy array
+        /// constant reconstruction (full volume) into preallocated numpy array
     m2.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<uint16_t, uint16_t>, "Piecewise constant reconstruction",
            py::arg("APR"), py::arg("parts"), py::arg("arr"));
     m2.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<uint64_t, uint64_t>, "Piecewise constant reconstruction",

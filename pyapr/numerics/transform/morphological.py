@@ -89,10 +89,13 @@ def find_objects(apr: pyapr.APR,
                  labels: (pyapr.ShortParticles, pyapr.LongParticles)):
 
     max_label = labels.max()
-    max_dim = max(apr.org_dims())
+    max_dim = max([apr.org_dims(x) for x in range(3)])
     min_coords = np.full((max_label+1, 3), max_dim+1, dtype=np.int32)
     max_coords = np.zeros((max_label+1, 3), dtype=np.int32)
     pyapr.numerics.transform.find_objects_cpp(apr, labels, min_coords, max_coords)
+
+    max_coords[0, :] = [apr.org_dims(x) for x in range(3)]
+    min_coords[0, :] = 0
 
     return min_coords, max_coords
 
@@ -108,3 +111,13 @@ def find_label_centers(apr: pyapr.APR,
     else:
         pyapr.numerics.transform.find_label_centers_cpp(apr, labels, coords)
     return coords[np.any(coords > 0, axis=1), :]
+
+
+def find_label_volume(apr: pyapr.APR,
+                      labels: (pyapr.ShortParticles, pyapr.LongParticles)):
+
+    max_label = labels.max()
+    volume = np.zeros((max_label+1), dtype=np.uint64)
+    pyapr.numerics.transform.find_label_volume_cpp(apr, labels, volume)
+
+    return volume

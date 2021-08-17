@@ -12,7 +12,6 @@ class APRSlicer:
         self.apr = apr
         self.parts = parts
         self.mode = mode
-
         if self.mode == 'level':
             self.dtype = np.uint8
         else:
@@ -23,22 +22,21 @@ class APRSlicer:
             elif isinstance(parts, pyapr.ShortParticles):
                 self.dtype = np.uint16
             else:
-                raise('Error: parts type not recognized')
+                raise ValueError('parts type not recognized')
 
         self.patch = pyapr.ReconPatch()
         self.patch.level_delta = level_delta
         self.patch.z_end = 1
         self.patch.check_limits(self.apr)
-
         self.dims = []
         self.update_dims()
 
-        if isinstance(parts, pyapr.FloatParticles):
-            self.tree_parts = pyapr.FloatParticles()
-        elif isinstance(parts, pyapr.LongParticles):
+        if isinstance(parts, pyapr.LongParticles):
             self.tree_parts = pyapr.LongParticles()
         elif isinstance(parts, pyapr.ShortParticles):
             self.tree_parts = pyapr.ShortParticles()
+        else:
+            self.tree_parts = pyapr.FloatParticles()
 
         if tree_mode == 'mean':
             pyapr.numerics.fill_tree_mean(self.apr, self.parts, self.tree_parts)
@@ -46,9 +44,7 @@ class APRSlicer:
             pyapr.numerics.fill_tree_max(self.apr, self.parts, self.tree_parts)
         else:
             raise ValueError('Unknown tree mode.')
-
         self._slice = self.new_empty_slice()
-
         if self.mode == 'constant':
             self.recon = pyapr.numerics.reconstruction.reconstruct_constant
         elif self.mode == 'smooth':

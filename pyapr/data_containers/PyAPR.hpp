@@ -27,7 +27,8 @@ void AddPyAPR(pybind11::module &m, const std::string &modulename) {
             .def("z_num", &APR::z_num,  "Gives the maximum bounds in the z direction for the given level")
             .def("iterator", &APR::iterator, "Return a linear iterator for APR particles")
             .def("tree_iterator", &APR::tree_iterator, "Return a linear iterator for interior APRTree particles")
-            .def("org_dims", &APR::org_dims, "returns the original pixel image dimensions as a tuple (y, x, z)")
+            .def("org_dims", &APR::org_dims, "returns the original image size in a specified dimension (y, x, z)")
+            .def("shape", [](APR& self){return py::make_tuple(self.org_dims(2), self.org_dims(1), self.org_dims(0));}, "returns the original pixel image dimensions as a tuple (z, x, y)")
             .def("get_parameters", &APR::get_apr_parameters, "return the parameters used to create the APR")
             .def("computational_ratio", &APR::computational_ratio, "return the computational ratio (number of pixels in original image / number of particles in the APR)");
 }
