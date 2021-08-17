@@ -67,7 +67,7 @@ def bottomhat(apr: pyapr.APR,
 
 
 def remove_small_holes(apr: pyapr.APR,
-                       parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
+                       parts: (pyapr.ShortParticles, pyapr.LongParticles),
                        min_volume: int = 200):
 
     mask = parts < 1
@@ -78,7 +78,12 @@ def remove_small_holes(apr: pyapr.APR,
 
     if parts.max() > 1:
         # Case where input is a label map
-        cc = pyapr.ShortParticles()
+        if isinstance(parts, pyapr.ShortParticles):
+            cc = pyapr.ShortParticles()
+        elif isinstance(parts, pyapr.LongParticles):
+            mask = np.array(mask).astype('uint16')
+            mask = pyapr.ShortParticles(mask)
+            cc = pyapr.LongParticles()
         pyapr.numerics.segmentation.connected_component(apr, mask, cc)
         return cc
     else:
