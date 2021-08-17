@@ -42,12 +42,7 @@ jobs:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
       CIBW_ENVIRONMENT_WINDOWS: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\"
-#      CIBW_ENVIRONMENT_LINUX: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=/home/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_MANIFEST_DIR=/home/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/"
-#      CIBW_ENVIRONMENT_MACOS: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=/Users/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_MANIFEST_DIR=/Users/runner/work/PyLibAPR/PyLibAPR/external/LibAPR/"
-#      EXTRA_CMAKE_ARGS: -DCMAKE_TOOLCHAIN_FILE=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\
-#      TEST: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\PyLibAPR\\PyLibAPR\\external\\LibAPR\\"
       CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
-#      CIBW_BUILD: "cp36-*"
       CIBW_ARCHS: "auto64"
       CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_24"
       TWINE_USERNAME: __token__
@@ -113,14 +108,11 @@ jobs:
           brew install libomp
           brew install c-blosc
           brew install hdf5
-#
+
       - name: Run cibuildwheel
         run: |
           python3 -m cibuildwheel --output-dir ${{matrix.builddir1}}
-#
-#      - name: Install dependencies and generate project files
-#        run: |
-#          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" ${{ env.TEST}}
+
       - name: Fix windows wheels
         if: contains(matrix.os,'windows')
         run: |
@@ -135,3 +127,9 @@ jobs:
       - name: Publish to test Pypi
         run: |
           python3 -m twine upload --skip-existing --repository testpypi ${{matrix.builddir}}/*.whl -p ${{ secrets.TEST_PYPI_API_TOKEN }}
+
+      - name: Test release from pypi
+        run: |
+          pip install -r requirements.txt
+          pip install -i https://test.pypi.org/simple/ PyLibAPR-test
+          python3 -m unittest
