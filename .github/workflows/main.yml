@@ -49,7 +49,7 @@ jobs:
       CIBW_BUILD_VERBOSITY: 3
       CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
       CIBW_BEFORE_TEST: "pip install -r requirements.txt"
-      CIBW_TEST_COMMAND: "python3 -m unittest discover -s ${{ github.workspace }}"
+      CIBW_TEST_COMMAND: "python3 -m unittest discover -s ${{ github.workspace }}/pyapr/tests/"
       CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
 
     steps:
