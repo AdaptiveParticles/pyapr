@@ -58,12 +58,16 @@ void AddPyAPRFile(pybind11::module &m, const std::string &modulename) {
                  py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")
             .def("write_particles", &PyAPRFile::write_particles<uint16_t>, "write particles to file",
                  py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")
+            .def("write_particles", &PyAPRFile::write_particles<uint64_t>, "write particles to file",
+                 py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")
             .def("write_particles", &PyAPRFile::write_particles<float>, "write particles to file",
                  py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")
 
             .def("read_particles", &PyAPRFile::read_particles_py<uint8_t>, "read particles from file",
                  py::arg("apr"), py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")
             .def("read_particles", &PyAPRFile::read_particles_py<uint16_t>, "read particles from file",
+                 py::arg("apr"), py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")
+            .def("read_particles", &PyAPRFile::read_particles_py<uint64_t>, "read particles from file",
                  py::arg("apr"), py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")
             .def("read_particles", &PyAPRFile::read_particles_py<float>, "read particles from file",
                  py::arg("apr"), py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")

@@ -3,7 +3,7 @@ import numpy as np
 
 
 def opening(apr: pyapr.APR,
-            parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+            parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
             binary: bool = False,
             radius: int = 1,
             inplace: bool = False):
@@ -23,7 +23,7 @@ def opening(apr: pyapr.APR,
 
 
 def closing(apr: pyapr.APR,
-            parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+            parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
             binary: bool = False,
             radius: int = 1,
             inplace: bool = False):
@@ -43,7 +43,7 @@ def closing(apr: pyapr.APR,
 
 
 def tophat(apr: pyapr.APR,
-           parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+           parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
            binary: bool = False,
            radius: int = 1):
 
@@ -55,7 +55,7 @@ def tophat(apr: pyapr.APR,
 
 
 def bottomhat(apr: pyapr.APR,
-              parts: (pyapr.ShortParticles, pyapr.FloatParticles),
+              parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
               binary: bool = False,
               radius: int = 1):
 
@@ -68,18 +68,12 @@ def bottomhat(apr: pyapr.APR,
 
 def remove_small_holes(apr: pyapr.APR,
                        parts: (pyapr.ShortParticles, pyapr.LongParticles),
-                       max_volume: int = 200):
+                       min_volume: int = 200):
 
-    if isinstance(parts, pyapr.ShortParticles):
-        mask = parts < 1
-        cc_inverted = pyapr.ShortParticles()
-    elif isinstance(parts, pyapr.LongParticles):
-        mask = parts < 1
-        mask = np.array(mask).astype('uint16')
-        mask = pyapr.ShortParticles(mask)
-        cc_inverted = pyapr.LongParticles()
+    mask = parts < 1
+    cc_inverted = pyapr.ShortParticles()
     pyapr.numerics.segmentation.connected_component(apr, mask, cc_inverted)
-    pyapr.numerics.transform.remove_small_objects(apr, cc_inverted, min_volume=max_volume)
+    pyapr.numerics.transform.remove_small_objects(apr, cc_inverted, min_volume=min_volume)
     mask = cc_inverted < 1
 
     if parts.max() > 1:
@@ -97,12 +91,38 @@ def remove_small_holes(apr: pyapr.APR,
 
 
 def find_objects(apr: pyapr.APR,
-                 labels: pyapr.ShortParticles):
+                 labels: (pyapr.ShortParticles, pyapr.LongParticles)):
 
     max_label = labels.max()
-    max_dim = max(apr.org_dims())
+    max_dim = max([apr.org_dims(x) for x in range(3)])
     min_coords = np.full((max_label+1, 3), max_dim+1, dtype=np.int32)
     max_coords = np.zeros((max_label+1, 3), dtype=np.int32)
     pyapr.numerics.transform.find_objects_cpp(apr, labels, min_coords, max_coords)
 
+    max_coords[0, :] = [apr.org_dims(x) for x in range(3)]
+    min_coords[0, :] = 0
+
     return min_coords, max_coords
+
+
+def find_label_centers(apr: pyapr.APR,
+                       labels: (pyapr.ShortParticles, pyapr.LongParticles),
+                       weights: (None, pyapr.ShortParticles, pyapr.FloatParticles) = None):
+
+    max_label = labels.max()
+    coords = np.zeros((max_label+1, 3), dtype=np.float64)
+    if weights is not None:
+        pyapr.numerics.transform.find_label_centers_weighted_cpp(apr, labels, coords, weights)
+    else:
+        pyapr.numerics.transform.find_label_centers_cpp(apr, labels, coords)
+    return coords[np.any(coords > 0, axis=1), :]
+
+
+def find_label_volume(apr: pyapr.APR,
+                      labels: (pyapr.ShortParticles, pyapr.LongParticles)):
+
+    max_label = labels.max()
+    volume = np.zeros((max_label+1), dtype=np.uint64)
+    pyapr.numerics.transform.find_label_volume_cpp(apr, labels, volume)
+
+    return volume
