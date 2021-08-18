@@ -63,8 +63,8 @@ def maximum_projection(apr: pyapr.APR,
         return np.array(pyapr.numerics.transform.max_projection_x(*args), copy=False).squeeze() if method == 'direct' \
             else np.array(pyapr.numerics.transform.max_projection_x_alt(*args), copy=False).squeeze()
     else:
-        return np.array(pyapr.numerics.transform.max_projection_x(*args), copy=False).squeeze() if method == 'direct' \
-            else np.array(pyapr.numerics.transform.max_projection_x_alt(*args), copy=False).squeeze()
+        return np.array(pyapr.numerics.transform.max_projection_z(*args), copy=False).squeeze() if method == 'direct' \
+            else np.array(pyapr.numerics.transform.max_projection_z_alt(*args), copy=False).squeeze()
 
 
 def maximum_projection_patch(apr: pyapr.APR,
