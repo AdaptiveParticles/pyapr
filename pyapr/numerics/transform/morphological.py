@@ -99,7 +99,7 @@ def find_objects(apr: pyapr.APR,
     max_coords = np.zeros((max_label+1, 3), dtype=np.int32)
     pyapr.numerics.transform.find_objects_cpp(apr, labels, min_coords, max_coords)
 
-    max_coords[0, :] = [apr.org_dims(x) for x in range(3)]
+    max_coords[0, :] = [apr.org_dims(x) for x in [2, 0, 1]]
     min_coords[0, :] = 0
 
     return min_coords, max_coords
