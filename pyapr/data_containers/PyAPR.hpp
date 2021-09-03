@@ -8,9 +8,13 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
+#include <pybind11/stl_bind.h>
+
 #include <data_structures/APR/APR.hpp>
 
 namespace py = pybind11;
+
+PYBIND11_MAKE_OPAQUE(std::vector<APR*>)
 
 void AddPyAPR(pybind11::module &m, const std::string &modulename) {
     py::class_<APR>(m, modulename.c_str())
@@ -18,6 +22,7 @@ void AddPyAPR(pybind11::module &m, const std::string &modulename) {
             .def("__repr__", [](APR& a) {
                 return "APR (shape [" + std::to_string(a.org_dims(2)) + ", " + std::to_string(a.org_dims(1)) + \
                         ", " + std::to_string(a.org_dims(0)) + "], number particles = " + std::to_string(a.total_number_particles()) + ")";})
+            .def_readwrite("name", &APR::name)
             .def("total_number_particles", &APR::total_number_particles, "return number of particles")
             .def("total_number_tree_particles", &APR::total_number_tree_particles, "return number of interior tree particles")
             .def("level_min", &APR::level_min, "return the minimum resolution level")
@@ -31,6 +36,9 @@ void AddPyAPR(pybind11::module &m, const std::string &modulename) {
             .def("shape", [](APR& self){return py::make_tuple(self.org_dims(2), self.org_dims(1), self.org_dims(0));}, "returns the original pixel image dimensions as a tuple (z, x, y)")
             .def("get_parameters", &APR::get_apr_parameters, "return the parameters used to create the APR")
             .def("computational_ratio", &APR::computational_ratio, "return the computational ratio (number of pixels in original image / number of particles in the APR)");
+
+    py::bind_vector<std::vector<APR*>>(m, "APRPtrVector", py::module_local(false));
 }
+
 
 #endif //PYLIBAPR_PYAPR_HPP
