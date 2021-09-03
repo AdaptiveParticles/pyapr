@@ -67,8 +67,8 @@ class CMakeBuild(build_ext):
             os.makedirs(self.build_temp)
 
         print("******************************************************************************")
-        print( ext.sourcedir)
-        print( self.build_temp)
+        print(ext.sourcedir)
+        print(self.build_temp)
 
         subprocess.check_call(
             ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp
@@ -80,13 +80,12 @@ class CMakeBuild(build_ext):
 
 
 setup(
-    name='PyLibAPR-test',
-    version='0.1.5.9',
+    name='pyapr',
+    version='0.2.0.0',
     ext_modules=[CMakeExtension('_pyaprwrapper')],
     cmdclass={
         'build_ext': CMakeBuild,
     },
-    setup_requires=['cmake-setuptools'],
     packages=find_packages(),
     install_requires=[
         'numpy',
