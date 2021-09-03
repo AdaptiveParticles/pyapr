@@ -16,8 +16,8 @@ namespace py = pybind11;
 
 
 // -------- wrapper -------------------------------------------------
-void AddPyLinearIterator(pybind11::module &m, const std::string &modulename) {
-    py::class_<LinearIterator>(m, modulename.c_str())
+void AddPyLinearIterator(pybind11::module &m) {
+    py::class_<LinearIterator>(m, "LinearIterator")
             .def(py::init())
             .def("total_number_particles", &LinearIterator::total_number_particles, "return number of particles",
                  py::arg("level")=0)

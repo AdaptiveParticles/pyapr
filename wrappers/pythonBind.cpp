@@ -61,7 +61,7 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     AddReconPatch(data_containers);
 
     // wrap PyLinearIterator
-    AddPyLinearIterator(data_containers, "iterators");
+    AddPyLinearIterator(data_containers);
 
     // wrap numerics module and submodules
     py::module numerics = m.def_submodule("numerics");
