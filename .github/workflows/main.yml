@@ -6,7 +6,7 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master, develop ]
+    branches:
   pull_request:
     branches: [ master, develop ]
 
@@ -48,8 +48,8 @@ jobs:
       TWINE_USERNAME: __token__
       CIBW_BUILD_VERBOSITY: 3
       CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
-      CIBW_BEFORE_TEST: "pip install -r requirements.txt"
-      CIBW_TEST_COMMAND: "python3 -m unittest discover -s ${{ github.workspace }}/pyapr/tests/"
+#      CIBW_BEFORE_TEST: "pip install -r requirements.txt"
+#      CIBW_TEST_COMMAND: "python3 -m unittest discover -s ${{ github.workspace }}/pyapr/tests/"
       CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
 
     steps:
@@ -128,8 +128,8 @@ jobs:
         run: |
           python3 -m twine upload --skip-existing --repository testpypi ${{matrix.builddir}}/*.whl -p ${{ secrets.TEST_PYPI_API_TOKEN }}
 
-      - name: Test release from pypi
-        run: |
-          pip install -r requirements.txt
-          pip install -i https://test.pypi.org/simple/ PyLibAPR-test
-          python3 -m unittest
+#      - name: Test release from pypi
+#        run: |
+#          pip install -r requirements.txt
+#          pip install -i https://test.pypi.org/simple/ PyLibAPR-test
+#          python3 -m unittest
