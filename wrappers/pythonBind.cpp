@@ -15,6 +15,11 @@
 #include "data_containers/PyParticleData.hpp"
 #include "data_containers/ReconPatch.hpp"
 #include "data_containers/iterators/PyLinearIterator.hpp"
+
+#include "data_containers/LazyAccess.hpp"
+#include "data_containers/LazyData.hpp"
+#include "data_containers/iterators/LazyIterator.hpp"
+
 #include "numerics/PyAPRNumerics.hpp"
 #include "numerics/PyAPRTreeNumerics.hpp"
 #include "numerics/reconstruction/PyAPRReconstruction.hpp"
@@ -62,6 +67,14 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
 
     // wrap PyLinearIterator
     AddPyLinearIterator(data_containers);
+
+    // Lazy stuff
+    AddLazyAccess(data_containers, "LazyAccess");
+    AddLazyIterator(data_containers);
+    AddLazyData<uint8_t>(data_containers, "Byte");
+    AddLazyData<uint16_t>(data_containers, "Short");
+    AddLazyData<uint64_t>(data_containers, "Long");
+    AddLazyData<float>(data_containers, "Float");
 
     // wrap numerics module and submodules
     py::module numerics = m.def_submodule("numerics");
