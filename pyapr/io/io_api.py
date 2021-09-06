@@ -122,6 +122,22 @@ def initialize_particles_type(typestr):
         return pyapr.FloatParticles()
     if typestr == 'uint8':
         return pyapr.ByteParticles()
+    if typestr == 'uint64':
+        return pyapr.LongParticles()
+
+    print('deduced datatype {} is currently not supported - returning None'.format(typestr))
+    return None
+
+
+def initialize_lazy_particles_type(typestr):
+    if typestr == 'uint16':
+        return pyapr.LazyDataShort()
+    if typestr == 'float':
+        return pyapr.LazyDataFloat()
+    if typestr == 'uint8':
+        return pyapr.LazyDataByte()
+    if typestr == 'uint64':
+        return pyapr.LazyDataLong()
 
     print('deduced datatype {} is currently not supported - returning None'.format(typestr))
     return None
