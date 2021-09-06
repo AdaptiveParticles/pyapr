@@ -3,7 +3,8 @@ from _pyaprwrapper.numerics.reconstruction import reconstruct_constant_inplace, 
                                                   reconstruct_smooth_inplace, \
                                                   reconstruct_constant_patch_inplace, \
                                                   reconstruct_level_patch_inplace, \
-                                                  reconstruct_smooth_patch_inplace
+                                                  reconstruct_smooth_patch_inplace, \
+                                                  reconstruct_constant_lazy_inplace
 
 import numpy as np
 import pyapr
@@ -166,3 +167,26 @@ def reconstruct_level(apr: pyapr.APR,
         reconstruct_level_inplace(apr, out_arr)
     return out_arr
 
+
+def reconstruct_lazy(apr_it: pyapr.LazyIterator,
+                     tree_it: pyapr.LazyIterator,
+                     parts: (pyapr.LazyDataShort, pyapr.LazyDataLong, pyapr.LazyDataFloat),
+                     tree_parts: (pyapr.LazyDataShort, pyapr.LazyDataLong, pyapr.LazyDataFloat),
+                     patch: pyapr.ReconPatch,
+                     out_arr: (None, np.ndarray) = None):
+
+    if isinstance(parts, pyapr.LazyDataFloat):
+        _dtype = np.float32
+    elif isinstance(parts, pyapr.LazyDataLong):
+        _dtype = np.uint64
+    elif isinstance(parts, pyapr.LazyDataShort):
+        _dtype = np.uint16
+    else:
+        raise ValueError('parts type not recognized')
+
+    if out_arr is None or out_arr.size != patch.size():
+        out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
+                           dtype=_dtype)
+
+    reconstruct_constant_lazy_inplace(apr_it, tree_it, out_arr, parts, tree_parts, patch)
+    return out_arr
