@@ -6,9 +6,12 @@
 #define PYLIBAPR_RECONPATCH_HPP
 
 #include "numerics/APRReconstruction.hpp"
+#include <pybind11/pybind11.h>
 
 
 void AddReconPatch(pybind11::module &m) {
+
+    using namespace pybind11::literals;
 
     py::class_<ReconPatch>(m, "ReconPatch")
             .def(py::init())
@@ -25,7 +28,9 @@ void AddReconPatch(pybind11::module &m) {
             .def_readwrite("y_begin", &ReconPatch::y_begin)
             .def_readwrite("y_end", &ReconPatch::y_end)
             .def_readwrite("level_delta", &ReconPatch::level_delta)
-            .def("check_limits", &ReconPatch::check_limits, "check patch limits against APR dimensions")
+//            .def("check_limits", &ReconPatch::check_limits, "check patch limits against APR dimensions", "apr"_a)
+            .def("check_limits", [](ReconPatch& p, APR& apr){ return p.check_limits(apr); })
+            .def("check_limits", [](ReconPatch& p, LazyAccess& acc){ return p.check_limits(acc); })
             .def("size", &ReconPatch::size, "return the number of pixels in the patch region");
 }
 
