@@ -70,7 +70,7 @@ class LazySlicer:
         return np.zeros((self.patch.z_end-self.patch.z_begin, self.patch.x_end-self.patch.x_begin, self.patch.y_end-self.patch.y_begin), dtype=self.dtype)
 
     def update_dims(self):
-        self.dims = [np.ceil(self.apr_access.org_dims(x) * pow(2, self.patch.level_delta)) for x in range(3)]
+        self.dims = [int(np.ceil(self.apr_access.org_dims(x) * pow(2, self.patch.level_delta))) for x in range(3)]
 
     def set_level_delta(self, level_delta):
         self.patch.level_delta = level_delta
