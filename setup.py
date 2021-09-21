@@ -80,8 +80,8 @@ class CMakeBuild(build_ext):
         )
 
 setup(
-    name='PyLibAPR-test',
-    version='0.1.6.0',
+    name='pyapr',
+    version='0.0.0.1',
     ext_modules=[CMakeExtension('_pyaprwrapper')],
     cmdclass={
         'build_ext': CMakeBuild,
