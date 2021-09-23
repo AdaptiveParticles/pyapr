@@ -1,6 +1,6 @@
 # PyLibAPR
 
-![example workflow](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+![build and deploy](https://github.com/AdaptiveParticles/PyLibAPR/actions/workflows/main.yml/badge.svg)
 ![PyPI - Python Version](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue) 
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/p/DNS.1.1.1.1)
 
