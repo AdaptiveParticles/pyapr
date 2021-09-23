@@ -1,6 +1,8 @@
 # PyLibAPR
 
 [![Build Status](https://travis-ci.com/AdaptiveParticles/PyLibAPR.svg?branch=ci_build)](https://travis-ci.com/AdaptiveParticles/PyLibAPR)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyapr)
+
 
 Python wrappers for [LibAPR](https://github.com/AdaptiveParticles/LibAPR) - Library for producing and processing on 
 the Adaptive Particle Representation (APR).
