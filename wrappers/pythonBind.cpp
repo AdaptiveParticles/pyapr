@@ -56,11 +56,12 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     AddPyParticleData<uint8_t>(data_containers, "Byte");
     AddPyParticleData<float>(data_containers, "Float");
     AddPyParticleData<uint16_t>(data_containers, "Short");
+    AddPyParticleData<uint64_t>(data_containers, "Long");
 
     AddReconPatch(data_containers);
 
     // wrap PyLinearIterator
-    AddPyLinearIterator(data_containers, "iterators");
+    AddPyLinearIterator(data_containers);
 
     // wrap numerics module and submodules
     py::module numerics = m.def_submodule("numerics");

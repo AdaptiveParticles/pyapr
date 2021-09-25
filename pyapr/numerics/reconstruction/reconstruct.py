@@ -10,8 +10,8 @@ import pyapr
 
 
 def reconstruct_constant(apr: pyapr.APR,
-                         parts: (pyapr.ShortParticles, pyapr.FloatParticles),
-                         tree_parts: (None, pyapr.ShortParticles, pyapr.FloatParticles) = None,
+                         parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
+                         tree_parts: (None, pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles) = None,
                          patch: (None, pyapr.ReconPatch) = None,
                          out_arr: (None, np.ndarray) = None):
     """
@@ -38,7 +38,14 @@ def reconstruct_constant(apr: pyapr.APR,
         the reconstructed pixel values
     """
 
-    _dtype = np.float32 if isinstance(parts, pyapr.FloatParticles) else np.uint16
+    if isinstance(parts, pyapr.FloatParticles):
+        _dtype = np.float32
+    elif isinstance(parts, pyapr.LongParticles):
+        _dtype = np.uint64
+    elif isinstance(parts, pyapr.ShortParticles):
+        _dtype = np.uint16
+    else:
+        raise ValueError('parts type not recognized')
 
     if patch is not None:
         if not patch.check_limits(apr):
@@ -62,8 +69,8 @@ def reconstruct_constant(apr: pyapr.APR,
 
 
 def reconstruct_smooth(apr: pyapr.APR,
-                       parts: (pyapr.ShortParticles, pyapr.FloatParticles),
-                       tree_parts: (None, pyapr.ShortParticles, pyapr.FloatParticles) = None,
+                       parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
+                       tree_parts: (None, pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles) = None,
                        patch: (None, pyapr.ReconPatch) = None,
                        out_arr: (None, np.ndarray) = None):
     """
@@ -90,7 +97,14 @@ def reconstruct_smooth(apr: pyapr.APR,
         the reconstructed pixel values
     """
 
-    _dtype = np.float if isinstance(parts, pyapr.FloatParticles) else np.uint16
+    if isinstance(parts, pyapr.FloatParticles):
+        _dtype = np.float32
+    elif isinstance(parts, pyapr.LongParticles):
+        _dtype = np.uint64
+    elif isinstance(parts, pyapr.ShortParticles):
+        _dtype = np.uint16
+    else:
+        raise ValueError('parts type not recognized')
 
     if patch is not None:
         if not patch.check_limits(apr):

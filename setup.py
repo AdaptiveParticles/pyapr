@@ -65,6 +65,7 @@ class CMakeBuild(build_ext):
             os.makedirs(self.build_temp)
 
         print("******************************************************************************")
+
         print( ext.sourcedir)
         print("*******************************CMAKE ARGS***********************************************")
         print(cmake_args)
@@ -81,12 +82,12 @@ class CMakeBuild(build_ext):
 
 setup(
     name='pyapr',
+
     version='0.0.0.2',
     ext_modules=[CMakeExtension('_pyaprwrapper')],
     cmdclass={
         'build_ext': CMakeBuild,
     },
-    setup_requires=['cmake-setuptools'],
     packages=find_packages(),
     install_requires=[
         'numpy',
