@@ -102,4 +102,6 @@ jobs:
       # Build with python
       - name: Python Setup
         run: |
-          python -m setup.py bdist_wheel
+          pip install wheel
+          pip install setuptools
+          python setup.py bdist_wheel
