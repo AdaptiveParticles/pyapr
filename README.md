@@ -10,7 +10,7 @@ the Adaptive Particle Representation (APR).
 For article see: https://www.nature.com/articles/s41467-018-07390-9
 
 ## Installation using PYPI
-For Windows, OSX, and linux and python versions 3.6-3.9 direction installation with OpenMP support should work via:
+For Windows 10, OSX, and Linux and Python versions 3.6-3.9 direction installation with OpenMP support should work via:
 ```
 pip install pyapr
 ```
