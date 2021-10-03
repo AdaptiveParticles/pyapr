@@ -95,13 +95,15 @@ jobs:
       # Build with python
       - name: Python Setup
         run: |
+          python -m venv
+          source venv/bin/activate
           pip install wheel
           pip install setuptools
           python setup.py install
 
-      - name: Python Install
-        run: |
-          pip install -r requirements.txt
+#       - name: Python Install
+#         run: |
+#           pip install -r requirements.txt
 
       - name: Python Test
         run: |
