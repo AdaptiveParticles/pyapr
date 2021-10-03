@@ -22,18 +22,25 @@ jobs:
         include:
           - os: windows-latest
             triplet: x64-windows
-
+            extblosc: ON
+            openmp: ON
+            buildargs: -A x64 -T ClangCL
           - os: ubuntu-latest
             triplet: x64-linux
-
+            extblosc: OFF
+            openmp: ON
+            buildargs:
           - os: macos-latest
             triplet: x64-osx
+            extblosc: OFF
+            openmp: ON
+            buildargs:
 
     env:
       # Indicates the CMake build directory where project files and binaries are being produced.
       CMAKE_BUILD_DIR: ${{ github.workspace }}/builddir/
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
-      VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       TEST: -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/external/LibAPR/"
 
     steps:
@@ -84,6 +91,6 @@ jobs:
           
       - name: Install dependencies and generate project files
         run: |
-          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" ${{ env.TEST}}
+          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" ${{ env.TEST}} -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
 
 
