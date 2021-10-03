@@ -42,7 +42,7 @@ jobs:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
       TEST: -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/external/LibAPR/" ${{ matrix.buildargs }}
-
+      EXTRA_CMAKE_ARGS: "-DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake' -DVCPKG_MANIFEST_DIR='${{ github.workspace }}/external/LibAPR/' ${{ matrix.buildargs }}"
     steps:
       - uses: actions/checkout@v2
         with:
@@ -98,3 +98,8 @@ jobs:
       - name: Build
         run: |
           cmake --build "${{ env.CMAKE_BUILD_DIR }}" --parallel 4 --config Release
+
+      # Build with python
+      - name: Python Setup
+        run: |
+          python setup.py bdist_wheel
