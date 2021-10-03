@@ -95,7 +95,7 @@ jobs:
       # Build with python
       - name: Python Setup
         run: |
-          python -m venv
+          python -m venv venv
           source venv/bin/activate
           pip install wheel
           pip install setuptools
