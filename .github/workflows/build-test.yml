@@ -73,8 +73,14 @@ jobs:
         with:
           python-version: '3.7'
 
+      - name: Check file existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "${{ env.VCPKG_ROOT }}/vcpkg"
+
       - name: VCPKG setup
-        if: hashFiles('${{ env.VCPKG_ROOT }}/vcpkg') == ''
+        if: steps.check_files.outputs.files_exists == 'false'
         run: |
           ${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh
 
