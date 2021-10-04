@@ -74,7 +74,7 @@ jobs:
           python-version: '3.7'
 
       - name: VCPKG setup
-        if: hashFiles('${{ env.VCPKG_ROOT }}/vcpkg') != ''
+        if: hashFiles('${{ env.VCPKG_ROOT }}/vcpkg') == ''
         run: |
           ${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh
 
