@@ -73,9 +73,13 @@ jobs:
         with:
           python-version: '3.7'
 
-      - name: VCPKG install package
+      - name: VCPKG setup
+        if: hashFiles('${{ env.VCPKG_ROOT }}/vcpkg') != ''
         run: |
           ${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh
+
+      - name: VCPKG install package
+        run: |
           ${{ env.VCPKG_ROOT }}/vcpkg install tiff blosc hdf5 szip --triplet=${{ matrix.triplet }}
 
       # Build with python
