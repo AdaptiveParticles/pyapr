@@ -76,7 +76,7 @@ jobs:
       - name: VCPKG install package
         run: |
           ${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh
-          ${{ env.VCPKG_ROOT }}/vcpkg install --triplet=${{ matrix.triplet }}
+          ${{ env.VCPKG_ROOT }}/vcpkg install tiff blosc hdf5 szip --triplet=${{ matrix.triplet }}
 
       # Build with python
       - name: Python Setup
