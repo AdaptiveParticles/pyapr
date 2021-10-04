@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Quick Test
+name: Quick Test Python 3.7
 
 # Controls when the workflow will run
 on:
@@ -35,7 +35,7 @@ jobs:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
 #      TEST: -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/external/LibAPR/" ${{ matrix.buildargs }}
-      EXTRA_CMAKE_ARGS: "-DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake' -DVCPKG_MANIFEST_DIR='${{ github.workspace }}/external/LibAPR/' ${{ matrix.buildargs }}"
+      EXTRA_CMAKE_ARGS: "-DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake' -DVCPKG_MANIFEST_DIR='${{ github.workspace }}'"
     steps:
       - uses: actions/checkout@v2
         with:
@@ -99,12 +99,12 @@ jobs:
           source venv/bin/activate
           pip install wheel
           pip install setuptools
-          python setup.py install
+          python3 setup.py bdist_wheel
 
-#       - name: Python Install
-#         run: |
-#           pip install -r requirements.txt
+      - name: Python Install
+        run: |
+          pip install --find-links=dist pyapr
 
       - name: Python Test
         run: |
-          python -m unittest
+          python3 -m unittest
