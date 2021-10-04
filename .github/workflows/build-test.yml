@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         include:
           - os: ubuntu-latest
             triplet: x64-linux
@@ -31,7 +31,6 @@ jobs:
       CMAKE_BUILD_DIR: ${{ github.workspace }}/${{ matrix.buildfolder }}
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
-#      TEST: -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/external/LibAPR/" ${{ matrix.buildargs }}
       EXTRA_CMAKE_ARGS: "-DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake' -DVCPKG_MANIFEST_DIR='${{ github.workspace }}'"
     steps:
       - uses: actions/checkout@v2
@@ -73,21 +72,6 @@ jobs:
         name: Install Python
         with:
           python-version: '3.7'
-
-      - name: Install OpenMP dependencies with brew for OSX
-        if: contains(matrix.os,'macos')
-        run: |
-          brew install libomp
-          
-
-#      - name: Install dependencies and generate project files
-#        run: |
-#          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" ${{ env.TEST}}
-#
-#      # Build the whole project remove!!
-#      - name: Build
-#        run: |
-#          cmake --build "${{ env.CMAKE_BUILD_DIR }}" --parallel 4 --config Release
 
       # Build with python
       - name: Python Setup
