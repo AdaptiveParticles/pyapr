@@ -24,14 +24,11 @@ jobs:
             triplet: x64-linux
             extblosc: OFF
             openmp: ON
-          - os: macos-latest
-            triplet: x64-osx
-            extblosc: OFF
-            openmp: ON
+            buildfolder: build/temp.linux-x86_64-3.7/
 
     env:
       # Indicates the CMake build directory where project files and binaries are being produced.
-      CMAKE_BUILD_DIR: ${{ github.workspace }}/builddir/
+      CMAKE_BUILD_DIR: ${{ github.workspace }}/${{ matrix.buildfolder }}
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
 #      TEST: -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_DIR="${{ github.workspace }}/external/LibAPR/" ${{ matrix.buildargs }}
@@ -63,7 +60,7 @@ jobs:
           # The key includes: hash of the vcpkg.json file, the hash of the vcpkg Git commit id, and the used vcpkg's triplet. The vcpkg's commit id would suffice, but computing an hash out it does not harm.
           # Note: given a key, the cache content is immutable. If a cache entry has been created improperly, in order the recreate the right content the key must be changed as well, and it must be brand new (i.e. not existing already).
           key: |
-            ${{ hashFiles( 'vcpkg.json' ) }}-${{ hashFiles( '.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}-invalidate
+            ${{ hashFiles( 'vcpkg.json' ) }}-${{ hashFiles( '${{ env.VCPKG_ROOT }}/.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}-invalidate
 
       - name: Show content of workspace after cache has been restored
         run: find $RUNNER_WORKSPACE
@@ -99,7 +96,7 @@ jobs:
           source venv/bin/activate
           pip install wheel
           pip install setuptools
-          python3 setup.py bdist_wheel
+          python3 setup.py bdist_wheel -b ${{ env.CMAKE_BUILD_DIR }}
 
       - name: Python Install
         run: |
