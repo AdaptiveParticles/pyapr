@@ -24,14 +24,14 @@ jobs:
             triplet: x64-linux
             extblosc: OFF
             openmp: ON
-            buildfolder: build/temp.linux-x86_64-3.7/
+            buildfolder: build/temp.linux-x86_64-3.7
 
     env:
       # Indicates the CMake build directory where project files and binaries are being produced.
       CMAKE_BUILD_DIR: ${{ github.workspace }}/${{ matrix.buildfolder }}
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
-      EXTRA_CMAKE_ARGS: "-DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake' -DVCPKG_MANIFEST_DIR='${{ github.workspace }}'"
+      EXTRA_CMAKE_ARGS: "-DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake'"
     steps:
       - uses: actions/checkout@v2
         with:
@@ -72,6 +72,11 @@ jobs:
         name: Install Python
         with:
           python-version: '3.7'
+
+      - name: VCPKG install package
+        run: |
+          ${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh
+          ${{ env.VCPKG_ROOT }}/vcpkg install --triplet=${{ matrix.triplet }}
 
       # Build with python
       - name: Python Setup
