@@ -1,11 +1,20 @@
 # PyLibAPR
 
-[![Build Status](https://travis-ci.com/AdaptiveParticles/PyLibAPR.svg?branch=ci_build)](https://travis-ci.com/AdaptiveParticles/PyLibAPR)
+![build and deploy](https://github.com/AdaptiveParticles/PyLibAPR/actions/workflows/main.yml/badge.svg)
+![PyPI - Python Version](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue) 
+![PowerShell Gallery](https://img.shields.io/powershellgallery/p/DNS.1.1.1.1)
 
 Python wrappers for [LibAPR](https://github.com/AdaptiveParticles/LibAPR) - Library for producing and processing on 
 the Adaptive Particle Representation (APR).
 
 For article see: https://www.nature.com/articles/s41467-018-07390-9
+
+## Installation using PYPI
+For Windows 10, OSX, and Linux and Python versions 3.6-3.9 direction installation with OpenMP support should work via:
+```
+pip install pyapr
+```
+Note: Due to the use of OpenMP, it is encouraged to install as part of a virtualenv.
 
 ## Exclusive features
 
@@ -17,6 +26,10 @@ new features that simplify the generation and handling of the APR. For example:
 * Interactive APR z-slice viewer (see [viewer_demo](demo/viewer_demo.py))
 * Interactive APR raycast (maximum intensity projection) viewer (see [raycast_demo](demo/raycast_demo.py))
 * Interactive lossy compression of particle intensities (see [compress_particles_demo](demo/compress_particles_demo.py))
+
+For further instructions see: https://github.com/AdaptiveParticles/PyLibAPR/tree/master/demo
+
+# Developer Instructions
 
 ## Dependencies
 
@@ -45,11 +58,7 @@ as the clang version shipped by Apple currently does not support OpenMP.
 
 ### Note for windows users
 
-The simplest way to utilise the library from Windows is through Windows Subsystem for Linux; see: 
-https://docs.microsoft.com/en-us/windows/wsl/install-win10 then follow linux instructions.
-
-The viewers and demos use a Graphical User Interface. In order to use these features from WSL, you
-may additionally need to install an X server.
+Please see https://github.com/AdaptiveParticles/LibAPR for the latest windows install instructions.
 
 ## Building
 

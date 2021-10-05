@@ -15,7 +15,7 @@ print(files)
 for f in files:
     subprocess.check_call(['wheel','unpack',f])
 
-    folders = glob.glob('PyLibAPR_test-*/')
+    folders = glob.glob('pyapr*/')
 
     print('going to loop')
     for folder in folders:

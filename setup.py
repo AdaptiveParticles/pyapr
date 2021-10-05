@@ -61,27 +61,29 @@ class CMakeBuild(build_ext):
             cmake_args += ["-T"]
             cmake_args += ["ClangCL"]
 
-        print(cmake_args)
-
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
 
         print("******************************************************************************")
-        print(ext.sourcedir)
-        print(self.build_temp)
+
+        print( ext.sourcedir)
+        print("*******************************CMAKE ARGS***********************************************")
+        print(cmake_args)
+        print( self.build_temp)
+
+        print(["cmake", ext.sourcedir] + cmake_args)
 
         subprocess.check_call(
             ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp
         )
         subprocess.check_call(
-            ["cmake", "--build", "."] + build_args, cwd=self.build_temp
+            ["cmake", "--build", ".", "--parallel", "4"] + build_args, cwd=self.build_temp
         )
-
-
 
 setup(
     name='pyapr',
-    version='0.2.0.0',
+
+    version='0.0.0.3',
     ext_modules=[CMakeExtension('_pyaprwrapper')],
     cmdclass={
         'build_ext': CMakeBuild,
