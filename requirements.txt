@@ -1,7 +1,6 @@
-cmake-setuptools
 numpy
-libtiff
 scikit-image
+tifffile
 PyQt5
-pyqtgraph
+pyqtgraph==0.12.1
 matplotlib
