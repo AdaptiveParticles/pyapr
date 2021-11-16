@@ -106,6 +106,18 @@ void convolve_cuda(APR& apr, PyParticleData<inputType>& input_parts, PyParticleD
 #endif
 
 
+template<int size_z, int size_x, int size_y>
+void bindMedianFilter(py::module &m) {
+    std::string name = "median_filter_" + std::to_string(size_z) + std::to_string(size_x) + std::to_string(size_y);
+    m.def(name.c_str(), &APRFilter::median_filter<size_z, size_x, size_y, uint16_t, uint16_t>, "median filter",
+          py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"));
+    m.def(name.c_str(), &APRFilter::median_filter<size_z, size_x, size_y, uint16_t, float>, "median filter",
+          py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"));
+    m.def(name.c_str(), &APRFilter::median_filter<size_z, size_x, size_y, float, float>, "median filter",
+          py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"));
+}
+
+
 void AddPyAPRFilter(py::module &m, const std::string &modulename) {
 
     auto m2 = m.def_submodule(modulename.c_str());
@@ -122,6 +134,18 @@ void AddPyAPRFilter(py::module &m, const std::string &modulename) {
     m2.def("convolve_pencil", &convolve_pencil<uint16_t, float>, "Convolve an APR with a stencil",
             py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"), py::arg("stencil"),
             py::arg("use_stencil_downsample")=true, py::arg("normalize_stencil")=false, py::arg("use_reflective_boundary")=false);
+
+    bindMedianFilter<3, 3, 3>(m2);
+    bindMedianFilter<5, 5, 5>(m2);
+    bindMedianFilter<7, 7, 7>(m2);
+    bindMedianFilter<9, 9, 9>(m2);
+    bindMedianFilter<11, 11, 11>(m2);
+
+    bindMedianFilter<1, 3, 3>(m2);
+    bindMedianFilter<1, 5, 5>(m2);
+    bindMedianFilter<1, 7, 7>(m2);
+    bindMedianFilter<1, 9, 9>(m2);
+    bindMedianFilter<1, 11, 11>(m2);
 
 #ifdef PYAPR_USE_CUDA
     m2.def("convolve_cuda", &convolve_cuda<float, float>, "Filter an APR with a stencil",
