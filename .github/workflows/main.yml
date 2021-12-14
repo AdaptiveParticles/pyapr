@@ -126,7 +126,8 @@ jobs:
 
       - name: Publish to test Pypi
         run: |
-          python3 -m twine upload --skip-existing --repository pypi ${{matrix.builddir}}/*.whl -p ${{ secrets.PYPI_API_TOKEN }}
+          ls ${{matrix.builddir}}/*.whl
+#          python3 -m twine upload --skip-existing --repository pypi ${{matrix.builddir}}/*.whl -p ${{ secrets.PYPI_API_TOKEN }}
 
 #      - name: Test release from pypi 3.7
 #        run: |
