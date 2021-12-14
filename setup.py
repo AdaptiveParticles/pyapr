@@ -82,8 +82,6 @@ class CMakeBuild(build_ext):
 
 setup(
     name='pyapr',
-
-    version='0.0.0.4',
     ext_modules=[CMakeExtension('_pyaprwrapper')],
     cmdclass={
         'build_ext': CMakeBuild,
