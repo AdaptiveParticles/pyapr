@@ -77,8 +77,8 @@ class LazySlicer:
         self.update_dims()
 
     def reconstruct(self):
-        self._slice = pyapr.numerics.reconstruction.reconstruct_lazy(self.apr_it, self.tree_it, self.parts,
-                                                                     self.tree_parts, self.patch, out_arr=self._slice)
+        self._slice = pyapr.numerics.reconstruction.reconstruct_constant_lazy(self.apr_it, self.tree_it, self.parts,
+                                                                              self.tree_parts, self.patch, out_arr=self._slice)
         return self._slice.squeeze()
 
     def __getitem__(self, item):

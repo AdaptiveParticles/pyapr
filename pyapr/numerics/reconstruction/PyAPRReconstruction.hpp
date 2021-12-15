@@ -153,10 +153,48 @@ namespace PyAPRReconstruction {
         initialize_pixeldata_from_buffer(recon, buf);
 
         if(recon.mesh.size() != patch.size()) {
-            throw std::invalid_argument("input array size does not agree with APR dimensions");
+            throw std::invalid_argument("input array must agree with patch size!");
         }
 
         APRReconstruction::reconstruct_constant_lazy(apr_it, tree_it, recon, parts, tree_parts, patch);
+    }
+
+    /**
+     * Lazy patch reconstruction (level)
+     */
+    template<typename S>
+    void reconstruct_level_lazy_inplace(LazyIterator& apr_it,
+                                        LazyIterator& tree_it,
+                                        py::array_t<S, py::array::c_style>& arr,
+                                        ReconPatch& patch) {
+
+        auto buf = arr.request(true);
+        PixelData<S> recon;
+        initialize_pixeldata_from_buffer(recon, buf);
+
+        if(recon.mesh.size() != patch.size()) {
+            throw std::invalid_argument("input array must agree with patch size!");
+        }
+
+        APRReconstruction::reconstruct_level_lazy(apr_it, tree_it, recon, patch);
+    }
+
+    /**
+     * Lazy patch reconstruction (smooth)
+     */
+    template<typename S, typename T>
+    void reconstruct_smooth_lazy_inplace(LazyIterator& apr_it, LazyIterator& tree_it, py::array_t<S, py::array::c_style>& arr,
+                                         LazyData<T>& parts, LazyData<T>& tree_parts, ReconPatch& patch) {
+
+        auto buf = arr.request(true);
+        PixelData<S> recon;
+        initialize_pixeldata_from_buffer(recon, buf);
+
+        if(recon.mesh.size() != patch.size()) {
+            throw std::invalid_argument("input array size does not agree with APR dimensions");
+        }
+
+        APRReconstruction::reconstruct_smooth_lazy(apr_it, tree_it, recon, parts, tree_parts, patch);
     }
 
 }
@@ -251,6 +289,28 @@ void AddPyAPRReconstruction(py::module &m, const std::string &modulename) {
     m2.def("reconstruct_constant_lazy_inplace", &PyAPRReconstruction::reconstruct_constant_lazy_inplace<uint64_t, uint64_t>, "lazy reconstruction",
            "apr_it"_a, "tree_it"_a, "arr"_a, "parts"_a, "tree_parts"_a, "patch"_a);
     m2.def("reconstruct_constant_lazy_inplace", &PyAPRReconstruction::reconstruct_constant_lazy_inplace<uint64_t, float>, "lazy reconstruction",
+           "apr_it"_a, "tree_it"_a, "arr"_a, "parts"_a, "tree_parts"_a, "patch"_a);
+
+    /// lazy level reconstruction (patch)
+    m2.def("reconstruct_level_lazy_inplace", &PyAPRReconstruction::reconstruct_level_lazy_inplace<uint8_t>, "lazy reconstruction",
+           "apr_it"_a, "tree_it"_a, "arr"_a, "patch"_a);
+    m2.def("reconstruct_level_lazy_inplace", &PyAPRReconstruction::reconstruct_level_lazy_inplace<uint16_t>, "lazy reconstruction",
+           "apr_it"_a, "tree_it"_a, "arr"_a, "patch"_a);
+    m2.def("reconstruct_level_lazy_inplace", &PyAPRReconstruction::reconstruct_level_lazy_inplace<uint64_t>, "lazy reconstruction",
+           "apr_it"_a, "tree_it"_a, "arr"_a, "patch"_a);
+    m2.def("reconstruct_level_lazy_inplace", &PyAPRReconstruction::reconstruct_level_lazy_inplace<float>, "lazy reconstruction",
+           "apr_it"_a, "tree_it"_a, "arr"_a, "patch"_a);
+
+    /// lazy smooth reconstruction (patch)
+    m2.def("reconstruct_smooth_lazy_inplace", &PyAPRReconstruction::reconstruct_smooth_lazy_inplace<uint16_t, uint16_t>, "lazy reconstruction",
+           "apr_it"_a, "tree_it"_a, "arr"_a, "parts"_a, "tree_parts"_a, "patch"_a);
+    m2.def("reconstruct_smooth_lazy_inplace", &PyAPRReconstruction::reconstruct_smooth_lazy_inplace<uint16_t, float>, "lazy reconstruction",
+           "apr_it"_a, "tree_it"_a, "arr"_a, "parts"_a, "tree_parts"_a, "patch"_a);
+    m2.def("reconstruct_smooth_lazy_inplace", &PyAPRReconstruction::reconstruct_smooth_lazy_inplace<float, float>, "lazy reconstruction",
+           "apr_it"_a, "tree_it"_a, "arr"_a, "parts"_a, "tree_parts"_a, "patch"_a);
+    m2.def("reconstruct_smooth_lazy_inplace", &PyAPRReconstruction::reconstruct_smooth_lazy_inplace<uint64_t, uint64_t>, "lazy reconstruction",
+           "apr_it"_a, "tree_it"_a, "arr"_a, "parts"_a, "tree_parts"_a, "patch"_a);
+    m2.def("reconstruct_smooth_lazy_inplace", &PyAPRReconstruction::reconstruct_smooth_lazy_inplace<uint64_t, float>, "lazy reconstruction",
            "apr_it"_a, "tree_it"_a, "arr"_a, "parts"_a, "tree_parts"_a, "patch"_a);
 }
 
