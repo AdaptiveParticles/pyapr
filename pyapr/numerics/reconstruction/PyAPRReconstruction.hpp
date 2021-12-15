@@ -68,6 +68,21 @@ namespace PyAPRReconstruction {
         APRReconstruction::reconstruct_smooth(apr, recon, parts);
     }
 
+    template<typename T>
+    void initialize_pixeldata_from_buffer(PixelData<T>& pd, py::buffer_info& buf) {
+        auto* ptr = static_cast<T*>(buf.ptr);
+
+        if(buf.ndim == 3) {
+            pd.init_from_mesh(buf.shape[2], buf.shape[1], buf.shape[0], ptr);
+        } else if(buf.ndim == 2) {
+            pd.init_from_mesh(buf.shape[1], buf.shape[0], 1, ptr);
+        } else if(buf.ndim == 1) {
+            pd.init_from_mesh(buf.shape[0], 1, 1, ptr);
+        } else {
+            throw std::invalid_argument("input array must be 1-3 dimensional");
+        }
+    }
+
     /**
      * Constant reconstruction (patch)
      */
@@ -76,25 +91,10 @@ namespace PyAPRReconstruction {
     reconstruct_constant_patch_inplace(APR& apr, PyParticleData<S>& parts, PyParticleData<T>& tree_parts,
                                        ReconPatch& patch, py::array_t<S, py::array::c_style>& arr) {
         auto buf = arr.request(true);
-        auto* ptr = static_cast<S*>(buf.ptr);
         PixelData<S> recon;
+        initialize_pixeldata_from_buffer(recon, buf);
 
-        if(buf.ndim == 3) {
-            recon.init_from_mesh(buf.shape[2], buf.shape[1], buf.shape[0], ptr);
-        } else if(buf.ndim == 2) {
-            recon.init_from_mesh(buf.shape[1], buf.shape[0], 1, ptr);
-        } else if(buf.ndim == 1) {
-            recon.init_from_mesh(buf.shape[0], 1, 1, ptr);
-        } else {
-            throw std::invalid_argument("input array must be 1-3 dimensional");
-        }
-
-        //patch.check_limits(aPyAPR);   // assuming check_limits has been called from python to initialize array
-        const size_t psize = size_t (patch.z_end-patch.z_begin) *
-                             size_t (patch.x_end-patch.x_begin) *
-                             size_t (patch.y_end-patch.y_begin);
-
-        if(recon.mesh.size() != psize) {
+        if(recon.mesh.size() != patch.size()) {
             throw std::invalid_argument("input array must agree with patch size!");
         }
 
@@ -109,24 +109,10 @@ namespace PyAPRReconstruction {
     void
     reconstruct_level_patch_inplace(APR& apr, ReconPatch& patch, py::array_t<S, py::array::c_style>& arr) {
         auto buf = arr.request(true);
-        auto* ptr = static_cast<S*>(buf.ptr);
         PixelData<S> recon;
+        initialize_pixeldata_from_buffer(recon, buf);
 
-        if(buf.ndim == 3) {
-            recon.init_from_mesh(buf.shape[2], buf.shape[1], buf.shape[0], ptr);
-        } else if(buf.ndim == 2) {
-            recon.init_from_mesh(buf.shape[1], buf.shape[0], 1, ptr);
-        } else if(buf.ndim == 1) {
-            recon.init_from_mesh(buf.shape[0], 1, 1, ptr);
-        } else {
-            throw std::invalid_argument("input array must be 1-3 dimensional");
-        }
-
-        //patch.check_limits(aPyAPR);   // assuming check_limits has been called from python to initialize array
-        const size_t psize = (patch.z_end-patch.z_begin) *
-                             (patch.x_end-patch.x_begin) *
-                             (patch.y_end-patch.y_begin);
-        if(recon.mesh.size() != psize) {
+        if(recon.mesh.size() != patch.size()) {
             throw std::invalid_argument("input array must agree with patch size!");
         }
 
@@ -141,25 +127,12 @@ namespace PyAPRReconstruction {
     void
     reconstruct_smooth_patch_inplace(APR& apr, PyParticleData<S>& parts, PyParticleData<T>& tree_parts,
                                      ReconPatch& patch, py::array_t<S, py::array::c_style>& arr) {
+
         auto buf = arr.request(true);
-        auto* ptr = static_cast<S*>(buf.ptr);
         PixelData<S> recon;
+        initialize_pixeldata_from_buffer(recon, buf);
 
-        if(buf.ndim == 3) {
-            recon.init_from_mesh(buf.shape[2], buf.shape[1], buf.shape[0], ptr);
-        } else if(buf.ndim == 2) {
-            recon.init_from_mesh(buf.shape[1], buf.shape[0], 1, ptr);
-        } else if(buf.ndim == 1) {
-            recon.init_from_mesh(buf.shape[0], 1, 1, ptr);
-        } else {
-            throw std::invalid_argument("input array must be 1-3 dimensional");
-        }
-
-        //patch.check_limits(aPyAPR);   // assuming check_limits has been called from python to initialize array
-        const size_t psize = (patch.z_end-patch.z_begin) *
-                             (patch.x_end-patch.x_begin) *
-                             (patch.y_end-patch.y_begin);
-        if(recon.mesh.size() != psize) {
+        if(recon.mesh.size() != patch.size()) {
             throw std::invalid_argument("input array must agree with patch size!");
         }
 
@@ -176,21 +149,10 @@ namespace PyAPRReconstruction {
                                            LazyData<T>& parts, LazyData<T>& tree_parts, ReconPatch& patch) {
 
         auto buf = arr.request(true);
-        auto* ptr = static_cast<T*>(buf.ptr);
-        PixelData<T> recon;
+        PixelData<S> recon;
+        initialize_pixeldata_from_buffer(recon, buf);
 
-        if(buf.ndim == 3) {
-            recon.init_from_mesh(buf.shape[2], buf.shape[1], buf.shape[0], ptr);
-        } else if(buf.ndim == 2) {
-            recon.init_from_mesh(buf.shape[1], buf.shape[0], 1, ptr);
-        } else if(buf.ndim == 1) {
-            recon.init_from_mesh(buf.shape[0], 1, 1, ptr);
-        } else {
-            throw std::invalid_argument("input array must be 1-3 dimensional");
-        }
-
-        const size_t size_alloc = std::accumulate(buf.shape.begin(), buf.shape.end(), (size_t) 1, std::multiplies<size_t>());
-        if(recon.mesh.size() != size_alloc) {
+        if(recon.mesh.size() != patch.size()) {
             throw std::invalid_argument("input array size does not agree with APR dimensions");
         }
 
