@@ -135,15 +135,18 @@ jobs:
           name: ${{ matrix.os }}-wheels
           path: ${{matrix.builddir}}/
 
-  fake-deploy:
+  deploy:
     runs-on: ubuntu-latest
     needs: test
     name: download and print artifacts
     steps:
-      - name: downlaod ubuntu artifacts
+      - name: download wheels from artifacts
         uses: actions/download-artifact@v2
         with:
-          name: ubuntu-latest-wheels
+          name:
+            - ubuntu-latest-wheels
+            - macos-latest-wheels
+            - windows-latest-wheels
           path: wheelhouse
 
       - name: print stuff
