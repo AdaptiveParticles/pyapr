@@ -5,4 +5,4 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
 write_to = "pyapr/_version.py"
 
 [tool.cibuildwheel]
-test-command = "python3 -m unittest discover"
+test-command = "python -W default -m unittest discover -s {project}"
