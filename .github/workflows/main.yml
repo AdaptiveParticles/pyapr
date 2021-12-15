@@ -143,10 +143,6 @@ jobs:
       - name: download wheels from artifacts
         uses: actions/download-artifact@v2
         with:
-          name:
-            - ubuntu-latest-wheels
-            - macos-latest-wheels
-            - windows-latest-wheels
           path: wheelhouse
 
       - name: print stuff
