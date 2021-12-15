@@ -93,13 +93,11 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-          pip install wheel
           pip install setuptools
-          python3 setup.py bdist_wheel -b ${{ env.CMAKE_BUILD_DIR }}
 
       - name: Python Install
         run: |
-          pip install dist/pyapr*.whl
+          python setup.py install
 
       - name: Python Test
         run: |
