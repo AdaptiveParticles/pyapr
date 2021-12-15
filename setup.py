@@ -91,7 +91,7 @@ setup(
         'numpy',
         'scikit-image',
         'PyQt5',
-        'pyqtgraph==0.12.1',
+        'pyqtgraph',
         'matplotlib'
     ],
     description='Python wrappers for LibAPR',
