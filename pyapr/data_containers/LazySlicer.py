@@ -8,7 +8,10 @@ class LazySlicer:
     Helper class allowing (3D) slice indexing. Pixel values in the slice range are reconstructed
     on the fly and returned as an array.
     """
-    def __init__(self, file_path, level_delta=0):
+    def __init__(self, file_path, level_delta=0, mode='constant'):
+
+        self.mode = mode
+
         self.path = file_path
         self.aprfile = pyapr.io.APRFile()
         self.aprfile.set_read_write_tree(True)
@@ -52,6 +55,15 @@ class LazySlicer:
 
         self._slice = self.new_empty_slice()
 
+        if self.mode == 'constant':
+            self.recon = pyapr.numerics.reconstruction.reconstruct_constant_lazy
+        elif self.mode == 'smooth':
+            self.recon = pyapr.numerics.reconstruction.reconstruct_smooth_lazy
+        elif self.mode == 'level':
+            self.recon = pyapr.numerics.reconstruction.reconstruct_level_lazy
+        else:
+            raise ValueError('APRArray mode argument must be \'constant\', \'smooth\' or \'level\'')
+
         self.order = [2, 1, 0]
 
     def transpose(self, order):
@@ -77,8 +89,11 @@ class LazySlicer:
         self.update_dims()
 
     def reconstruct(self):
-        self._slice = pyapr.numerics.reconstruction.reconstruct_constant_lazy(self.apr_it, self.tree_it, self.parts,
-                                                                              self.tree_parts, self.patch, out_arr=self._slice)
+        if self.mode == 'level':
+            self._slice = self.recon(self.apr_it, self.tree_it, self.patch, out_arr=self._slice)
+        else:
+            self._slice = self.recon(self.apr_it, self.tree_it, self.parts,
+                                     self.tree_parts, self.patch, out_arr=self._slice)
         return self._slice.squeeze()
 
     def __getitem__(self, item):
