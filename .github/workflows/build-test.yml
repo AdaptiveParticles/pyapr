@@ -103,5 +103,4 @@ jobs:
 
       - name: Python Test
         run: |
-          which python
           python3 -m unittest
