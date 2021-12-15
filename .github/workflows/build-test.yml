@@ -99,7 +99,7 @@ jobs:
 
       - name: Python Install
         run: |
-          pip install --find-links=dist pyapr
+          pip install dist/pyapr*.whl
 
       - name: Python Test
         run: |
