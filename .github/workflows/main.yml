@@ -149,7 +149,7 @@ jobs:
     needs:
       - check-wheels
     name: publish to pypi
-    if: contains(github.ref, 'tags')  # only run on tagged commits starting with "v*"
+#    if: contains(github.ref, 'tags')  # only run on tagged commits starting with "v*"
     steps:
       - name: Download wheels from artifacts
         uses: actions/download-artifact@v2
