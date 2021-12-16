@@ -53,8 +53,7 @@ jobs:
       CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
       CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "pip install -U wheel delvewheel && python {project}/fix_windows_wheel.py {wheel} {dest_dir}"
       CIBW_TEST_COMMAND: "python3 -m unittest discover -s {project}"
-#      CIBW_BEFORE_TEST_LINUX: "pip install -r requirements.txt"
-#      CIBW_TEST_COMMAND_LINUX: "python3 -m unittest discover -s ${{ github.workspace }}"
+      CIBW_TEST_SKIP: "cp*-win*"  # skip tests on windows, as wheels are not fixed until after the cibw run
       CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
 
     steps:
