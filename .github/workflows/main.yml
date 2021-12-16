@@ -53,7 +53,7 @@ jobs:
       CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
       CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "pip install -U wheel delvewheel && python fix_windows_wheel.py {wheel} {dest_dir}"
       CIBW_TEST_COMMAND: "python3 -m unittest discover -s {project}"
-#      CIBW_TEST_SKIP: "cp*-win*"  # skip tests on windows, as wheels are not fixed until after the cibw run
+      CIBW_TEST_SKIP: "*-win_amd64"  # skip tests on windows, as wheels are not fixed until after the cibw run
       CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
 
     steps:
@@ -169,10 +169,11 @@ jobs:
       - name: Publish
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+#          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
           ls wheelhouse/*wheels/*.whl
-#          twine upload wheelhouse/*wheels/*.whl
+          twine upload --repository testpypi wheelhouse/*wheels/*.whl
 
 
 #      - name: Publish to test Pypi
