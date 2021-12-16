@@ -129,7 +129,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.os }}-wheels
-          path: ${{matrix.builddir}}/
+          path: ${{matrix.builddir1}}/
 
   check-wheels:
     runs-on: ubuntu-latest
