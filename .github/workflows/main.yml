@@ -158,10 +158,10 @@ jobs:
       - name: Set version string
         run: |
           echo "py_version_str=cp$(echo ${{ matrix.python-version }} | tr -d -c 0-9)" >> $GITHUB_ENV
-          echo ${{ env.py_version_str }}
+          echo "${{ env.py_version_str }}"
 
       - name: print version string
-        run: echo ${{ env.py_version_str }}
+        run: echo "${{ env.py_version_str }}"
 
 #      - name: Install package from wheel
 #        run: |
