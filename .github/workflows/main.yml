@@ -128,7 +128,7 @@ jobs:
   windows-tests:
     name: windows py${{ matrix.python-version }} tests
     runs-on: windows-latest
-    needs: build-wheels
+#    needs: build-wheels
     strategy:
       fail-fast: false
       matrix:
