@@ -1,5 +1,6 @@
 import subprocess
 import os
+import sys
 import glob
 import shutil
 
@@ -8,26 +9,39 @@ import shutil
 #   then repacking the wheel and then using delvewheel to fix dependencies.
 #
 
-os.chdir('dist')
-files = glob.glob('*.whl')
-print(files)
+def main(wheel_file, dest_dir):
+    wheel_dir = os.path.dirname(wheel_file)
+    wheel_name = os.path.basename(wheel_file)
+    os.chdir(wheel_dir)
 
-for f in files:
-    subprocess.check_call(['wheel','unpack',f])
+    #unpack the wheel
+    subprocess.check_call(['wheel', 'unpack', wheel_name])
 
-    folders = glob.glob('pyapr*/')
+    folder = glob.glob('pyapr*/')[0]    # there should be only one
 
-    print('going to loop')
-    for folder in folders:
-        path = folder + 'Release' + '/*'
-        files_2_copy = glob.glob(path)
-        for fc in files_2_copy:
-            print(fc)
-            shutil.copy(fc,folder)
-        folder_release = folder + 'Release'
-        shutil.rmtree(folder_release)
+    # copy files out of the Release subdirectory
+    path = os.path.join(folder, 'Release', '*')
+    files_2_copy = glob.glob(path)
+    for fc in files_2_copy:
+        print(fc)
+        shutil.copy(fc,folder)
 
-        subprocess.check_call(['wheel', 'pack', folder])
-        shutil.rmtree(folder)
-    subprocess.check_call(['delvewheel', 'repair','--ignore-in-wheel',f])
+    # remove the Release folder and its contents
+    shutil.rmtree(os.path.join(folder, 'Release'))
 
+    # repack the wheel
+    subprocess.check_call(['wheel', 'pack', folder])
+
+    # remove the unpacked directory
+    shutil.rmtree(folder)
+
+    # repair wheel
+    subprocess.check_call(['delvewheel', 'repair', '--ignore-in-wheel', wheel_name])
+
+    # copy repaired wheel to destination directory
+    shutil.copy(wheel_name, dest_dir)
+
+
+if __name__ == '__main__':
+    _, wheel_file, dest_dir = sys.argv
+    main(wheel_file, dest_dir)

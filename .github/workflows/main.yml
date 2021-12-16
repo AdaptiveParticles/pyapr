@@ -51,6 +51,7 @@ jobs:
       CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_24"
       CIBW_BUILD_VERBOSITY: 3
       CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
+      CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "pip install -U wheel delvewheel && python {project}/fix_windows_wheel.py {wheel} {dest_dir}"
       CIBW_TEST_COMMAND: "python3 -m unittest discover -s {project}"
 #      CIBW_BEFORE_TEST_LINUX: "pip install -r requirements.txt"
 #      CIBW_TEST_COMMAND_LINUX: "python3 -m unittest discover -s ${{ github.workspace }}"
@@ -118,12 +119,12 @@ jobs:
         run: |
           python3 -m cibuildwheel --output-dir ${{matrix.builddir1}}
 
-      - name: Fix windows wheels
-        if: contains(matrix.os,'windows')
-        run: |
-          python3 -m pip install wheel
-          python3 -m pip install delvewheel
-          python3 fix_windows_wheel.py
+#      - name: Fix windows wheels
+#        if: contains(matrix.os,'windows')
+#        run: |
+#          python3 -m pip install wheel
+#          python3 -m pip install delvewheel
+#          python3 fix_windows_wheel.py
 
       - name: Upload wheels as artifacts
         uses: actions/upload-artifact@v2
