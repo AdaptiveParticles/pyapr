@@ -17,17 +17,29 @@ def main(wheel_file, dest_dir):
     #unpack the wheel
     subprocess.check_call(['wheel', 'unpack', wheel_name])
 
-    folder = glob.glob('pyapr*/')[0]    # there should be only one
+    folders = glob.glob('pyapr*/')    # there should be only one
+    print('unpacked folders:')
+    print(folders)
+
+    folder = folders[0]
+
+    print('unpacked wheel folder contents:')
+    print(os.listdir(folder))
+
+    print('contents of Release:')
+    print(os.listdir(os.path.join(folder, 'Release')))
 
     # copy files out of the Release subdirectory
-    path = os.path.join(folder, 'Release', '*')
-    files_2_copy = glob.glob(path)
+    files_2_copy = glob.glob(os.path.join(folder, 'Release', '*'))
     for fc in files_2_copy:
-        print(fc)
+        print('copying file ', fc, ' to ', folder)
         shutil.copy(fc,folder)
 
     # remove the Release folder and its contents
     shutil.rmtree(os.path.join(folder, 'Release'))
+
+    print('folder contents after copy:')
+    print(os.listdir(folder))
 
     # repack the wheel
     subprocess.check_call(['wheel', 'pack', folder])
