@@ -156,11 +156,13 @@ jobs:
 #          path: wheelhouse
 
       - name: Set version string
+        shell: bash
         run: |
           echo "py_version_str=cp$(echo ${{ matrix.python-version }} | tr -d -c 0-9)" >> $GITHUB_ENV
           echo "${{ env.py_version_str }}"
 
       - name: print version string
+        shell: bash
         run: echo "${{ env.py_version_str }}"
 
 #      - name: Install package from wheel
