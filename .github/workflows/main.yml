@@ -160,7 +160,9 @@ jobs:
         run: echo "py_version_str=cp$(echo ${{ matrix.python-version }} | tr -d -c 0-9)" >> $GITHUB_ENV
 
       - name: Install package from wheel
+        shell: bash
         run: |
+          ls -R wheelhouse
           python -m pip install --upgrade pip
           pip install wheelhouse/pyapr-*${{ env.py_version_str }}*.whl
 
