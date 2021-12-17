@@ -125,7 +125,7 @@ def initialize_particles_type(typestr):
     if typestr == 'uint64':
         return pyapr.LongParticles()
 
-    print('deduced datatype {} is currently not supported - returning None'.format(typestr))
+    print('Deducted datatype {} is currently not supported - returning None'.format(typestr))
     return None
 
 
