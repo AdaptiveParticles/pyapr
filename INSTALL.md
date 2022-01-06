@@ -61,12 +61,14 @@ There are two CMake options that can be given to enable or disable OpenMP and CU
 |:--|:--|:--|
 | PYAPR_USE_OPENMP | Enable multithreading via OpenMP | ON |
 | PYAPR_USE_CUDA | Build available CUDA functionality | OFF |
+| PYAPR_PREFER_EXTERNAL_LIBAPR | Use an installed version of LibAPR (if found) rather than building it from submodules | OFF |
 
-When building via the setup.py script, these options can be set via the environment variable `CMAKE_COMMON_VARIABLES`. For example,
+When building via the setup.py script, these options can be set via the environment variable `EXTRA_CMAKE_ARGS`. For example,
 ```
-CMAKE_COMMON_VARIABLES="-DPYAPR_USE_OPENMP=OFF -DPYAPR_USE_CUDA=OFF" python setup.py install
+EXTRA_CMAKE_ARGS="-DPYAPR_USE_OPENMP=OFF -DPYAPR_USE_CUDA=OFF" python setup.py install
 ```
-should install the package with both OpenMP and CUDA disabled.
+will install the package with both OpenMP and CUDA disabled. If building from an installed version of LibAPR in a non-standard
+location, help CMake find it, e.g., by passing `-DCMAKE_PREFIX_PATH=/path/to/APR`.
 
 ### OpenMP support on OSX
 
