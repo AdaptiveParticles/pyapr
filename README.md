@@ -48,11 +48,14 @@ Also be sure to check out our (experimental) [napari] plugin: [napari-apr-viewer
 **pyapr** is distributed under the terms of the [Apache Software License 2.0].
 
 
+## Issues
+
+If you encounter any problems, please [file an issue] with a short description. 
+
 ## Contact us
 
-If anything is not working as you think it should, or would like it to, please get in touch with us!! Further, dont 
-hesitate to contact us if you have a project or algorithm you would like to try using the APR for. We would be happy to 
-assist you!
+If you have a project or algorithm in which you would like to try using the APR, don't hesitate to get
+in touch with us. We would be happy to assist you!
 
 
 [LibAPR]: https://github.com/AdaptiveParticles/LibAPR
@@ -62,3 +65,4 @@ assist you!
 [napari]: https://napari.org
 [napari-apr-viewer]: https://github.com/AdaptiveParticles/napari-apr-viewer
 [Apache Software License 2.0]: http://www.apache.org/licenses/LICENSE-2.0
+[file an issue]: https://github.com/AdaptiveParticles/PyLibAPR/issues
