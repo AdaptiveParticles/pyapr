@@ -31,18 +31,6 @@ public:
         return this->par;
     }
 
-    PixelData<T>& get_gradient() {
-        return this->grad_temp;
-    }
-
-    PixelData<float>& get_intensity_scale() {
-        return this->local_scale_temp;
-    }
-
-    PixelData<float>& get_smooth_image() {
-        return this->local_scale_temp2;
-    }
-
     /**
      * Compute an APR from a given image, given as a numpy array.
      * @param apr
@@ -197,12 +185,6 @@ void AddPyAPRConverter(pybind11::module &m, const std::string &aTypeString) {
                  py::arg("apr"), py::arg("img").noconvert())
             .def("set_parameters", &converter::set_parameters, "set parameters")
             .def("get_parameters", &converter::get_parameters, "get parameters")
-            .def("get_gradient", &converter::get_gradient, "return B-spline gradient",
-                 py::return_value_policy::reference)
-            .def("get_intensity_scale", &converter::get_intensity_scale, "return local intensity scale",
-                 py::return_value_policy::reference)
-            .def("get_smooth_image", &converter::get_smooth_image, "return B-spline smoothed image",
-                 py::return_value_policy::reference)
             .def("get_level_slice", &converter::get_level_slice,
                  "gets the current level slice for the applied parameters")
             .def("get_apr_step1", &converter::template get_apr_step1<float>, "Interactive APR generation",
