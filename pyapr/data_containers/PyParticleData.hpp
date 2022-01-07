@@ -43,6 +43,11 @@ public:
         std::copy(ptr, ptr+buf.size, this->begin());
     }
 
+    template<typename S>
+    PyParticleData(PyParticleData<S>& other) {
+        this->copy(other);
+    }
+
     bool contains(T val) const {
         for(size_t i = 0; i < this->size(); ++i) {
             if(this->data[i] == val) {
@@ -493,9 +498,13 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
     std::string typeStr = aTypeString + "Particles";
     py::class_<TypeParticles, BaseParticles>(m, typeStr.c_str(), py::buffer_protocol())
             .def(py::init())
-            .def(py::init([](uint64_t num_particles) { return new TypeParticles(num_particles); }))
-            .def(py::init([](APR& apr) { return new TypeParticles(apr); }))
-            .def(py::init([](py::array_t<DataType, py::array::c_style | py::array::forcecast>& arr){ return new TypeParticles(arr); }))
+            .def(py::init([](uint64_t num_particles) { return TypeParticles(num_particles); }))
+            .def(py::init([](APR& apr) { return TypeParticles(apr); }))
+            .def(py::init([](py::array_t<DataType, py::array::c_style | py::array::forcecast>& arr){ return TypeParticles(arr); }))
+            .def(py::init([](PyParticleData<float>& other){ return TypeParticles(other); }))
+            .def(py::init([](PyParticleData<uint8_t>& other){ return TypeParticles(other); }))
+            .def(py::init([](PyParticleData<uint16_t>& other){ return TypeParticles(other); }))
+            .def(py::init([](PyParticleData<uint64_t>& other){ return TypeParticles(other); }))
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
             .def("__contains__", [](const TypeParticles &p, DataType v) { return p.contains(v); })
             .def("resize", &TypeParticles::resize, "resize the data array to a specified number of elements")
