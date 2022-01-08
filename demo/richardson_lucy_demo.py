@@ -41,14 +41,18 @@ print('RLTV took {} seconds'.format(time()-t0))
 
 
 # Alternatively, if PyLibAPR is built with CUDA enabled and psf is of size (3, 3, 3) or (5, 5, 5)
+cuda = False
 if pyapr.cuda_build() and psf.shape in [(3, 3, 3), (5, 5, 5)]:
     t0 = time()
-    output = pyapr.FloatParticles()
-    pyapr.numerics.richardson_lucy_cuda(apr, parts, output, psf, niter, use_stencil_downsample=False,
+    output_cuda = pyapr.FloatParticles()
+    pyapr.numerics.richardson_lucy_cuda(apr, parts, output_cuda, psf, niter, use_stencil_downsample=True,
                                         normalize_stencil=True, resume=False)
     print('RL cuda took {} seconds'.format(time()-t0))
+    cuda = True
 
 
 # Display the result
 pyapr.viewer.parts_viewer(apr, output)
 pyapr.viewer.parts_viewer(apr, output_tv)
+if cuda:
+    pyapr.viewer.parts_viewer(apr, output_cuda)
