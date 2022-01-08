@@ -1,5 +1,5 @@
 import pyapr
-
+from time import time
 
 """
 Read a selected APR from file and apply Richardson-Lucy deconvolution
@@ -19,26 +19,36 @@ parts = pyapr.FloatParticles(parts)
 offset = 1e-5 * parts.max()
 parts += offset
 
-# Display the input image
-pyapr.viewer.parts_viewer(apr, parts)
-
 # Specify the PSF and number of iterations
 psf = pyapr.numerics.filter.get_gaussian_stencil(size=5, sigma=1, ndims=3, normalize=True)
-niter = 20
+niter = 10
 
-# Perform richardson-lucy deconvolution
+# Richardson-lucy deconvolution
+t0 = time()
 output = pyapr.FloatParticles()
 pyapr.numerics.richardson_lucy(apr, parts, output, psf, niter, use_stencil_downsample=True,
                                normalize_stencil=True, resume=False)
+print('RL took {} seconds'.format(time()-t0))
 
-# Alternative using total variation regularization:
-# reg_factor = 1e-2
-# pyapr.numerics.richardson_lucy_tv(apr, fparts, output, psf, niter, reg_factor, use_stencil_downsample=True,
-#                                   normalize_stencil=True, resume=False)
+
+# Using total variation regularization
+t0 = time()
+output_tv = pyapr.FloatParticles()
+reg_factor = 1e-2
+pyapr.numerics.richardson_lucy_tv(apr, parts, output_tv, psf, niter, reg_factor, use_stencil_downsample=True,
+                                  normalize_stencil=True, resume=False)
+print('RLTV took {} seconds'.format(time()-t0))
+
 
 # Alternatively, if PyLibAPR is built with CUDA enabled and psf is of size (3, 3, 3) or (5, 5, 5)
-# pyapr.numerics.richardson_lucy_cuda(apr, fparts, output, psf, niter, use_stencil_downsample=True,
-#                                     normalize_stencil=True, resume=False)
+if pyapr.cuda_build() and psf.shape in [(3, 3, 3), (5, 5, 5)]:
+    t0 = time()
+    output = pyapr.FloatParticles()
+    pyapr.numerics.richardson_lucy_cuda(apr, parts, output, psf, niter, use_stencil_downsample=False,
+                                        normalize_stencil=True, resume=False)
+    print('RL cuda took {} seconds'.format(time()-t0))
+
 
 # Display the result
 pyapr.viewer.parts_viewer(apr, output)
+pyapr.viewer.parts_viewer(apr, output_tv)
