@@ -42,7 +42,7 @@ print('RLTV took {} seconds'.format(time()-t0))
 
 # Alternatively, if PyLibAPR is built with CUDA enabled and psf is of size (3, 3, 3) or (5, 5, 5)
 cuda = False
-if pyapr.cuda_build() and psf.shape in [(3, 3, 3), (5, 5, 5)]:
+if pyapr.cuda_enabled() and psf.shape in [(3, 3, 3), (5, 5, 5)]:
     t0 = time()
     output_cuda = pyapr.FloatParticles()
     pyapr.numerics.richardson_lucy_cuda(apr, parts, output_cuda, psf, niter, use_stencil_downsample=True,

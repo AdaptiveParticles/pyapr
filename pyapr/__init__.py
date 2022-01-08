@@ -30,7 +30,7 @@ from . import numerics
 from . import viewer
 
 
-def cuda_build():
+def cuda_enabled():
     return __cuda_build__
 
 
