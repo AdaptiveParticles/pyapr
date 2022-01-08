@@ -32,6 +32,10 @@ def get_apr(image: np.ndarray,
     A tuple (apr, parts) where apr is the APR object and parts is the sampled particle data object of type
     FloatParticles or ShortParticles (depending on the input image data type).
     """
+    if not image.flags['C_CONTIGUOUS']:
+        print('WARNING: \'image\' argument given to get_apr is not C-contiguous \n'
+              'input image has been replaced with a C-contiguous copy of itself')
+        image = np.ascontiguousarray(image)
 
     if image.dtype not in __allowed_image_types__:
         errstr = 'pyapr.converter.get_apr accepts images of type float32, uint16 and uint8, ' \
@@ -96,6 +100,10 @@ def get_apr_interactive(image: np.ndarray,
     A tuple (apr, parts) where apr is the APR object and parts is the sampled particle data object of type
     FloatParticles or ShortParticles (depending on the input image data type).
     """
+    if not image.flags['C_CONTIGUOUS']:
+        print('WARNING: \'image\' argument given to get_apr_interactive is not C-contiguous \n'
+              'input image has been replaced with a C-contiguous copy of itself')
+        image = np.ascontiguousarray(image)
 
     if image.dtype not in __allowed_image_types__:
         errstr = 'pyapr.converter.get_apr accepts images of type float32, uint16 and uint8, ' \
@@ -143,6 +151,10 @@ def find_parameters_interactive(image: np.ndarray,
                                 verbose: bool = False,
                                 slider_decimals: int = 1):
     """Same as `get_apr_interactive` but simply returns the selected parameters"""
+    if not image.flags['C_CONTIGUOUS']:
+        print('WARNING: \'image\' argument given to find_parameters_interactive is not C-contiguous \n'
+              'input image has been replaced with a C-contiguous copy of itself')
+        image = np.ascontiguousarray(image)
 
     if image.dtype not in __allowed_image_types__:
         errstr = 'pyapr.converter.find_parameters_interactive accepts input images of type float32, uint16 and uint8, ' \
