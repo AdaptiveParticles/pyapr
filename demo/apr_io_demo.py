@@ -11,7 +11,7 @@ io_int = pyapr.filegui.InteractiveIO()
 
 # Read in an image
 fpath = io_int.get_tiff_file_name()
-img = skio.imread(fpath).astype(np.uint16)
+img = skio.imread(fpath)
 
 # convert image to APR (with default parameters)
 apr, parts = pyapr.converter.get_apr(img)
