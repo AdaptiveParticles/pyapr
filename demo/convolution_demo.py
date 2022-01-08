@@ -1,5 +1,5 @@
 import pyapr
-
+from time import time
 """
 This demo reads an APR, applies a convolution operation and displays the result
 """
@@ -15,16 +15,25 @@ stencil = pyapr.numerics.filter.get_gaussian_stencil(size=5, sigma=1, ndims=3, n
 out = pyapr.FloatParticles()
 
 # Convolve using CPU:
+t0 = time()
 pyapr.numerics.convolve(apr, parts, out, stencil, use_stencil_downsample=True,
                         normalize_stencil=True, use_reflective_boundary=False)
+print('convolve took {} seconds'.format(time()-t0))
 
-# Alternative CPU convolution method (produces the same result as 'convolve'):
-# pyapr.numerics.convolve_pencil(apr, parts, out, stencil, use_stencil_downsample=True,
-#                                normalize_stencil=True, use_reflective_boundary=False)
+
+# Alternative CPU convolution algorithm:
+t0 = time()
+pyapr.numerics.convolve_pencil(apr, parts, out, stencil, use_stencil_downsample=True,
+                               normalize_stencil=True, use_reflective_boundary=False)
+print('convolve_pencil took {} seconds'.format(time()-t0))
+
 
 # Convolve using GPU (stencil must be of shape 3x3x3 or 5x5x5):
-# pyapr.numerics.convolve_cuda(apr, parts, out, stencil, use_stencil_downsample=True,
-#                          normalize_stencil=True, use_reflective_boundary=False)
+if pyapr.cuda_build() and stencil.shape in [(3, 3, 3), (5, 5, 5)]:
+    t0 = time()
+    pyapr.numerics.convolve_cuda(apr, parts, out, stencil, use_stencil_downsample=True,
+                                 normalize_stencil=True, use_reflective_boundary=False)
+    print('convolve_cuda took {} seconds'.format(time()-t0))
 
 # Display the result
 pyapr.viewer.parts_viewer(apr, out)
