@@ -20,7 +20,7 @@ numerics
 viewer
     a simple graphical user interface for visualizing results and exploring parameters
 """
-
+__cuda_build__ = __import__('_pyaprwrapper').__cuda_build__
 from . import data_containers
 from .data_containers import *
 from .filegui import InteractiveIO
@@ -29,4 +29,9 @@ from . import io
 from . import numerics
 from . import viewer
 
-__all__ = ['data_containers', 'io', 'viewer', 'converter', 'numerics', 'tests']
+
+def cuda_build():
+    return __cuda_build__
+
+
+__all__ = ['data_containers', 'io', 'viewer', 'converter', 'numerics']

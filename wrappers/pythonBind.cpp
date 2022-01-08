@@ -3,12 +3,8 @@
 // Modified by Joel Jonsson on 2/5/19.
 //
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/numpy.h>
-
 #include <ConfigAPR.h>
-
+#include <pybind11/pybind11.h>
 #include "data_containers/PyPixelData.hpp"
 #include "data_containers/PyAPR.hpp"
 #include "data_containers/PyAPRParameters.hpp"
@@ -27,6 +23,12 @@
 #include "viewer/ViewerHelpers.hpp"
 #include "viewer/PyAPRRaycaster.hpp"
 
+#ifdef PYAPR_USE_CUDA
+#define BUILT_WITH_CUDA true
+#else
+#define BUILT_WITH_CUDA false
+#endif
+
 namespace py = pybind11;
 
 // -------- Check if properly configured in CMAKE -----------------------------
@@ -38,6 +40,7 @@ namespace py = pybind11;
 PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     m.doc() = "python binding for LibAPR library";
     m.attr("__version__") = py::str(ConfigAPR::APR_VERSION);
+    m.attr("__cuda_build__") = BUILT_WITH_CUDA;
 
     py::module data_containers = m.def_submodule("data_containers");
 
