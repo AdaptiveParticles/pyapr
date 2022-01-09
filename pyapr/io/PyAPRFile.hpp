@@ -76,6 +76,8 @@ void AddPyAPRFile(pybind11::module &m, const std::string &modulename) {
                  py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")
             .def("read_particles", &PyAPRFile::read_particles_py2<uint16_t>, "read particles from file",
                  py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")
+            .def("read_particles", &PyAPRFile::read_particles_py2<uint64_t>, "read particles from file",
+                 py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")
             .def("read_particles", &PyAPRFile::read_particles_py2<float>, "read particles from file",
                  py::arg("particles_name"), py::arg("particles"), py::arg("apr_or_tree")=true, py::arg("t")=0, py::arg("channel_name")="t")
 
