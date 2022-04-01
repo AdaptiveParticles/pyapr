@@ -34,7 +34,7 @@ class LazySlicer:
         parts_name = pyapr.io.get_particle_names(self.path, tree=False)
         parts_type = pyapr.io.get_particle_type(self.path, parts_name=parts_name[0], tree=False)
         self.parts = pyapr.io.initialize_lazy_particles_type(parts_type)
-        self.parts.init_file(self.aprfile, parts_name[0], True)
+        self.parts.init(self.aprfile, parts_name[0], 0, 't')
         self.parts.open()
 
         self.dtype = parts_type
@@ -43,7 +43,7 @@ class LazySlicer:
         tree_parts_name = pyapr.io.get_particle_names(self.path, tree=True)
         tree_parts_type = pyapr.io.get_particle_type(self.path, parts_name=tree_parts_name[0], tree=True)
         self.tree_parts = pyapr.io.initialize_lazy_particles_type(tree_parts_type)
-        self.tree_parts.init_file(self.aprfile, tree_parts_name[0], False)
+        self.tree_parts.init_tree(self.aprfile, tree_parts_name[0], 0, 't')
         self.tree_parts.open()
 
         self.patch = pyapr.ReconPatch()
