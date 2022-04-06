@@ -9,6 +9,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <algorithm>
+#include <set>
 
 namespace py = pybind11;
 
@@ -1083,6 +1084,81 @@ void find_label_centers_weighted_cpp(APR& apr, PyParticleData<T>& object_labels,
 
 
 template<typename T>
+void remove_edge_objects(APR& apr, PyParticleData<T>& object_labels, const T background_label=0,
+                         const bool z_edges=false, const bool x_edges=true, const bool y_edges=true) {
+
+    auto it = apr.iterator();
+
+    // step 1: find unique labels intersecting with the volume edges in the specified directions
+    std::set<T> edge_labels;
+
+    if(z_edges) {
+        for(int level = it.level_max(); level >= it.level_min(); --level) {
+            for(auto z : {0, it.z_num(level)-1}) {
+                for(int x = 0; x < it.x_num(level); ++x) {
+                    for(it.begin(level, z, x); it < it.end(); ++it) {
+                        if(object_labels[it] != background_label) {
+                            edge_labels.insert(object_labels[it]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if(x_edges) {
+        for(int level = it.level_max(); level >= it.level_min(); --level) {
+            for(auto x : {0, it.x_num(level)-1}) {
+                for(int z = 0; z < it.z_num(level); ++z) {
+                    for(it.begin(level, z, x); it < it.end(); ++it) {
+                        if(object_labels[it] != background_label) {
+                            edge_labels.insert(object_labels[it]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if(y_edges) {
+        for(int level = it.level_max(); level >= it.level_min(); --level) {
+            for(int z = 0; z < it.z_num(level); ++z) {
+                for(int x = 0; x < it.x_num(level); ++x) {
+                    it.begin(level, z, x);
+                    if(it < it.end()) {
+                        if( (it.y() == 0) && (object_labels[it] != background_label) ) {
+                            edge_labels.insert(object_labels[it]);
+                        }
+
+                        const uint64_t last_idx = it.end() - 1;
+                        if( (it.get_y(last_idx) == (it.y_num(level)-1)) && (object_labels[it] != background_label) ) {
+                            edge_labels.insert(object_labels[it]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // if no edge labels were found, we are done
+    if(edge_labels.empty()) { return; }
+
+    // set edge labels to background_label
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for default(shared)
+#endif
+    for(size_t idx = 0; idx < object_labels.size(); ++idx) {
+        if(object_labels[idx] != background_label) {
+            // if current label is in edge_labels, set it to the background value
+            if(edge_labels.find(object_labels[idx]) != edge_labels.end()) {
+                object_labels[idx] = background_label;
+            }
+        }
+    }
+}
+
+
+template<typename T>
 void find_label_volume_cpp(APR& apr, PyParticleData<T>& object_labels, py::array_t<uint64_t>& volume) {
 
     auto max_label = object_labels.max();
@@ -1223,6 +1299,13 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
            py::arg("apr"), py::arg("object_labels"), py::arg("volume"));
     m2.def("find_label_volume_cpp", &find_label_volume_cpp<uint64_t>, "find object volume",
            py::arg("apr"), py::arg("object_labels"), py::arg("volume"));
+
+    m2.def("remove_edge_objects", &remove_edge_objects<uint16_t>, "remove object labels intersecting with an edge",
+           py::arg("apr"), py::arg("object_labels"), py::arg("background_label")=0, py::arg("z_edges")=false,
+           py::arg("x_edges")=true, py::arg("y_edges")=true);
+    m2.def("remove_edge_objects", &remove_edge_objects<uint64_t>, "remove object labels intersecting with an edge",
+           py::arg("apr"), py::arg("object_labels"), py::arg("background_label")=0, py::arg("z_edges")=false,
+           py::arg("x_edges")=true, py::arg("y_edges")=true);
 }
 
 #endif //PYLIBAPR_PYAPRTRANSFORM_HPP
