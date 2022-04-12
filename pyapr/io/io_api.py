@@ -139,7 +139,7 @@ def initialize_lazy_particles_type(typestr):
     if typestr == 'uint64':
         return pyapr.LazyDataLong()
 
-    print('deduced datatype {} is currently not supported - returning None'.format(typestr))
+    print('Deducted datatype {} is currently not supported - returning None'.format(typestr))
     return None
 
 

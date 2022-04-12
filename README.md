@@ -1,11 +1,31 @@
 # PyLibAPR
 
-[![Build Status](https://travis-ci.com/AdaptiveParticles/PyLibAPR.svg?branch=ci_build)](https://travis-ci.com/AdaptiveParticles/PyLibAPR)
+[![build and deploy](https://github.com/AdaptiveParticles/PyLibAPR/actions/workflows/main.yml/badge.svg)](https://github.com/AdaptiveParticles/PyLibAPR/actions)
+[![License](https://img.shields.io/pypi/l/pyapr.svg?color=green)](https://raw.githubusercontent.com/AdaptiveParticles/PyLibAPR/master/LICENSE)
+[![Python Version](https://img.shields.io/pypi/pyversions/pyapr.svg?color=blue)]((https://python.org))
+[![PyPI](https://img.shields.io/pypi/v/pyapr.svg?color=green)](https://pypi.org/project/pyapr/)
+![PowerShell Gallery](https://img.shields.io/powershellgallery/p/DNS.1.1.1.1)
 
-Python wrappers for [LibAPR](https://github.com/AdaptiveParticles/LibAPR) - Library for producing and processing on 
-the Adaptive Particle Representation (APR).
+Python wrappers for [LibAPR]: A library for producing and processing on the Adaptive Particle Representation (APR).
 
-For article see: https://www.nature.com/articles/s41467-018-07390-9
+The APR is an adaptive image representation designed primarily for large volumetric
+microscopy datasets. By replacing pixels with particles positioned according to the
+image content, it enables orders-of-magnitude compression of sparse image data
+while maintaining image quality. However, unlike most compression formats, the APR
+can be used directly in a wide range of processing tasks - even on the GPU!
+
+For more detailed information about the APR and its use, see:
+- [Adaptive particle representation of fluorescence microscopy images](https://www.nature.com/articles/s41467-018-07390-9) (nature communications)
+- [Parallel Discrete Convolutions on Adaptive Particle Representations of Images](https://arxiv.org/abs/2112.03592) (arXiv preprint)
+
+## Installation
+For Windows 10, OSX, and Linux and Python versions 3.7-3.9 direct installation with OpenMP support should work via [pip]:
+```
+pip install pyapr
+```
+Note: Due to the use of OpenMP, it is encouraged to install as part of a virtualenv.
+
+See [INSTALL] for manual build instructions.
 
 ## Exclusive features
 
@@ -18,89 +38,31 @@ new features that simplify the generation and handling of the APR. For example:
 * Interactive APR raycast (maximum intensity projection) viewer (see [raycast_demo](demo/raycast_demo.py))
 * Interactive lossy compression of particle intensities (see [compress_particles_demo](demo/compress_particles_demo.py))
 
-## Dependencies
+For further examples see the [demo scripts].
 
-[LibAPR](https://github.com/AdaptiveParticles/LibAPR) is included as a submodule, and built alongside the wrappers. 
-This requires the following packages:
+Also be sure to check out our (experimental) [napari] plugin: [napari-apr-viewer].
 
-* HDF5 1.8.20 or higher
-* OpenMP > 3.0 (optional, but recommended)
-* CMake 3.6 or higher
-* LibTIFF 4.0 or higher
 
-The Python library additionally requires Python 3, and the packages listed in [requirements.txt](requirements.txt).
+## License
 
-### Installing dependencies on Linux
+**pyapr** is distributed under the terms of the [Apache Software License 2.0].
 
-On Ubuntu, install the `cmake`, `build-essential`, `libhdf5-dev` and `libtiff5-dev` packages (on other distributions, 
-refer to the documentation there, the package names will be similar). OpenMP support is provided by the GCC compiler 
-installed as part of the `build-essential` package.
 
-### Installing dependencies on OSX
+## Issues
 
-On OSX, install the `cmake`, `hdf5` and `libtiff`  [homebrew](https://brew.sh) packages and have the 
-[Xcode command line tools](http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) installed.
-If you want to compile with OpenMP support, also install the `llvm` package (this can also be done using homebrew), 
-as the clang version shipped by Apple currently does not support OpenMP.
-
-### Note for windows users
-
-The simplest way to utilise the library from Windows is through Windows Subsystem for Linux; see: 
-https://docs.microsoft.com/en-us/windows/wsl/install-win10 then follow linux instructions.
-
-The viewers and demos use a Graphical User Interface. In order to use these features from WSL, you
-may additionally need to install an X server.
-
-## Building
-
-The repository requires submodules, so the repository needs to be cloned recursively:
-
-```
-git clone --recursive https://github.com/AdaptiveParticles/PyLibAPR.git
-```
-
-It is recommended to use a virtual environment, such as `virtualenv`. To set this up, use e.g.
-
-```
-pip3 install virtualenv
-python3 -m virtualenv myenv
-source myenv/bin/activate
-```
-
-The required Python packages can be installed via the command
-```
-pip install -r requirements.txt 
-```
-
-Once the dependencies are installed, PyLibAPR can be built via the setup.py script:
-```
-python setup.py install
-```
-
-### CMake build options
-
-There are two CMake options that can be given to enable or disable OpenMP and CUDA:
-
-| Option | Description | Default value |
-|:--|:--|:--|
-| PYAPR_USE_OPENMP | Enable multithreading via OpenMP | ON |
-| PYAPR_USE_CUDA | Build available CUDA functionality | OFF |
-
-When building via the setup.py script, these options can be set via the environment variable `CMAKE_COMMON_VARIABLES`. For example,
-```
-CMAKE_COMMON_VARIABLES="-DPYAPR_USE_OPENMP=OFF -DPYAPR_USE_CUDA=OFF" python setup.py install
-```
-should install the package with both OpenMP and CUDA disabled.
-
-### OpenMP support on OSX
-
-To use the homebrew-installed clang for OpenMP support on OSX, modify the call above to
-```
-CPPFLAGS="-I/usr/local/opt/llvm/include" LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib" CXX="/usr/local/opt/llvm/bin/clang++" CC="/usr/local/opt/llvm/bin/clang" python setup.py install 
-```
+If you encounter any problems, please [file an issue] with a short description. 
 
 ## Contact us
 
-If anything is not working as you think it should, or would like it to, please get in touch with us!! Further, dont 
-hesitate to contact us if you have a project or algorithm you would like to try using the APR for. We would be happy to 
-assist you!
+If you have a project or algorithm in which you would like to try using the APR, don't hesitate to get
+in touch with us. We would be happy to assist you!
+
+
+[LibAPR]: https://github.com/AdaptiveParticles/LibAPR
+[pip]: https://pypi.org/project/pip/
+[INSTALL]: INSTALL.md
+[demo scripts]: demo
+[napari]: https://napari.org
+[napari-apr-viewer]: https://github.com/AdaptiveParticles/napari-apr-viewer
+[Apache Software License 2.0]: http://www.apache.org/licenses/LICENSE-2.0
+[file an issue]: https://github.com/AdaptiveParticles/PyLibAPR/issues
