@@ -1,22 +1,26 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Build and Deploy
+name: build
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [master, develop]
+    branches:
+      - master
+    tags:
+      - "v*"
   pull_request:
-    branches: [ master, develop ]
+    branches:
+      - master
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  job:
-    name: ${{ matrix.os }}-build-and-test
+  build-wheels:
+    name: ${{ matrix.os }} build and test wheels
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -25,17 +29,13 @@ jobs:
         include:
           - os: windows-latest
             triplet: x64-windows
-            openmp: ON
-            builddir: dist/wheelhouse
-            builddir1: dist
+            builddir: dist
           - os: ubuntu-latest
             triplet: x64-linux
             builddir: wheelhouse
-            builddir1: wheelhouse
           - os: macos-latest
             triplet: x64-osx
             builddir: wheelhouse
-            builddir1: wheelhouse
     env:
       # Indicates the CMake build directory where project files and binaries are being produced.
       CMAKE_BUILD_DIR: ${{ github.workspace }}/builddir/
@@ -45,16 +45,17 @@ jobs:
       CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
       CIBW_ARCHS: "auto64"
       CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_24"
-      TWINE_USERNAME: __token__
-      CIBW_BUILD_VERBOSITY: 3
+      CIBW_BUILD_VERBOSITY: 1
       CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
-#      CIBW_BEFORE_TEST_LINUX: "pip install -r requirements.txt"
-#      CIBW_TEST_COMMAND_LINUX: "python3 -m unittest discover -s ${{ github.workspace }}"
+      CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "pip install -U wheel delvewheel && python fix_windows_wheel.py {wheel} {dest_dir}"
+      CIBW_TEST_COMMAND: "python3 -m unittest discover -s {project}"
+      CIBW_TEST_SKIP: "*-win_amd64"  # skip tests on windows
       CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
 
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           submodules: true
 
       - name: Submodule recursive
@@ -81,7 +82,7 @@ jobs:
           key: |
             ${{ hashFiles( 'external/LibAPR/vcpkg.json' ) }}-${{ hashFiles( '.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}-invalidate
 
-      - name: check file paths
+      - name: Check file paths
         run: |
           cd ${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/
           ls
@@ -111,24 +112,84 @@ jobs:
 
       - name: Run cibuildwheel
         run: |
-          python3 -m cibuildwheel --output-dir ${{matrix.builddir1}}
+          python3 -m cibuildwheel --output-dir ${{matrix.builddir}}
 
-      - name: Fix windows wheels
-        if: contains(matrix.os,'windows')
+      - name: Upload wheels as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.os }}-wheels
+          path: ${{matrix.builddir}}/
+          retention-days: 5
+
+  windows-tests:
+    name: windows py${{ matrix.python-version }} tests
+    runs-on: windows-latest
+    needs: build-wheels
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        include:
+          - os: windows-latest
+            triplet: x64-windows
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Download wheels from artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: windows-latest-wheels
+          path: wheelhouse
+
+      - name: Set version string
+        shell: bash
+        run: echo "py_version_str=cp$(echo ${{ matrix.python-version }} | tr -d -c 0-9)" >> $GITHUB_ENV
+
+      - name: Install package from wheel
+        shell: bash
         run: |
-          python3 -m pip install wheel
-          python3 -m pip install delvewheel
-          python3 fix_windows_wheel.py
+          ls -R wheelhouse
+          python -m pip install --upgrade pip
+          pip install wheelhouse/pyapr-*${{ env.py_version_str }}*.whl
 
-      - name: Install twine
+      - name: Run tests
         run: |
-          python3 -m pip install twine
+          python -m unittest discover -s ${{ github.workspace }}
 
-      - name: Publish to test Pypi
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: windows-tests
+    name: publish to pypi
+    if: contains(github.ref, 'tags')  # only run on tagged commits starting with "v*"
+    steps:
+      - name: Download wheels from artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: wheelhouse
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+
+      - name: Install dependencies
         run: |
-          python3 -m twine upload --skip-existing --repository pypi ${{matrix.builddir}}/*.whl -p ${{ secrets.PYPI_API_TOKEN }}
+          python -m pip install --upgrade pip
+          pip install -U twine
 
-#      - name: Test release from pypi 3.7
-#        run: |
-#          pip install pyapr
-#          python3 -m unittest
+      - name: Publish
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          twine upload wheelhouse/*wheels/*.whl

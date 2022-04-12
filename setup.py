@@ -2,8 +2,9 @@
 import os
 import sys
 import subprocess
-from setuptools import setup, find_packages, Extension
+from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
+
 
 # Convert distutils Windows platform specifiers to CMake -A arguments
 PLAT_TO_CMAKE = {
@@ -80,34 +81,11 @@ class CMakeBuild(build_ext):
             ["cmake", "--build", ".", "--parallel", "4"] + build_args, cwd=self.build_temp
         )
 
-setup(
-    name='pyapr',
 
-    version='0.0.0.4',
+
+setup(
     ext_modules=[CMakeExtension('_pyaprwrapper')],
     cmdclass={
         'build_ext': CMakeBuild,
-    },
-    packages=find_packages(),
-    install_requires=[
-        'numpy',
-        'scikit-image',
-        'PyQt5',
-        'pyqtgraph==0.12.1',
-        'matplotlib'
-    ],
-    description='Python wrappers for LibAPR',
-    long_description="long_description",
-    url='https://github.com/joeljonsson/PyLibAPR',
-    author='Joel Jonsson, Bevan Cheeseman',
-    author_email='jonsson@mpi-cbg.de',
-    license='Apache-2.0',
-    classifiers=[
-        'Development Status :: 1 - Planning',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 3'
-    ],
-    keywords='LibAPR, PyLibAPR, APR',
-    zip_safe=False
+    }
 )

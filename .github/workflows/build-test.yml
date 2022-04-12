@@ -35,6 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           submodules: true
 
       - name: Submodule recursive
@@ -93,13 +94,12 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-          pip install wheel
-          pip install setuptools
+          pip install wheel setuptools setuptools_scm
           python3 setup.py bdist_wheel -b ${{ env.CMAKE_BUILD_DIR }}
 
       - name: Python Install
         run: |
-          pip install --find-links=dist pyapr
+          pip install dist/pyapr*.whl
 
       - name: Python Test
         run: |
