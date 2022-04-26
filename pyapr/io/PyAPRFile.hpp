@@ -49,7 +49,8 @@ void AddPyAPRFile(pybind11::module &m, const std::string &modulename) {
             .def("get_particle_type", &PyAPRFile::get_particle_type, "return type (string) of particle dataset",
                  py::arg("particles_name"), py::arg("apr_or_tree")=false, py::arg("t")=0, py::arg("channel_name")="t")
 
-            .def("write_apr", &PyAPRFile::write_apr, py::arg("apr"), py::arg("t")=0, py::arg("channel_name")="t", "write apr to file")
+            .def("write_apr", &PyAPRFile::write_apr, "write apr to file",
+                 py::arg("apr"), py::arg("t")=0, py::arg("channel_name")="t", py::arg("write_tree")=true)
             .def("write_apr_append", &PyAPRFile::write_apr_append, "write the APR to file and append it as the next time point")
 
             .def("read_apr", &PyAPRFile::read_apr, py::arg("apr"), py::arg("t")=0, py::arg("channel_name")="t", "read an APR from file")
