@@ -115,6 +115,24 @@ void bindMedianFilter(py::module &m) {
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"));
 }
 
+template<int size_z, int size_x, int size_y>
+void bindMinFilter(py::module &m) {
+    std::string name = "min_filter_" + std::to_string(size_z) + std::to_string(size_x) + std::to_string(size_y);
+    m.def(name.c_str(), &APRFilter::min_filter<size_y, size_x, size_z, uint16_t, uint16_t>, "min filter",
+          py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"));
+    m.def(name.c_str(), &APRFilter::min_filter<size_y, size_x, size_z, float, float>, "min filter",
+          py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"));
+}
+
+template<int size_z, int size_x, int size_y>
+void bindMaxFilter(py::module &m) {
+    std::string name = "max_filter_" + std::to_string(size_z) + std::to_string(size_x) + std::to_string(size_y);
+    m.def(name.c_str(), &APRFilter::max_filter<size_y, size_x, size_z, uint16_t, uint16_t>, "max filter",
+          py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"));
+    m.def(name.c_str(), &APRFilter::max_filter<size_y, size_x, size_z, float, float>, "max filter",
+          py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"));
+}
+
 
 void AddPyAPRFilter(py::module &m, const std::string &modulename) {
 
@@ -144,6 +162,16 @@ void AddPyAPRFilter(py::module &m, const std::string &modulename) {
     bindMedianFilter<1, 7, 7>(m2);
     bindMedianFilter<1, 9, 9>(m2);
     bindMedianFilter<1, 11, 11>(m2);
+
+    bindMinFilter<1, 3, 3>(m2);
+    bindMinFilter<1, 5, 5>(m2);
+    bindMinFilter<3, 3, 3>(m2);
+    bindMinFilter<5, 5, 5>(m2);
+
+    bindMaxFilter<1, 3, 3>(m2);
+    bindMaxFilter<1, 5, 5>(m2);
+    bindMaxFilter<3, 3, 3>(m2);
+    bindMaxFilter<5, 5, 5>(m2);
 
 #ifdef PYAPR_USE_CUDA
     m2.def("convolve_cuda", &convolve_cuda<float, float>, "Filter an APR with a stencil",
