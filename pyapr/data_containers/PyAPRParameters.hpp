@@ -17,7 +17,6 @@ void AddPyAPRParameters(pybind11::module &m) {
         .def_readwrite("rel_error", &APRParameters::rel_error)
         .def_readwrite("sigma_th", &APRParameters::sigma_th)
         .def_readwrite("sigma_th_max", &APRParameters::sigma_th_max)
-        .def_readwrite("extra_smooth", &APRParameters::extra_smooth)
         .def_readwrite("noise_sd_estimate", &APRParameters::noise_sd_estimate)
         .def_readwrite("background_intensity_estimate", &APRParameters::background_intensity_estimate)
         .def_readwrite("auto_parameters", &APRParameters::auto_parameters)
