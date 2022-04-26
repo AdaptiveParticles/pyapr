@@ -14,7 +14,6 @@ class LazySlicer:
 
         self.path = file_path
         self.aprfile = pyapr.io.APRFile()
-        self.aprfile.set_read_write_tree(True)
         self.aprfile.set_write_linear_flag(True)
         self.aprfile.open(self.path, "READ")
 

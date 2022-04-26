@@ -1,11 +1,10 @@
 import pyapr
 
 
-def read(fpath, apr=None, parts=None, t=0, channel_name='t', parts_name='particles', read_tree=True):
+def read(fpath, apr=None, parts=None, t=0, channel_name='t', parts_name='particles'):
 
     # Initialize APRFile for I/O
     aprfile = pyapr.io.APRFile()
-    aprfile.set_read_write_tree(read_tree)
     aprfile.open(fpath, 'READ')
 
     # initialize output objects if not given
@@ -30,16 +29,14 @@ def write(fpath, apr, parts, t=0, channel_name='t', parts_name='particles', writ
 
     # Initialize APRFile for I/O
     aprfile = pyapr.io.APRFile()
-    aprfile.set_read_write_tree(write_tree)
     aprfile.set_write_linear_flag(write_linear)
 
     # Write APR and particles to file
     aprfile.open(fpath, 'WRITE')
-    aprfile.write_apr(apr, t=t, channel_name=channel_name)
+    aprfile.write_apr(apr, t=t, channel_name=channel_name, write_tree=write_tree)
     aprfile.write_particles(parts_name, parts, apr_or_tree=True, t=t, channel_name=channel_name)
 
     if tree_parts is not None and write_tree:
-        assert isinstance(tree_parts, (pyapr.ShortParticles, pyapr.FloatParticles))
         aprfile.write_particles(parts_name, tree_parts, apr_or_tree=False, t=t, channel_name=channel_name)
 
     aprfile.close()
@@ -58,7 +55,6 @@ def write_particles(fpath, parts, t=0, channel_name='t', parts_name='particles',
 
 def read_particles(fpath, apr=None, parts=None, t=0, channel_name='t', parts_name='particles', tree=False):
     aprfile = pyapr.io.APRFile()
-    aprfile.set_read_write_tree(tree)
     aprfile.open(fpath, 'READ')
 
     if parts is None:
@@ -82,17 +78,15 @@ def write_apr(fpath, apr, t=0, channel_name='t', write_linear=True, write_tree=T
         return
 
     aprfile = pyapr.io.APRFile()
-    aprfile.set_read_write_tree(write_tree)
     aprfile.set_write_linear_flag(write_linear)
     aprfile.open(fpath, 'WRITE')
-    aprfile.write_apr(apr, t=t, channel_name=channel_name)
+    aprfile.write_apr(apr, t=t, channel_name=channel_name, write_tree=write_tree)
     aprfile.close()
 
 
-def read_apr(fpath, apr=None, t=0, channel_name='t', read_tree=True):
+def read_apr(fpath, apr=None, t=0, channel_name='t'):
     apr = apr or pyapr.APR()
     aprfile = pyapr.io.APRFile()
-    aprfile.set_read_write_tree(read_tree)
     aprfile.open(fpath, 'READ')
     aprfile.read_apr(apr, t=t, channel_name=channel_name)
     aprfile.close()
@@ -167,7 +161,6 @@ def write_multichannel(fpath, apr, parts_list, t=0, channel_name='t', channel_na
 
     # Initialize APRFile for I/O
     aprfile = pyapr.io.APRFile()
-    aprfile.set_read_write_tree(True)
 
     # Write APR and particles to file
     aprfile.open(fpath, 'WRITE')
@@ -194,7 +187,6 @@ def read_multichannel(fpath, apr, parts_list, t=0, channel_name='t', channel_nam
 
     # Initialize APRFile for I/O
     aprfile = pyapr.io.APRFile()
-    aprfile.set_read_write_tree(True)
 
     # Write APR and particles to file
     aprfile.open(fpath, 'READ')
