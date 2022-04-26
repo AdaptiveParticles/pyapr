@@ -109,11 +109,11 @@ void convolve_cuda(APR& apr, PyParticleData<inputType>& input_parts, PyParticleD
 template<int size_z, int size_x, int size_y>
 void bindMedianFilter(py::module &m) {
     std::string name = "median_filter_" + std::to_string(size_z) + std::to_string(size_x) + std::to_string(size_y);
-    m.def(name.c_str(), &APRFilter::median_filter<size_z, size_x, size_y, uint16_t, uint16_t>, "median filter",
+    m.def(name.c_str(), &APRFilter::median_filter<size_y, size_x, size_z, uint16_t, uint16_t>, "median filter",
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"));
-    m.def(name.c_str(), &APRFilter::median_filter<size_z, size_x, size_y, uint16_t, float>, "median filter",
+    m.def(name.c_str(), &APRFilter::median_filter<size_y, size_x, size_z, uint16_t, float>, "median filter",
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"));
-    m.def(name.c_str(), &APRFilter::median_filter<size_z, size_x, size_y, float, float>, "median filter",
+    m.def(name.c_str(), &APRFilter::median_filter<size_y, size_x, size_z, float, float>, "median filter",
           py::arg("apr"), py::arg("input_parts"), py::arg("output_parts"));
 }
 
