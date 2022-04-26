@@ -39,7 +39,6 @@ void AddPyAPRFile(pybind11::module &m, const std::string &modulename) {
             .def(py::init())
             .def("open", &PyAPRFile::open, py::arg("file_name"), py::arg("read_write")="WRITE", "open a file for reading and/or writing")
             .def("close", &PyAPRFile::close, "close the file")
-            .def("set_read_write_tree", &PyAPRFile::set_read_write_tree, "set whether the interior APRTree access should also be written and read.")
             .def("set_write_linear_flag", &PyAPRFile::set_write_linear_flag, "write linear access structure?")
 
             .def("get_particles_names", &PyAPRFile::get_particles_names, "return list of field names for stored particle values",
