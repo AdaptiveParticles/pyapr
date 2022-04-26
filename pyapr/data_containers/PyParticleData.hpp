@@ -403,7 +403,7 @@ public:
      * @param img     numpy array representing the image
      */
     template<typename ImageType>
-    void sample_image(APR &apr, py::array_t<ImageType, py::array::c_style> &img) {
+    void sample_image_py(APR &apr, py::array_t<ImageType, py::array::c_style> &img) {
 
         if(std::is_integral<T>::value && (std::is_floating_point<ImageType>::value || sizeof(T) < sizeof(ImageType))) {
             std::cerr << "Warning: narrowing conversion from " << TypeParseTraits<ImageType>::name() << " to " <<
@@ -435,7 +435,7 @@ public:
         PixelData<ImageType> pd;
         pd.init_from_mesh(y_num, x_num, z_num, ptr);
 
-        this->sample_parts_from_img_downsampled(apr, pd);
+        this->sample_image(apr, pd);
     }
 
 
@@ -521,13 +521,13 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def("copy", &TypeParticles::copy_parts_byte, "copy particles from another PyParticleData object",
                  py::arg("aPyAPR"), py::arg("partsToCopy"), py::arg("level")=0)
             .def("copy", &TypeParticles::ret_copy, "return a copy of self")
-            .def("sample_image", &TypeParticles::template sample_image<uint8_t>, "sample particle values from an image (numpy array)",
+            .def("sample_image", &TypeParticles::template sample_image_py<uint8_t>, "sample particle values from an image (numpy array)",
                  py::arg("apr"), py::arg("img").noconvert())
-            .def("sample_image", &TypeParticles::template sample_image<uint16_t>, "sample particle values from an image (numpy array)",
+            .def("sample_image", &TypeParticles::template sample_image_py<uint16_t>, "sample particle values from an image (numpy array)",
                  py::arg("apr"), py::arg("img").noconvert())
-            .def("sample_image", &TypeParticles::template sample_image<uint64_t>, "sample particle values from an image (numpy array)",
+            .def("sample_image", &TypeParticles::template sample_image_py<uint64_t>, "sample particle values from an image (numpy array)",
                  py::arg("apr"), py::arg("img").noconvert())
-            .def("sample_image", &TypeParticles::template sample_image<float>, "sample particle values from an image (numpy array)",
+            .def("sample_image", &TypeParticles::template sample_image_py<float>, "sample particle values from an image (numpy array)",
                  py::arg("apr"), py::arg("img").noconvert())
             .def("sample_image_blocked", &TypeParticles::sample_image_blocked,
                  "sample particle values from a file in z-blocks to reduce memory usage")
