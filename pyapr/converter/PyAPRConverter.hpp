@@ -31,24 +31,13 @@ public:
         return this->par;
     }
 
-    PixelData<T>& get_gradient() {
-        return this->grad_temp;
-    }
-
-    PixelData<float>& get_intensity_scale() {
-        return this->local_scale_temp;
-    }
-
-    PixelData<float>& get_smooth_image() {
-        return this->local_scale_temp2;
-    }
-
     /**
      * Compute an APR from a given image, given as a numpy array.
-     * @param aPyAPR
+     * @param apr
      * @param img
      */
-    void get_apr_py(APR& apr, py::array_t<T>& img) {
+    template<typename ImageType>
+    void get_apr_py(APR& apr, py::array_t<ImageType, py::array::c_style>& img) {
 
         auto buf = img.request(false);
 
@@ -72,14 +61,15 @@ public:
             throw std::invalid_argument("input array must be of dimension at most 3");
         }
 
-        auto ptr = static_cast<T*>(buf.ptr);
-        PixelData<T> pd;
+        auto ptr = static_cast<ImageType*>(buf.ptr);
+        PixelData<ImageType> pd;
         pd.init_from_mesh(y_num, x_num, z_num, ptr);
 
         this->get_apr(apr, pd);
     }
 
-    void get_apr_step1(APR& apr, py::array_t<T>& img){
+    template<typename ImageType>
+    void get_apr_step1(APR& apr, py::array_t<ImageType, py::array::c_style>& img){
 
         auto buf = img.request(false);
 
@@ -106,9 +96,9 @@ public:
             throw std::invalid_argument("input array must be of dimension at most 3");
         }
 
-        auto ptr = static_cast<T*>(buf.ptr);
+        auto ptr = static_cast<ImageType*>(buf.ptr);
 
-        PixelData<T> pd;
+        PixelData<ImageType> pd;
         pd.init_from_mesh(y_num, x_num, z_num, ptr);
 
         APRTimer timer(this->verbose);
@@ -175,26 +165,35 @@ public:
 
 template<typename DataType>
 void AddPyAPRConverter(pybind11::module &m, const std::string &aTypeString) {
+
+    /// wrap base class (APRConverter)
+    using cppConverter = APRConverter<DataType>;
+    std::string baseName = aTypeString + "Converter_CPP";
+    py::class_<cppConverter>(m, baseName.c_str());
+
+    /// wrap PyAPRConverter
     using converter = PyAPRConverter<DataType>;
     std::string typeStr = aTypeString + "Converter";
-    py::class_<converter>(m, typeStr.c_str())
+    py::class_<converter, cppConverter>(m, typeStr.c_str())
             .def(py::init())
             .def_readwrite("verbose", &converter::verbose)
-            .def("get_apr", &converter::get_apr_py, "compute APR from an image (input as a numpy array)")
+            .def("get_apr", &converter::template get_apr_py<float>, "compute APR from an image (input as a numpy array)",
+                 py::arg("apr"), py::arg("img").noconvert())
+            .def("get_apr", &converter::template get_apr_py<uint16_t>, "compute APR from an image (input as a numpy array)",
+                 py::arg("apr"), py::arg("img").noconvert())
+            .def("get_apr", &converter::template get_apr_py<uint8_t>, "compute APR from an image (input as a numpy array)",
+                 py::arg("apr"), py::arg("img").noconvert())
             .def("set_parameters", &converter::set_parameters, "set parameters")
             .def("get_parameters", &converter::get_parameters, "get parameters")
-            .def("get_gradient", &converter::get_gradient, "return B-spline gradient",
-                 py::return_value_policy::reference)
-            .def("get_intensity_scale", &converter::get_intensity_scale, "return local intensity scale",
-                 py::return_value_policy::reference)
-            .def("get_smooth_image", &converter::get_smooth_image, "return B-spline smoothed image",
-                 py::return_value_policy::reference)
             .def("get_level_slice", &converter::get_level_slice,
                  "gets the current level slice for the applied parameters")
-            .def("get_apr_step1", &converter::get_apr_step1,
-                 "Interactive APR generation")
-            .def("get_apr_step2", &converter::get_apr_step2,
-                 "Interactive APR generation");
+            .def("get_apr_step1", &converter::template get_apr_step1<float>, "Interactive APR generation",
+                 py::arg("apr"), py::arg("img").noconvert())
+            .def("get_apr_step1", &converter::template get_apr_step1<uint16_t>, "Interactive APR generation",
+                 py::arg("apr"), py::arg("img").noconvert())
+            .def("get_apr_step1", &converter::template get_apr_step1<uint8_t>, "Interactive APR generation",
+                 py::arg("apr"), py::arg("img").noconvert())
+            .def("get_apr_step2", &converter::get_apr_step2, "Interactive APR generation");
 }
 
 

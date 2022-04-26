@@ -1,13 +1,26 @@
 #ifndef PYLIBAPR_PYPARTICLEDATA_HPP
 #define PYLIBAPR_PYPARTICLEDATA_HPP
 
+#include <iostream>
+#include <string>
+#include <typeinfo>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
-
 #include <data_structures/APR/particles/ParticleData.hpp>
 
+template<typename T>
+struct TypeParseTraits{
+    static const char* name() { return typeid(T).name(); }
+};
+
+#define REGISTER_PARSE_TYPE(X) template <> struct TypeParseTraits<X> { static const char* name() { return #X; }; }
+
+REGISTER_PARSE_TYPE(uint8);
+REGISTER_PARSE_TYPE(uint16);
+REGISTER_PARSE_TYPE(uint64);
+REGISTER_PARSE_TYPE(float);
 
 namespace py = pybind11;
 
@@ -28,6 +41,11 @@ public:
         this->init(buf.size);
         auto ptr = static_cast<T*>(buf.ptr);
         std::copy(ptr, ptr+buf.size, this->begin());
+    }
+
+    template<typename S>
+    PyParticleData(PyParticleData<S>& other) {
+        this->copy(other);
     }
 
     bool contains(T val) const {
@@ -381,10 +399,16 @@ public:
     /**
      * Sample the particle values from an image (numpy array) for a given APR (computed from the same image).
      *
-     * @param aPyAPR  PyAPR object
+     * @param apr     APR object
      * @param img     numpy array representing the image
      */
-    void sample_image(APR &apr, py::array_t<T> &img) {
+    template<typename ImageType>
+    void sample_image(APR &apr, py::array_t<ImageType, py::array::c_style> &img) {
+
+        if(std::is_integral<T>::value && (std::is_floating_point<ImageType>::value || sizeof(T) < sizeof(ImageType))) {
+            std::cerr << "Warning: narrowing conversion from " << TypeParseTraits<ImageType>::name() << " to " <<
+                         TypeParseTraits<T>::name() << " in PyParticleData::sample_image" << std::endl;
+        }
         auto buf = img.request(false);
         int y_num, x_num, z_num;
 
@@ -406,9 +430,9 @@ public:
             throw std::invalid_argument("sample_image: input array must be of dimension 1-3");
         }
 
-        auto ptr = static_cast<T*>(buf.ptr);
+        auto ptr = static_cast<ImageType*>(buf.ptr);
 
-        PixelData<T> pd;
+        PixelData<ImageType> pd;
         pd.init_from_mesh(y_num, x_num, z_num, ptr);
 
         this->sample_parts_from_img_downsampled(apr, pd);
@@ -418,7 +442,7 @@ public:
     /**
      * Sample the particle values from a TIFF file, that is read in blocks of z-slices to reduce memory usage.
      *
-     * @param aPyAPR     PyAPR object
+     * @param apr        APR object
      * @param aFileName  Path to the TIFF file
      * @param blockSize  Number of z-slices to process in each tile
      * @param ghostSize  Number of ghost slices on each side of the block (maximum slices held in memory at any given time is blockSize + 2*ghostSize)
@@ -434,7 +458,7 @@ public:
     /**
      * Fill the particle values with their corresponding resolution levels.
      *
-     * @param aPyAPR  a PyAPR object
+     * @param apr  APR object
      */
     void fill_with_levels(APR &apr) {
 
@@ -474,9 +498,13 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
     std::string typeStr = aTypeString + "Particles";
     py::class_<TypeParticles, BaseParticles>(m, typeStr.c_str(), py::buffer_protocol())
             .def(py::init())
-            .def(py::init([](uint64_t num_particles) { return new TypeParticles(num_particles); }))
-            .def(py::init([](APR& apr) { return new TypeParticles(apr); }))
-            .def(py::init([](py::array_t<DataType, py::array::c_style | py::array::forcecast>& arr){ return new TypeParticles(arr); }))
+            .def(py::init([](uint64_t num_particles) { return TypeParticles(num_particles); }))
+            .def(py::init([](APR& apr) { return TypeParticles(apr); }))
+            .def(py::init([](py::array_t<DataType, py::array::c_style | py::array::forcecast>& arr){ return TypeParticles(arr); }))
+            .def(py::init([](PyParticleData<float>& other){ return TypeParticles(other); }))
+            .def(py::init([](PyParticleData<uint8_t>& other){ return TypeParticles(other); }))
+            .def(py::init([](PyParticleData<uint16_t>& other){ return TypeParticles(other); }))
+            .def(py::init([](PyParticleData<uint64_t>& other){ return TypeParticles(other); }))
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
             .def("__contains__", [](const TypeParticles &p, DataType v) { return p.contains(v); })
             .def("resize", &TypeParticles::resize, "resize the data array to a specified number of elements")
@@ -493,7 +521,14 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def("copy", &TypeParticles::copy_parts_byte, "copy particles from another PyParticleData object",
                  py::arg("aPyAPR"), py::arg("partsToCopy"), py::arg("level")=0)
             .def("copy", &TypeParticles::ret_copy, "return a copy of self")
-            .def("sample_image", &TypeParticles::sample_image, "sample particle values from an image (numpy array)")
+            .def("sample_image", &TypeParticles::template sample_image<uint8_t>, "sample particle values from an image (numpy array)",
+                 py::arg("apr"), py::arg("img").noconvert())
+            .def("sample_image", &TypeParticles::template sample_image<uint16_t>, "sample particle values from an image (numpy array)",
+                 py::arg("apr"), py::arg("img").noconvert())
+            .def("sample_image", &TypeParticles::template sample_image<uint64_t>, "sample particle values from an image (numpy array)",
+                 py::arg("apr"), py::arg("img").noconvert())
+            .def("sample_image", &TypeParticles::template sample_image<float>, "sample particle values from an image (numpy array)",
+                 py::arg("apr"), py::arg("img").noconvert())
             .def("sample_image_blocked", &TypeParticles::sample_image_blocked,
                  "sample particle values from a file in z-blocks to reduce memory usage")
             .def("fill_with_levels", &TypeParticles::fill_with_levels, "fill particle values with levels",

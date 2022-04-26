@@ -78,9 +78,6 @@ class BasicTests(unittest.TestCase):
             self.__convert_image(self.impath_1D, np.float64)
 
         with self.assertRaises(TypeError):
-            self.__convert_image(self.impath_1D, np.uint8)
-
-        with self.assertRaises(TypeError):
             self.__convert_image(self.impath_1D, int)
 
     def test_io(self):
