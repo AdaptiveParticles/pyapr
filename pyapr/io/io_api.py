@@ -223,7 +223,8 @@ def write_apr(fpath: str,
               t: int = 0,
               channel_name: str = 't',
               write_linear: bool = True,
-              write_tree: bool = True):
+              write_tree: bool = True,
+              append: bool = False):
     """
     Write APR structure to file.
 
@@ -244,6 +245,9 @@ def write_apr(fpath: str,
         If `True`, the APR tree structure (all parent nodes of APR particles) is written to file. Results in slightly
         larger files, (roughly 14.3% additional particles in 3D) but typically saves time when reading a file and
         subsequently using the tree. (default: `True`)
+    append: bool
+        If `True`, writes the data to an existing file, leaving other fields (channels/time points) intact. Otherwise,
+        creates a new file, possibly overwriting if the file name already exists. (default: False)
 
     See also
     --------
@@ -256,7 +260,7 @@ def write_apr(fpath: str,
 
     aprfile = APRFile()
     aprfile.set_write_linear_flag(write_linear)
-    aprfile.open(fpath, 'WRITE')
+    aprfile.open(fpath, 'READWRITE' if append else 'WRITE')
     aprfile.write_apr(apr, t=t, channel_name=channel_name, write_tree=write_tree)
     aprfile.close()
 
