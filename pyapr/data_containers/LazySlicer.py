@@ -5,10 +5,19 @@ from numbers import Integral
 
 class LazySlicer:
     """
-    Helper class allowing (3D) slice indexing. Pixel values in the slice range are reconstructed
+    Helper class allowing (3D) slice indexing. Pixel values in the slice range are reconstructed lazily (from file)
     on the fly and returned as an array.
+
+    Note: requires the tree structure and corresponding particle values to be present in the file. This can
+          for example be achieved as follows:
+          ```
+          apr, parts = pyapr.io.read('file_without_tree.apr')
+          tree_parts = type(parts)()                                # new ParticleData object of same type as parts
+          pyapr.numerics.fill_tree_mean(apr, parts, tree_parts)
+          pyapr.io.write('file_with_tree.apr', apr, parts, write_tree=True, tree_parts=tree_parts)
+          ```
     """
-    def __init__(self, file_path, level_delta=0, mode='constant'):
+    def __init__(self, file_path: str, level_delta: int = 0, mode: str = 'constant'):
 
         self.mode = mode
 
@@ -97,6 +106,7 @@ class LazySlicer:
 
     def __getitem__(self, item):
         if isinstance(item, slice):
+            self.patch.x_begin, self.patch.x_end, self.patch.y_begin, self.patch.y_end = [0, -1, 0, -1]
             self.patch.z_begin = int(item.start) if item.start is not None else -1
             self.patch.z_end = int(item.stop) if item.stop is not None else -1
         elif isinstance(item, tuple):
@@ -113,6 +123,7 @@ class LazySlicer:
                     limits[2*i+1] = int(item[i]+1)
             self.patch.z_begin, self.patch.z_end, self.patch.x_begin, self.patch.x_end, self.patch.y_begin, self.patch.y_end = limits
         else:
+            self.patch.x_begin, self.patch.x_end, self.patch.y_begin, self.patch.y_end = [0, -1, 0, -1]
             self.patch.z_begin = int(item)
             self.patch.z_end = int(item+1)
         self.patch.check_limits(self.apr_access)
