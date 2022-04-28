@@ -1,58 +1,74 @@
-import pyapr
+from _pyaprwrapper.data_containers import APR, ReconPatch, ShortParticles, FloatParticles, LongParticles
+from _pyaprwrapper.numerics.treenumerics import fill_tree_mean, fill_tree_max
+from ..numerics.reconstruction import reconstruct_constant, reconstruct_level, reconstruct_smooth
 import numpy as np
 from numbers import Integral
+from typing import Union
 
 
 class APRSlicer:
     """
     Helper class allowing (3D) slice indexing. Pixel values in the slice range are reconstructed
     on the fly and returned as an array.
+
+    Examples
+    --------
+    >>> import pyapr
+    >>> apr, parts = pyapr.io.read('test.apr')
+    >>> slicer = pyapr.APRSlicer(apr, parts)
+    >>> slicer[15]                     # reconstruct slice at z=15
+    >>> slicer[10:15, 42:45, 57:60]    # reconstruct small 3D patch
     """
-    def __init__(self, apr, parts, mode='constant', level_delta=0, tree_mode='mean'):
+    def __init__(self,
+                 apr: APR,
+                 parts: Union[ShortParticles, LongParticles, FloatParticles],
+                 mode: str = 'constant',
+                 level_delta: int = 0,
+                 tree_mode: str = 'mean'):
         self.apr = apr
         self.parts = parts
         self.mode = mode
         if self.mode == 'level':
             self.dtype = np.uint8
         else:
-            if isinstance(parts, pyapr.FloatParticles):
+            if isinstance(parts, FloatParticles):
                 self.dtype = np.float32
-            elif isinstance(parts, pyapr.LongParticles):
+            elif isinstance(parts, LongParticles):
                 self.dtype = np.uint64
-            elif isinstance(parts, pyapr.ShortParticles):
+            elif isinstance(parts, ShortParticles):
                 self.dtype = np.uint16
             else:
                 raise ValueError('parts type not recognized')
 
-        self.patch = pyapr.ReconPatch()
+        self.patch = ReconPatch()
         self.patch.level_delta = level_delta
         self.patch.z_end = 1
         self.patch.check_limits(self.apr)
         self.dims = []
         self.update_dims()
 
-        if isinstance(parts, pyapr.LongParticles):
-            self.tree_parts = pyapr.LongParticles()
-        elif isinstance(parts, pyapr.ShortParticles):
-            self.tree_parts = pyapr.ShortParticles()
+        if isinstance(parts, LongParticles):
+            self.tree_parts = LongParticles()
+        elif isinstance(parts, ShortParticles):
+            self.tree_parts = ShortParticles()
         else:
-            self.tree_parts = pyapr.FloatParticles()
+            self.tree_parts = FloatParticles()
 
         if tree_mode == 'mean':
-            pyapr.numerics.fill_tree_mean(self.apr, self.parts, self.tree_parts)
+            fill_tree_mean(self.apr, self.parts, self.tree_parts)
         elif tree_mode == 'max':
-            pyapr.numerics.fill_tree_max(self.apr, self.parts, self.tree_parts)
+            fill_tree_max(self.apr, self.parts, self.tree_parts)
         else:
             raise ValueError('Unknown tree mode.')
         self._slice = self.new_empty_slice()
         if self.mode == 'constant':
-            self.recon = pyapr.numerics.reconstruction.reconstruct_constant
+            self.recon = reconstruct_constant
         elif self.mode == 'smooth':
-            self.recon = pyapr.numerics.reconstruction.reconstruct_smooth
+            self.recon = reconstruct_smooth
         elif self.mode == 'level':
-            self.recon = pyapr.numerics.reconstruction.reconstruct_level
+            self.recon = reconstruct_level
         else:
-            raise ValueError('APRArray mode argument must be \'constant\', \'smooth\' or \'level\'')
+            raise ValueError('mode argument must be \'constant\', \'smooth\' or \'level\'')
 
     @property
     def shape(self):
