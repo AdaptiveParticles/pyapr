@@ -1,5 +1,4 @@
-from _pyaprwrapper.viewer.viewerHelp import *
-from _pyaprwrapper.viewer import *
+from _pyaprwrapper.viewer import raycaster
 from .partsViewer import *
 from .compressInteractive import *
 from .raycastViewer import *
