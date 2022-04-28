@@ -263,6 +263,34 @@ void find_perimeter(APR& apr, PyParticleData<T>& parts, PyParticleData<T>& perim
     }
 }
 
+template<typename T>
+void find_edge_particles(APR& apr, PyParticleData<T>& parts, PyParticleData<T>& perimeter) {
+    auto apr_it = apr.random_iterator();
+    auto neigh_it = apr.random_iterator();
+
+    perimeter.init(apr);  //values are initialized to 0
+
+    for(int level = apr.level_max(); level > apr.level_min(); --level) {
+
+#ifdef PYAPR_HAVE_OPENMP
+#pragma omp parallel for schedule(dynamic) firstprivate(apr_it, neigh_it)
+#endif
+        for(int z = 0; z < apr_it.z_num(level); ++z) {
+            for(int x = 0; x < apr_it.x_num(level); ++x) {
+                for(apr_it.begin(level, z, x); apr_it < apr_it.end(); ++apr_it) {
+
+                    uint64_t ct_id = apr_it;
+                    if(parts[ct_id] > 0){
+                        if(find_zero_neighbour(apr_it, neigh_it, parts)) {
+                            perimeter[ct_id] = parts[ct_id];
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 /**
  * Remove objects smaller than a given volume (in pixels). Assumes that each object is labeled with a distinct number,
@@ -1206,6 +1234,13 @@ void AddPyAPRTransform(py::module &m, const std::string &modulename) {
     m2.def("find_perimeter", &find_perimeter<uint64_t>, "find all positive particles with at least one zero neighbour",
            py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
     m2.def("find_perimeter", &find_perimeter<float>, "find all positive particles with at least one zero neighbour",
+           py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
+
+    m2.def("find_edge_particles", &find_edge_particles<uint16_t>, "find all particle on the edge of connected component",
+           py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
+    m2.def("find_edge_particles", &find_edge_particles<uint64_t>, "find all particle on the edge of connected component",
+           py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
+    m2.def("find_edge_particles", &find_edge_particles<float>, "find all particle on the edge of connected component",
            py::arg("apr"), py::arg("parts"), py::arg("perimeter"));
 
     m2.def("remove_small_objects", &remove_small_objects<uint16_t>, py::arg("apr"), py::arg("object_labels"), py::arg("min_volume"));
