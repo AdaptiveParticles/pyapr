@@ -1,10 +1,14 @@
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import pyqtgraph as pg
-import pyapr
+from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
+from _pyaprwrapper.viewer import raycaster as APRRaycaster
+from _pyaprwrapper.viewer.viewerHelp import get_down_sample_parts
+from ..filegui import CustomSlider
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-from pyapr.filegui import CustomSlider
+from typing import Union
+
 
 class MainWindowImage(QtGui.QWidget):
     def __init__(self):
@@ -283,13 +287,14 @@ class MainWindowImage(QtGui.QWidget):
         self.update_slice(self.apr_ref.level_max())
 
 
-def raycast_viewer(apr, parts):
+def raycast_viewer(apr: APR,
+                   parts: Union[ShortParticles, FloatParticles]):
 
     # Raycast viewer currently only works for ShortParticles
-    if isinstance(parts, pyapr.FloatParticles):
+    if isinstance(parts, FloatParticles):
         print('Warning: raycast_viewer is currently only implemented for ShortParticles. '
               'Using a uint16 copy of the input particles.')
-        parts_short = pyapr.ShortParticles()
+        parts_short = ShortParticles()
         parts_short.copy(parts)
     else:
         parts_short = parts
@@ -308,7 +313,7 @@ def raycast_viewer(apr, parts):
     win.apr_ref = apr
     win.app_ref = app
 
-    raycaster = pyapr.viewer.raycaster()
+    raycaster = APRRaycaster()
     raycaster.set_z_anisotropy(1)
     raycaster.set_radius(0.1)
 
@@ -317,8 +322,8 @@ def raycast_viewer(apr, parts):
     win.raycaster_ref.set_angle(win.current_theta)
     win.raycaster_ref.set_phi(win.current_phi)
 
-    tree_parts = pyapr.FloatParticles()
-    pyapr.viewer.get_down_sample_parts(apr, parts, tree_parts)
+    tree_parts = FloatParticles()
+    get_down_sample_parts(apr, parts, tree_parts)
 
     win.set_image(apr, parts_short, tree_parts)
     app.exec_()
