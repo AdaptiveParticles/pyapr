@@ -289,6 +289,17 @@ class MainWindowImage(QtGui.QWidget):
 
 def raycast_viewer(apr: APR,
                    parts: Union[ShortParticles, FloatParticles]):
+    """
+    Spawn an interactive 3D APR viewer (maximum intensity projection).
+    Scroll to zoom, click and drag to change the view.
+
+    Parameters
+    ----------
+    apr: APR
+        Input APR data structure.
+    parts: ShortParticles or FloatParticles
+        Input particle intensity values.
+    """
 
     # Raycast viewer currently only works for ShortParticles
     if isinstance(parts, FloatParticles):
