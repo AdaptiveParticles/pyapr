@@ -102,6 +102,6 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
 
     // wrap visualization functions
     py::module viewer = m.def_submodule("viewer");
-    AddViewerHelpers(viewer,"viewerHelp");
-    AddPyAPRRaycaster(viewer,"raycaster");
+    AddViewerHelpers(viewer, "viewerHelp");
+    AddPyAPRRaycaster(viewer, "APRRaycaster");
 }
