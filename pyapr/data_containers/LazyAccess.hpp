@@ -17,6 +17,10 @@ void AddLazyAccess(pybind11::module &m, const std::string &modulename) {
 
     py::class_<LazyAccess>(m, modulename.c_str())
             .def(py::init())
+            .def("__repr__", [](LazyAccess &acc) {
+                return "LazyAccess(shape [" + std::to_string(acc.aprInfo.org_dims[2]) + ", " +
+                        std::to_string(acc.aprInfo.org_dims[1]) + ", " + std::to_string(acc.aprInfo.org_dims[0]) +
+                        "], " + std::to_string(acc.aprInfo.total_number_particles) + " particles)"; })
             .def("init", &LazyAccess::init, "initialize LazyAccess from an open APRFile", "aprFile"_a)
             .def("init_tree", &LazyAccess::init_tree, "initialize LazyAccess for tree data from an open APRFile", "aprFile"_a)
             .def("open", &LazyAccess::open, "open file for reading")

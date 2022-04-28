@@ -16,10 +16,10 @@ void AddReconPatch(pybind11::module &m) {
     py::class_<ReconPatch>(m, "ReconPatch")
             .def(py::init())
             .def("__repr__", [](ReconPatch& p) {
-                return "ReconPatch: z: [" + std::to_string(p.z_begin) + ", " + std::to_string(p.z_end) + ")" +
+                return "ReconPatch(z: [" + std::to_string(p.z_begin) + ", " + std::to_string(p.z_end) + ")" +
                         ", x: [" + std::to_string(p.x_begin) + ", " + std::to_string(p.x_end) + ")" +
                         ", y: [" + std::to_string(p.y_begin) + ", " + std::to_string(p.y_end) + ")" +
-                        ", level_delta = " + std::to_string(p.level_delta);
+                        ", level_delta = " + std::to_string(p.level_delta) + ")";
             })
             .def_readwrite("z_begin", &ReconPatch::z_begin)
             .def_readwrite("z_end", &ReconPatch::z_end)

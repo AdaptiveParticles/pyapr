@@ -505,6 +505,7 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def(py::init([](PyParticleData<uint8_t>& other){ return TypeParticles(other); }))
             .def(py::init([](PyParticleData<uint16_t>& other){ return TypeParticles(other); }))
             .def(py::init([](PyParticleData<uint64_t>& other){ return TypeParticles(other); }))
+            .def("__repr__", [typeStr](const TypeParticles &p) { return typeStr + "(size " + std::to_string(p.size()) + ")"; })
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
             .def("__contains__", [](const TypeParticles &p, DataType v) { return p.contains(v); })
             .def("resize", &TypeParticles::resize, "resize the data array to a specified number of elements")

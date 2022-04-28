@@ -20,8 +20,8 @@ void AddPyAPR(pybind11::module &m, const std::string &modulename) {
     py::class_<APR>(m, modulename.c_str())
             .def(py::init())
             .def("__repr__", [](APR& a) {
-                return "APR (shape [" + std::to_string(a.org_dims(2)) + ", " + std::to_string(a.org_dims(1)) + \
-                        ", " + std::to_string(a.org_dims(0)) + "], number particles = " + std::to_string(a.total_number_particles()) + ")";})
+                return "APR(shape [" + std::to_string(a.org_dims(2)) + ", " + std::to_string(a.org_dims(1)) +
+                        ", " + std::to_string(a.org_dims(0)) + "], " + std::to_string(a.total_number_particles()) + " particles)";})
             .def_readwrite("name", &APR::name)
             .def("total_number_particles", &APR::total_number_particles, "return number of particles")
             .def("total_number_tree_particles", &APR::total_number_tree_particles, "return number of interior tree particles")

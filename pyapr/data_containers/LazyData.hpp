@@ -20,6 +20,7 @@ void AddLazyData(pybind11::module &m, const std::string &aTypeString) {
 
     py::class_<LazyDataType>(m, typeStr.c_str())
             .def(py::init())
+            .def("__repr__", [typeStr](LazyDataType& p) { return typeStr + "(size " + std::to_string(p.dataset_size()) + ")"; })
             .def("init", &LazyDataType::init, "initialize dataset from an open APRFile",
                  "aprFile"_a, "name"_a, "t"_a=0, "channel_name"_a="t")
             .def("init_tree", &LazyDataType::init_tree, "initialize tree dataset from an open APRFile",
