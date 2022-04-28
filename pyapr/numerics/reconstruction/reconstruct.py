@@ -11,13 +11,18 @@ from _pyaprwrapper.data_containers import APR, ReconPatch, LazyIterator, \
                                           ShortParticles, LongParticles, FloatParticles, \
                                           LazyDataShort, LazyDataLong, LazyDataFloat
 import numpy as np
+from typing import Optional, Union
+
+
+ParticleData = Union[ShortParticles, FloatParticles, LongParticles]
+LazyData = Union[LazyDataShort, LazyDataFloat, LazyDataLong]
 
 
 def reconstruct_constant(apr: APR,
-                         parts: (ShortParticles, LongParticles, FloatParticles),
-                         tree_parts: (None, ShortParticles, LongParticles, FloatParticles) = None,
-                         patch: (None, ReconPatch) = None,
-                         out_arr: (None, np.ndarray) = None):
+                         parts: ParticleData,
+                         tree_parts: Optional[ParticleData] = None,
+                         patch: Optional[ReconPatch] = None,
+                         out_arr: Optional[np.ndarray] = None) -> np.ndarray:
     """
     Reconstruct pixel values by piecewise constant interpolation
 
@@ -25,21 +30,21 @@ def reconstruct_constant(apr: APR,
     ----------
     apr : APR
         input APR data structure
-    parts : FloatParticles or ShortParticles
+    parts : ParticleData
         input particle intensities
-    tree_parts: None, FloatParticles or ShortParticles
+    tree_parts: ParticleData, optional
         (optional) interior tree particle values used to construct at a lower resolution (if patch.level_delta < 0).
         If None, they are computed by average downsampling as necessary. (default: None)
-    patch: ReconPatch
+    patch: ReconPatch, optional
         (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
         at original pixel resolution. (default: None)
-    out_arr: None, np.ndarray
+    out_arr: numpy.ndarray, optional
         (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or patch limits),
         memory for the output is reallocated. (default: None)
     Returns
     -------
     out_arr : numpy.ndarray
-        the reconstructed pixel values
+        The reconstructed pixel values.
     """
 
     if isinstance(parts, FloatParticles):
@@ -73,10 +78,10 @@ def reconstruct_constant(apr: APR,
 
 
 def reconstruct_smooth(apr: APR,
-                       parts: (ShortParticles, LongParticles, FloatParticles),
-                       tree_parts: (None, ShortParticles, LongParticles, FloatParticles) = None,
-                       patch: (None, ReconPatch) = None,
-                       out_arr: (None, np.ndarray) = None):
+                       parts: ParticleData,
+                       tree_parts: Optional[ParticleData] = None,
+                       patch: Optional[ReconPatch] = None,
+                       out_arr: Optional[np.ndarray] = None) -> np.ndarray:
     """
     Reconstruct pixel values by smooth interpolation
 
@@ -84,21 +89,21 @@ def reconstruct_smooth(apr: APR,
     ----------
     apr : APR
         input APR data structure
-    parts : FloatParticles or ShortParticles
+    parts : ParticleData
         input particle intensities
-    tree_parts: None, FloatParticles or ShortParticles
+    tree_parts: ParticleData, optional
         (optional) interior tree particle values used to construct at a lower resolution (if patch.level_delta < 0).
         If None, they are computed by average downsampling as necessary. (default: None)
-    patch: ReconPatch
+    patch: ReconPatch, optional
         (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
         at original pixel resolution. (default: None)
-    out_arr: None, np.ndarray
+    out_arr: numpy.ndarray, optional
         (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or patch limits),
         memory for the output is reallocated. (default: None)
     Returns
     -------
     out_arr : numpy.ndarray
-        the reconstructed pixel values
+        The reconstructed pixel values.
     """
 
     if isinstance(parts, FloatParticles):
@@ -132,8 +137,8 @@ def reconstruct_smooth(apr: APR,
 
 
 def reconstruct_level(apr: APR,
-                      patch: (None, ReconPatch) = None,
-                      out_arr: (None, np.ndarray) = None):
+                      patch: Optional[ReconPatch] = None,
+                      out_arr: Optional[np.ndarray] = None) -> np.ndarray:
     """
     Construct pixel values containing the level of the particle at the corresponding location.
 
@@ -141,16 +146,16 @@ def reconstruct_level(apr: APR,
     ----------
     apr : APR
         input APR data structure
-    patch: ReconPatch
+    patch: ReconPatch, optional
         (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
         at original pixel resolution. (default: None)
-    out_arr: None, np.ndarray
+    out_arr: numpy.ndarray, optional
         (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or patch limits),
         memory for the output is reallocated. (default: None)
     Returns
     -------
     out_arr : numpy.ndarray
-        the reconstructed pixel values
+        The reconstructed pixel values.
     """
 
     if patch is not None:
@@ -173,10 +178,34 @@ def reconstruct_level(apr: APR,
 
 def reconstruct_constant_lazy(apr_it: LazyIterator,
                               tree_it: LazyIterator,
-                              parts: (LazyDataShort, LazyDataLong, LazyDataFloat),
-                              tree_parts: (LazyDataShort, LazyDataLong, LazyDataFloat),
+                              parts: LazyData,
+                              tree_parts: LazyData,
                               patch: ReconPatch,
-                              out_arr: (None, np.ndarray) = None):
+                              out_arr: Optional[np.ndarray] = None) -> np.ndarray:
+    """
+    Lazy constant reconstruction of an image region.
+
+    Parameters
+    ----------
+    apr_it: LazyIterator
+        Lazy iterator for APR structure, must be initialized and have the file open.
+    tree_it: LazyIterator
+        Lazy iterator for tree structure, must be initialized and have the file open.
+    parts : LazyData
+        LazyData object for APR particle values, must be initialized and have the file open.
+    tree_parts : LazyData
+        LazyData object for tree particle values, must be initialized and have the file open.
+    patch: ReconPatch
+        Specify the image region and resolution of the reconstruction.
+    out_arr: numpy.ndarray, optional
+        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or
+        patch limits), memory for the output is reallocated. (default: None)
+
+    Returns
+    -------
+    out_arr : numpy.ndarray
+        The reconstructed pixel values.
+    """
 
     if isinstance(parts, LazyDataFloat):
         _dtype = np.float32
@@ -199,7 +228,27 @@ def reconstruct_level_lazy(apr_it: LazyIterator,
                            tree_it: LazyIterator,
                            patch: ReconPatch,
                            out_arr: (None, np.ndarray) = None):
+    """
+    Lazy level reconstruction of an image region. Each pixel in the output takes the value of the
+    resolution level of the particle at the corresponding location.
 
+    Parameters
+    ----------
+    apr_it: LazyIterator
+        Lazy iterator for APR structure, must be initialized and have the file open.
+    tree_it: LazyIterator
+        Lazy iterator for tree structure, must be initialized and have the file open.
+    patch: ReconPatch
+        Specify the image region and resolution of the reconstruction.
+    out_arr: numpy.ndarray, optional
+        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or
+        patch limits), memory for the output is reallocated. (default: None)
+
+    Returns
+    -------
+    out_arr : numpy.ndarray
+        The reconstructed pixel values.
+    """
     _dtype = np.uint8
 
     if out_arr is None or out_arr.size != patch.size():
@@ -216,7 +265,30 @@ def reconstruct_smooth_lazy(apr_it: LazyIterator,
                             tree_parts: (LazyDataShort, LazyDataLong, LazyDataFloat),
                             patch: ReconPatch,
                             out_arr: (None, np.ndarray) = None):
+    """
+    Lazy smooth reconstruction of an image region.
 
+    Parameters
+    ----------
+    apr_it: LazyIterator
+        Lazy iterator for APR structure, must be initialized and have the file open.
+    tree_it: LazyIterator
+        Lazy iterator for tree structure, must be initialized and have the file open.
+    parts : LazyData
+        LazyData object for APR particle values, must be initialized and have the file open.
+    tree_parts : LazyData
+        LazyData object for tree particle values, must be initialized and have the file open.
+    patch: ReconPatch
+        Specify the image region and resolution of the reconstruction.
+    out_arr: numpy.ndarray, optional
+        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or
+        patch limits), memory for the output is reallocated. (default: None)
+
+    Returns
+    -------
+    out_arr : numpy.ndarray
+        The reconstructed pixel values.
+    """
     if isinstance(parts, LazyDataFloat):
         _dtype = np.float32
     elif isinstance(parts, LazyDataLong):
