@@ -1,2 +1,1 @@
-from _pyaprwrapper.data_containers import LinearIterator
-from _pyaprwrapper.data_containers import LazyIterator
+from _pyaprwrapper.data_containers import LinearIterator, LazyIterator
