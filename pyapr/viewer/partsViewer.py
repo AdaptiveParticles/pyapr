@@ -356,6 +356,16 @@ class MainWindow(QtGui.QWidget):
 
 def parts_viewer(apr: APR,
                  parts: Union[ShortParticles, FloatParticles]):
+    """
+    Spawns an interactive 2D APR viewer.
+
+    Parameters
+    ----------
+    apr: APR
+        Input APR data structure.
+    parts: ShortParticles or FloatParticles
+        Input particle intensity values.
+    """
 
     app = QtGui.QApplication.instance()
     if app is None:
