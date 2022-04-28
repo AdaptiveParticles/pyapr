@@ -70,8 +70,11 @@ def remove_small_holes(apr: pyapr.APR,
                        parts: (pyapr.ShortParticles, pyapr.LongParticles),
                        min_volume: int = 200):
 
-    mask = parts < 1
-    cc_inverted = pyapr.ShortParticles()
+    if isinstance(parts, pyapr.LongParticles):
+        mask = pyapr.ShortParticles(parts < 1)
+    else:
+        mask = parts < 1
+    cc_inverted = pyapr.LongParticles()
     pyapr.numerics.segmentation.connected_component(apr, mask, cc_inverted)
     pyapr.numerics.transform.remove_small_objects(apr, cc_inverted, min_volume=min_volume)
     mask = cc_inverted < 1
