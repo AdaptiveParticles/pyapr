@@ -4,13 +4,14 @@ from _pyaprwrapper.numerics.transform import erosion, dilation, remove_small_obj
 from _pyaprwrapper.numerics.segmentation import connected_component
 from _pyaprwrapper.data_containers import APR, ShortParticles, LongParticles, FloatParticles
 import numpy as np
+from typing import Optional, Union, Tuple
 
 
 def opening(apr: APR,
-            parts: (ShortParticles, LongParticles, FloatParticles),
+            parts: Union[ShortParticles, LongParticles, FloatParticles],
             binary: bool = False,
             radius: int = 1,
-            inplace: bool = False):
+            inplace: bool = False) -> Union[ShortParticles, LongParticles, FloatParticles]:
 
     parts_copy = parts if inplace else parts.copy()
 
@@ -22,10 +23,10 @@ def opening(apr: APR,
 
 
 def closing(apr: APR,
-            parts: (ShortParticles, LongParticles, FloatParticles),
+            parts: Union[ShortParticles, LongParticles, FloatParticles],
             binary: bool = False,
             radius: int = 1,
-            inplace: bool = False):
+            inplace: bool = False) -> Union[ShortParticles, LongParticles, FloatParticles]:
 
     parts_copy = parts if inplace else parts.copy()
 
@@ -37,18 +38,18 @@ def closing(apr: APR,
 
 
 def tophat(apr: APR,
-           parts: (ShortParticles, LongParticles, FloatParticles),
+           parts: Union[ShortParticles, LongParticles, FloatParticles],
            binary: bool = False,
-           radius: int = 1):
+           radius: int = 1) -> Union[ShortParticles, LongParticles, FloatParticles]:
 
     tmp = opening(apr, parts, binary=binary, radius=radius, inplace=False)
     return parts - tmp
 
 
 def bottomhat(apr: APR,
-              parts: (ShortParticles, LongParticles, FloatParticles),
+              parts: Union[ShortParticles, LongParticles, FloatParticles],
               binary: bool = False,
-              radius: int = 1):
+              radius: int = 1) -> Union[ShortParticles, LongParticles, FloatParticles]:
 
     # morphological closing
     tmp = closing(apr, parts, binary=binary, radius=radius, inplace=False)
@@ -58,8 +59,8 @@ def bottomhat(apr: APR,
 
 
 def remove_small_holes(apr: APR,
-                       parts: (ShortParticles, LongParticles),
-                       min_volume: int = 200):
+                       parts: Union[ShortParticles, LongParticles],
+                       min_volume: int = 200) -> Union[ShortParticles, LongParticles]:
 
     mask = parts < 1
     cc_inverted = ShortParticles()
@@ -82,7 +83,7 @@ def remove_small_holes(apr: APR,
 
 
 def find_objects(apr: APR,
-                 labels: (ShortParticles, LongParticles)):
+                 labels: Union[ShortParticles, LongParticles]) -> Tuple[np.ndarray, np.ndarray]:
 
     max_label = labels.max()
     max_dim = max([apr.org_dims(x) for x in range(3)])
@@ -97,8 +98,8 @@ def find_objects(apr: APR,
 
 
 def find_label_centers(apr: APR,
-                       labels: (ShortParticles, LongParticles),
-                       weights: (None, ShortParticles, FloatParticles) = None):
+                       labels: Union[ShortParticles, LongParticles],
+                       weights: Optional[Union[ShortParticles, FloatParticles]] = None) -> np.ndarray:
 
     max_label = labels.max()
     coords = np.zeros((max_label+1, 3), dtype=np.float64)
@@ -110,7 +111,7 @@ def find_label_centers(apr: APR,
 
 
 def find_label_volume(apr: APR,
-                      labels: (ShortParticles, LongParticles)):
+                      labels: Union[ShortParticles, LongParticles]) -> np.ndarray:
 
     max_label = labels.max()
     volume = np.zeros((max_label+1), dtype=np.uint64)
