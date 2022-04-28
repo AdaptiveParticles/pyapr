@@ -8,7 +8,16 @@ class LazySlicer:
     Helper class allowing (3D) slice indexing. Pixel values in the slice range are reconstructed
     on the fly and returned as an array.
     """
-    def __init__(self, file_path, level_delta=0, mode='constant'):
+
+    def __init__(self, file_path, level_delta=0, mode='constant', parts_name=None, tree_parts_name=None):
+
+        if parts_name is None:
+            parts_name = pyapr.io.get_particle_names(self.path, tree=False)
+            parts_name = parts_name[0]
+
+        if tree_parts_name is None:
+            tree_parts_name = pyapr.io.get_particle_names(self.path, tree=True)
+            tree_parts_name = tree_parts_name[0]
 
         self.mode = mode
 
@@ -31,19 +40,16 @@ class LazySlicer:
         self.tree_it = pyapr.LazyIterator(self.tree_access)
 
         # initialize lazy particle data
-        parts_name = pyapr.io.get_particle_names(self.path, tree=False)
-        parts_type = pyapr.io.get_particle_type(self.path, parts_name=parts_name[0], tree=False)
+        parts_type = pyapr.io.get_particle_type(self.path, parts_name=parts_name, tree=False)
         self.parts = pyapr.io.initialize_lazy_particles_type(parts_type)
-        self.parts.init(self.aprfile, parts_name[0], 0, 't')
+        self.parts.init(self.aprfile, parts_name, 0, 't')
         self.parts.open()
-
         self.dtype = parts_type
 
         # initialize lazy tree data
-        tree_parts_name = pyapr.io.get_particle_names(self.path, tree=True)
-        tree_parts_type = pyapr.io.get_particle_type(self.path, parts_name=tree_parts_name[0], tree=True)
+        tree_parts_type = pyapr.io.get_particle_type(self.path, parts_name=tree_parts_name, tree=True)
         self.tree_parts = pyapr.io.initialize_lazy_particles_type(tree_parts_type)
-        self.tree_parts.init_tree(self.aprfile, tree_parts_name[0], 0, 't')
+        self.tree_parts.init_tree(self.aprfile, tree_parts_name, 0, 't')
         self.tree_parts.open()
 
         self.patch = pyapr.ReconPatch()
