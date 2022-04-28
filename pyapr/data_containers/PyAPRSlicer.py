@@ -97,6 +97,7 @@ class APRSlicer:
 
     def __getitem__(self, item):
         if isinstance(item, slice):
+            self.patch.x_begin, self.patch.x_end, self.patch.y_begin, self.patch.y_end = [0, -1, 0, -1]
             self.patch.z_begin = int(item.start) if item.start is not None else -1
             self.patch.z_end = int(item.stop) if item.stop is not None else -1
         elif isinstance(item, tuple):
@@ -113,6 +114,7 @@ class APRSlicer:
                     limits[2*i+1] = int(item[i]+1)
             self.patch.z_begin, self.patch.z_end, self.patch.x_begin, self.patch.x_end, self.patch.y_begin, self.patch.y_end = limits
         else:
+            self.patch.x_begin, self.patch.x_end, self.patch.y_begin, self.patch.y_end = [0, -1, 0, -1]
             self.patch.z_begin = int(item)
             self.patch.z_end = int(item+1)
         self.patch.check_limits(self.apr)
