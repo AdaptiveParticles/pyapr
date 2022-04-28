@@ -4,7 +4,6 @@ except ImportError:
     __version__ = "not-installed"
 
 
-from . import data_containers
 from .data_containers import *
 from .filegui import InteractiveIO
 from . import converter
