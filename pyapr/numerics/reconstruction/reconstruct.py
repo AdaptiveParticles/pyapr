@@ -7,9 +7,10 @@ from _pyaprwrapper.numerics.reconstruction import reconstruct_constant_inplace, 
                                                   reconstruct_constant_lazy_inplace, \
                                                   reconstruct_smooth_lazy_inplace, \
                                                   reconstruct_level_lazy_inplace
-from _pyaprwrapper.data_containers import APR, ReconPatch, LazyIterator, \
+from _pyaprwrapper.data_containers import APR, ReconPatch, LazyIterator, LazyAccess, \
                                           ShortParticles, LongParticles, FloatParticles, \
                                           LazyDataShort, LazyDataLong, LazyDataFloat
+from ...io import APRFile, get_particle_type, initialize_lazy_particles_type
 import numpy as np
 from typing import Optional, Union
 
@@ -303,4 +304,107 @@ def reconstruct_smooth_lazy(apr_it: LazyIterator,
                            dtype=_dtype)
 
     reconstruct_smooth_lazy_inplace(apr_it, tree_it, out_arr, parts, tree_parts, patch)
+    return out_arr
+
+
+def reconstruct_lazy(file_path: str,
+                     patch: Optional[ReconPatch] = None,
+                     mode: str = 'constant',
+                     t: int = 0,
+                     channel_name: str = 't',
+                     parts_name: str = 'particles',
+                     tree_parts_name: str = 'particles',
+                     out_arr: Optional[np.ndarray] = None) -> np.ndarray:
+    """
+    Lazy reconstruction of an image (region) directly from a given APR file.
+
+    Parameters
+    ----------
+    file_path: str
+        APR file path, e.g. '/home/data/test.apr'.
+    patch: ReconPatch, optional
+        (optional) Specify the image region and resolution of the reconstruction. If `None`, the entire volume is
+        reconstructed at the original pixel resolution. (default: None)
+    mode: str
+        Reconstruction mode to use. Allowed values are 'constant', 'smooth', or 'level'. (default: 'constant')
+    t: int
+        Time point to open in the file. (default: 0)
+    channel_name: str
+        Channel to open in the file. (default: 't')
+    parts_name: str
+        Name of the particle value field to read. Only used for modes 'constant' and 'smooth'. (default: 'particles')
+    tree_parts_name: str
+        Name of the tree particle value field to read. Only used if `patch.level_delta < 0` for modes 'constant'
+        and 'smooth'. (default: 'particles')
+    out_arr: numpy.ndarray, optional
+        (optional) Pre-allocated array for the result. If the size is not correct (according to APR dimensions or
+        patch limits), memory for the output is reallocated. (default: None)
+
+    Returns
+    -------
+    out_arr: numpy.ndarray
+        The reconstructed pixel values.
+    """
+
+    apr_file = APRFile()
+    apr_file.open(file_path, 'READ')
+
+    # initialize lazy access
+    access = LazyAccess()
+    access.init(apr_file)
+    access.open()
+    apr_it = LazyIterator(access)
+
+    # initialize lazy data
+    if mode != 'level':
+        parts_type = get_particle_type(file_path, t=t, channel_name=channel_name, parts_name=parts_name, tree=False)
+        parts = initialize_lazy_particles_type(parts_type)
+        parts.init(apr_file, parts_name, t, channel_name)
+        parts.open()
+        _dtype = np.float32 if parts_type == 'float' else np.dtype(parts_type)
+        tree_parts = type(parts)()
+    else:
+        _dtype = np.uint8
+
+    # instantiate tree iterator and data (only used if patch.level_delta < 0)
+    tree_access = LazyAccess()
+    tree_it = LazyIterator()
+
+    patch = patch or ReconPatch()
+
+    if patch.level_delta < 0:
+        tree_access.init_tree(apr_file)
+        tree_access.open()
+        tree_it = LazyIterator(tree_access)
+
+        if mode != 'level':
+            tree_parts.init_tree(apr_file, tree_parts_name, t, channel_name)
+            tree_parts.open()
+
+    if not patch.check_limits(access):
+        return None
+
+    if out_arr is None or out_arr.size != patch.size():
+        out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
+                           dtype=_dtype)
+
+    if mode == 'constant':
+        reconstruct_constant_lazy_inplace(apr_it, tree_it, out_arr, parts, tree_parts, patch)
+    elif mode == 'smooth':
+        reconstruct_smooth_lazy_inplace(apr_it, tree_it, out_arr, parts, tree_parts, patch)
+    elif mode == 'level':
+        reconstruct_level_lazy_inplace(apr_it, tree_it, out_arr, patch)
+    else:
+        raise ValueError(f'mode \'{mode}\' not recognized - allowed values are \'constant\', \'smooth\' and \'level\'')
+
+    # close open file(s) and return
+    if patch.level_delta < 0:
+        tree_access.close()
+        if mode != 'level':
+            tree_parts.close()
+    if mode != 'level':
+        parts.close()
+    access.close()
+    apr_file.close()
+
     return out_arr
