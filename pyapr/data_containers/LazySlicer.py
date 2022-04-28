@@ -1,4 +1,6 @@
-import pyapr
+from _pyaprwrapper.data_containers import LazyAccess, LazyIterator, ReconPatch
+from ..io import APRFile, get_particle_type, get_particle_names, initialize_lazy_particles_type
+from ..numerics.reconstruction import reconstruct_constant_lazy, reconstruct_level_lazy, reconstruct_smooth_lazy
 import numpy as np
 from numbers import Integral
 
@@ -8,53 +10,55 @@ class LazySlicer:
     Helper class allowing (3D) slice indexing. Pixel values in the slice range are reconstructed lazily (from file)
     on the fly and returned as an array.
 
-    Note: requires the tree structure and corresponding particle values to be present in the file. This can
-          for example be achieved as follows:
-          ```
-          apr, parts = pyapr.io.read('file_without_tree.apr')
-          tree_parts = type(parts)()                                # new ParticleData object of same type as parts
-          pyapr.numerics.fill_tree_mean(apr, parts, tree_parts)
-          pyapr.io.write('file_with_tree.apr', apr, parts, write_tree=True, tree_parts=tree_parts)
-          ```
+    Note
+    ----
+    Requires the tree structure and corresponding particle values to be present in the file. This can,
+    for example, be achieved as follows:
+
+    >>> import pyapr
+    >>> apr, parts = pyapr.io.read('file_without_tree.apr')
+    >>> tree_parts = type(parts)()                                # new ParticleData object of same type as parts
+    >>> pyapr.numerics.fill_tree_mean(apr, parts, tree_parts)
+    >>> pyapr.io.write('file_with_tree.apr', apr, parts, write_tree=True, tree_parts=tree_parts)
     """
     def __init__(self, file_path: str, level_delta: int = 0, mode: str = 'constant'):
 
         self.mode = mode
 
         self.path = file_path
-        self.aprfile = pyapr.io.APRFile()
+        self.aprfile = APRFile()
         self.aprfile.set_write_linear_flag(True)
         self.aprfile.open(self.path, "READ")
 
         # initialize lazy APR access
-        self.apr_access = pyapr.LazyAccess()
+        self.apr_access = LazyAccess()
         self.apr_access.init(self.aprfile)
         self.apr_access.open()
-        self.apr_it = pyapr.LazyIterator(self.apr_access)
+        self.apr_it = LazyIterator(self.apr_access)
 
         # initialize lazy tree access
-        self.tree_access = pyapr.LazyAccess()
+        self.tree_access = LazyAccess()
         self.tree_access.init_tree(self.aprfile)
         self.tree_access.open()
-        self.tree_it = pyapr.LazyIterator(self.tree_access)
+        self.tree_it = LazyIterator(self.tree_access)
 
         # initialize lazy particle data
-        parts_name = pyapr.io.get_particle_names(self.path, tree=False)
-        parts_type = pyapr.io.get_particle_type(self.path, parts_name=parts_name[0], tree=False)
-        self.parts = pyapr.io.initialize_lazy_particles_type(parts_type)
+        parts_name = get_particle_names(self.path, tree=False)
+        parts_type = get_particle_type(self.path, parts_name=parts_name[0], tree=False)
+        self.parts = initialize_lazy_particles_type(parts_type)
         self.parts.init(self.aprfile, parts_name[0], 0, 't')
         self.parts.open()
 
         self.dtype = parts_type
 
         # initialize lazy tree data
-        tree_parts_name = pyapr.io.get_particle_names(self.path, tree=True)
-        tree_parts_type = pyapr.io.get_particle_type(self.path, parts_name=tree_parts_name[0], tree=True)
-        self.tree_parts = pyapr.io.initialize_lazy_particles_type(tree_parts_type)
+        tree_parts_name = get_particle_names(self.path, tree=True)
+        tree_parts_type = get_particle_type(self.path, parts_name=tree_parts_name[0], tree=True)
+        self.tree_parts = initialize_lazy_particles_type(tree_parts_type)
         self.tree_parts.init_tree(self.aprfile, tree_parts_name[0], 0, 't')
         self.tree_parts.open()
 
-        self.patch = pyapr.ReconPatch()
+        self.patch = ReconPatch()
         self.patch.level_delta = level_delta
         self.patch.z_end = 1
         self.patch.check_limits(self.apr_access)
@@ -64,11 +68,11 @@ class LazySlicer:
         self._slice = self.new_empty_slice()
 
         if self.mode == 'constant':
-            self.recon = pyapr.numerics.reconstruction.reconstruct_constant_lazy
+            self.recon = reconstruct_constant_lazy
         elif self.mode == 'smooth':
-            self.recon = pyapr.numerics.reconstruction.reconstruct_smooth_lazy
+            self.recon = reconstruct_smooth_lazy
         elif self.mode == 'level':
-            self.recon = pyapr.numerics.reconstruction.reconstruct_level_lazy
+            self.recon = reconstruct_level_lazy
         else:
             raise ValueError('APRArray mode argument must be \'constant\', \'smooth\' or \'level\'')
 
