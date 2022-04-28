@@ -1,6 +1,6 @@
 from _pyaprwrapper.io import APRFile
-from ..data_containers import APR, ByteParticles, ShortParticles, LongParticles, FloatParticles, \
-                              LazyDataByte, LazyDataShort, LazyDataLong, LazyDataFloat
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, LongParticles, FloatParticles, \
+                                          LazyDataByte, LazyDataShort, LazyDataLong, LazyDataFloat
 from typing import Optional, Union, Tuple, List
 from warnings import warn
 
