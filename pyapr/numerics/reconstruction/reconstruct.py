@@ -227,7 +227,7 @@ def reconstruct_constant_lazy(apr_it: LazyIterator,
 def reconstruct_level_lazy(apr_it: LazyIterator,
                            tree_it: LazyIterator,
                            patch: ReconPatch,
-                           out_arr: (None, np.ndarray) = None):
+                           out_arr: (None, np.ndarray) = None) -> np.ndarray:
     """
     Lazy level reconstruction of an image region. Each pixel in the output takes the value of the
     resolution level of the particle at the corresponding location.
@@ -264,7 +264,7 @@ def reconstruct_smooth_lazy(apr_it: LazyIterator,
                             parts: (LazyDataShort, LazyDataLong, LazyDataFloat),
                             tree_parts: (LazyDataShort, LazyDataLong, LazyDataFloat),
                             patch: ReconPatch,
-                            out_arr: (None, np.ndarray) = None):
+                            out_arr: (None, np.ndarray) = None) -> np.ndarray:
     """
     Lazy smooth reconstruction of an image region.
 
