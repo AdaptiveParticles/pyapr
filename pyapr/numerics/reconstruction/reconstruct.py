@@ -7,29 +7,30 @@ from _pyaprwrapper.numerics.reconstruction import reconstruct_constant_inplace, 
                                                   reconstruct_constant_lazy_inplace, \
                                                   reconstruct_smooth_lazy_inplace, \
                                                   reconstruct_level_lazy_inplace
-
+from _pyaprwrapper.data_containers import APR, ReconPatch, LazyIterator, \
+                                          ShortParticles, LongParticles, FloatParticles, \
+                                          LazyDataShort, LazyDataLong, LazyDataFloat
 import numpy as np
-import pyapr
 
 
-def reconstruct_constant(apr: pyapr.APR,
-                         parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
-                         tree_parts: (None, pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles) = None,
-                         patch: (None, pyapr.ReconPatch) = None,
+def reconstruct_constant(apr: APR,
+                         parts: (ShortParticles, LongParticles, FloatParticles),
+                         tree_parts: (None, ShortParticles, LongParticles, FloatParticles) = None,
+                         patch: (None, ReconPatch) = None,
                          out_arr: (None, np.ndarray) = None):
     """
     Reconstruct pixel values by piecewise constant interpolation
 
     Parameters
     ----------
-    apr : pyapr.APR
+    apr : APR
         input APR data structure
-    parts : pyapr.FloatParticles or pyapr.ShortParticles
+    parts : FloatParticles or ShortParticles
         input particle intensities
-    tree_parts: None, pyapr.FloatParticles or pyapr.ShortParticles
+    tree_parts: None, FloatParticles or ShortParticles
         (optional) interior tree particle values used to construct at a lower resolution (if patch.level_delta < 0).
         If None, they are computed by average downsampling as necessary. (default: None)
-    patch: pyapr.ReconPatch
+    patch: ReconPatch
         (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
         at original pixel resolution. (default: None)
     out_arr: None, np.ndarray
@@ -41,11 +42,11 @@ def reconstruct_constant(apr: pyapr.APR,
         the reconstructed pixel values
     """
 
-    if isinstance(parts, pyapr.FloatParticles):
+    if isinstance(parts, FloatParticles):
         _dtype = np.float32
-    elif isinstance(parts, pyapr.LongParticles):
+    elif isinstance(parts, LongParticles):
         _dtype = np.uint64
-    elif isinstance(parts, pyapr.ShortParticles):
+    elif isinstance(parts, ShortParticles):
         _dtype = np.uint16
     else:
         raise ValueError('parts type not recognized')
@@ -59,7 +60,7 @@ def reconstruct_constant(apr: pyapr.APR,
                                dtype=_dtype)
 
         if tree_parts is None:
-            tree_parts = pyapr.FloatParticles()
+            tree_parts = FloatParticles()
 
         reconstruct_constant_patch_inplace(apr, parts, tree_parts, patch, out_arr)
     else:
@@ -71,24 +72,24 @@ def reconstruct_constant(apr: pyapr.APR,
     return out_arr
 
 
-def reconstruct_smooth(apr: pyapr.APR,
-                       parts: (pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles),
-                       tree_parts: (None, pyapr.ShortParticles, pyapr.LongParticles, pyapr.FloatParticles) = None,
-                       patch: (None, pyapr.ReconPatch) = None,
+def reconstruct_smooth(apr: APR,
+                       parts: (ShortParticles, LongParticles, FloatParticles),
+                       tree_parts: (None, ShortParticles, LongParticles, FloatParticles) = None,
+                       patch: (None, ReconPatch) = None,
                        out_arr: (None, np.ndarray) = None):
     """
     Reconstruct pixel values by smooth interpolation
 
     Parameters
     ----------
-    apr : pyapr.APR
+    apr : APR
         input APR data structure
-    parts : pyapr.FloatParticles or pyapr.ShortParticles
+    parts : FloatParticles or ShortParticles
         input particle intensities
-    tree_parts: None, pyapr.FloatParticles or pyapr.ShortParticles
+    tree_parts: None, FloatParticles or ShortParticles
         (optional) interior tree particle values used to construct at a lower resolution (if patch.level_delta < 0).
         If None, they are computed by average downsampling as necessary. (default: None)
-    patch: pyapr.ReconPatch
+    patch: ReconPatch
         (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
         at original pixel resolution. (default: None)
     out_arr: None, np.ndarray
@@ -100,11 +101,11 @@ def reconstruct_smooth(apr: pyapr.APR,
         the reconstructed pixel values
     """
 
-    if isinstance(parts, pyapr.FloatParticles):
+    if isinstance(parts, FloatParticles):
         _dtype = np.float32
-    elif isinstance(parts, pyapr.LongParticles):
+    elif isinstance(parts, LongParticles):
         _dtype = np.uint64
-    elif isinstance(parts, pyapr.ShortParticles):
+    elif isinstance(parts, ShortParticles):
         _dtype = np.uint16
     else:
         raise ValueError('parts type not recognized')
@@ -118,7 +119,7 @@ def reconstruct_smooth(apr: pyapr.APR,
                                dtype=_dtype)
 
         if tree_parts is None:
-            tree_parts = pyapr.FloatParticles()
+            tree_parts = FloatParticles()
 
         reconstruct_smooth_patch_inplace(apr, parts, tree_parts, patch, out_arr)
     else:
@@ -130,17 +131,17 @@ def reconstruct_smooth(apr: pyapr.APR,
     return out_arr
 
 
-def reconstruct_level(apr: pyapr.APR,
-                      patch: (None, pyapr.ReconPatch) = None,
+def reconstruct_level(apr: APR,
+                      patch: (None, ReconPatch) = None,
                       out_arr: (None, np.ndarray) = None):
     """
     Construct pixel values containing the level of the particle at the corresponding location.
 
     Parameters
     ----------
-    apr : pyapr.APR
+    apr : APR
         input APR data structure
-    patch: pyapr.ReconPatch
+    patch: ReconPatch
         (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
         at original pixel resolution. (default: None)
     out_arr: None, np.ndarray
@@ -170,18 +171,18 @@ def reconstruct_level(apr: pyapr.APR,
     return out_arr
 
 
-def reconstruct_constant_lazy(apr_it: pyapr.LazyIterator,
-                              tree_it: pyapr.LazyIterator,
-                              parts: (pyapr.LazyDataShort, pyapr.LazyDataLong, pyapr.LazyDataFloat),
-                              tree_parts: (pyapr.LazyDataShort, pyapr.LazyDataLong, pyapr.LazyDataFloat),
-                              patch: pyapr.ReconPatch,
+def reconstruct_constant_lazy(apr_it: LazyIterator,
+                              tree_it: LazyIterator,
+                              parts: (LazyDataShort, LazyDataLong, LazyDataFloat),
+                              tree_parts: (LazyDataShort, LazyDataLong, LazyDataFloat),
+                              patch: ReconPatch,
                               out_arr: (None, np.ndarray) = None):
 
-    if isinstance(parts, pyapr.LazyDataFloat):
+    if isinstance(parts, LazyDataFloat):
         _dtype = np.float32
-    elif isinstance(parts, pyapr.LazyDataLong):
+    elif isinstance(parts, LazyDataLong):
         _dtype = np.uint64
-    elif isinstance(parts, pyapr.LazyDataShort):
+    elif isinstance(parts, LazyDataShort):
         _dtype = np.uint16
     else:
         raise ValueError('parts type not recognized')
@@ -194,9 +195,9 @@ def reconstruct_constant_lazy(apr_it: pyapr.LazyIterator,
     return out_arr
 
 
-def reconstruct_level_lazy(apr_it: pyapr.LazyIterator,
-                           tree_it: pyapr.LazyIterator,
-                           patch: pyapr.ReconPatch,
+def reconstruct_level_lazy(apr_it: LazyIterator,
+                           tree_it: LazyIterator,
+                           patch: ReconPatch,
                            out_arr: (None, np.ndarray) = None):
 
     _dtype = np.uint8
@@ -209,18 +210,18 @@ def reconstruct_level_lazy(apr_it: pyapr.LazyIterator,
     return out_arr
 
 
-def reconstruct_smooth_lazy(apr_it: pyapr.LazyIterator,
-                            tree_it: pyapr.LazyIterator,
-                            parts: (pyapr.LazyDataShort, pyapr.LazyDataLong, pyapr.LazyDataFloat),
-                            tree_parts: (pyapr.LazyDataShort, pyapr.LazyDataLong, pyapr.LazyDataFloat),
-                            patch: pyapr.ReconPatch,
+def reconstruct_smooth_lazy(apr_it: LazyIterator,
+                            tree_it: LazyIterator,
+                            parts: (LazyDataShort, LazyDataLong, LazyDataFloat),
+                            tree_parts: (LazyDataShort, LazyDataLong, LazyDataFloat),
+                            patch: ReconPatch,
                             out_arr: (None, np.ndarray) = None):
 
-    if isinstance(parts, pyapr.LazyDataFloat):
+    if isinstance(parts, LazyDataFloat):
         _dtype = np.float32
-    elif isinstance(parts, pyapr.LazyDataLong):
+    elif isinstance(parts, LazyDataLong):
         _dtype = np.uint64
-    elif isinstance(parts, pyapr.LazyDataShort):
+    elif isinstance(parts, LazyDataShort):
         _dtype = np.uint16
     else:
         raise ValueError('parts type not recognized')
