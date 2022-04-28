@@ -135,7 +135,21 @@ class CompressWindow(MainWindow):
             self.updateSliceText(new_view)
 
 
-def interactive_compression(apr: APR, parts: ShortParticles):
+def interactive_compression(apr: APR,
+                            parts: ShortParticles):
+    """
+    Spawns a viewer to interactively find compression parameters for particle intensities.
+    Slide the `quantization` and `background` sliders to change the compression behavior.
+
+    Note: the parameters are saved in the input `parts` object, and used in subsequent I/O calls, e.g. `pyapr.io.write`.
+
+    Parameters
+    ----------
+    apr: APR
+        Input APR data structure.
+    parts: ShortParticles
+        Input particle intensity values.
+    """
 
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
