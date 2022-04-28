@@ -1,5 +1,5 @@
 from _pyaprwrapper.numerics.filter import *
-from ...data_containers import APR, ShortParticles, FloatParticles
+from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
 from typing import Tuple, Union
 
 __allowed_sizes_median__ = [(x, x, x) for x in [3, 5, 7, 9, 11]] + [(1, x, x) for x in [3, 5, 7, 9, 11]]
