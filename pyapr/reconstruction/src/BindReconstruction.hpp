@@ -38,11 +38,6 @@ namespace PyAPRReconstruction {
         PixelData<T> recon;
         initialize_pixeldata_from_buffer(recon, buf);
 
-        const size_t size_alloc = std::accumulate(buf.shape.begin(), buf.shape.end(), size_t(1), std::multiplies<size_t>());
-        if(recon.mesh.size() != size_alloc) {
-            throw std::invalid_argument("input array size does not agree with APR dimensions");
-        }
-
         APRReconstruction::reconstruct_constant(apr, recon, parts);
     }
 
@@ -56,10 +51,6 @@ namespace PyAPRReconstruction {
         PixelData<S> recon;
         initialize_pixeldata_from_buffer(recon, buf);
 
-        const size_t size_alloc = std::accumulate(buf.shape.begin(), buf.shape.end(), size_t(1), std::multiplies<size_t>());
-        if(recon.mesh.size() != size_alloc) {
-            throw std::invalid_argument("input array size does not agree with APR dimensions");
-        }
         APRReconstruction::reconstruct_level(apr, recon);
     }
 
@@ -72,11 +63,6 @@ namespace PyAPRReconstruction {
         auto buf = arr.request(true);
         PixelData<T> recon;
         initialize_pixeldata_from_buffer(recon, buf);
-
-        const size_t size_alloc = std::accumulate(buf.shape.begin(), buf.shape.end(), size_t(1), std::multiplies<size_t>());
-        if(recon.mesh.size() != size_alloc) {
-            throw std::invalid_argument("input array size does not agree with APR dimensions");
-        }
 
         APRReconstruction::reconstruct_smooth(apr, recon, parts);
     }
