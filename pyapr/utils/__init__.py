@@ -1,1 +1,1 @@
-from .filegui import InteractiveIO, CustomSlider, MainWindowImage, DoubleSlider
+from .filegui import InteractiveIO
