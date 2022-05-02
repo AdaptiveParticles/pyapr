@@ -26,14 +26,7 @@ int min_occupied_level(APR& apr){
 }
 
 
-/**
- *
- * @param aPyAPR       a PyAPR object
- * @param particles    a PyParticleData object
- * @param              py:array object (should be initialized to correct size  for level already)
- * @z                  slice of image at levels resolution
- * @level              the level of particles to be added.
- */
+
 template<typename T>
 void fill_slice(APR& apr, PyParticleData<T>& particles, py::array_t<T>& input, int z, int level) {
 
@@ -67,14 +60,6 @@ void fill_slice(APR& apr, PyParticleData<T>& particles, py::array_t<T>& input, i
 }
 
 
-/**
- *
- * @param aPyAPR       a PyAPR object
- * @param particles    a PyParticleData object
- * @param              py:array object (should be initialized to correct size  for level already)
- * @z                  slice of image at levels resolution
- * @level              the level of particles to be added.
- */
 template<typename T>
 void fill_slice_level(APR& apr, PyParticleData<T>& particles, py::array_t<T>& input, int z, int level) {
 
@@ -107,14 +92,7 @@ void fill_slice_level(APR& apr, PyParticleData<T>& particles, py::array_t<T>& in
 }
 
 
-/**
- *
- * @param aPyAPR       a PyAPR object
- * @param particles    a PyParticleData object
- * @param              py:array object (should be initialized to correct size  for level already)
- * @z                  slice of image at levels resolution
- * @level              the level of particles to be added.
- */
+
 void compress_and_fill_slice(APR& apr, PyParticleData<uint16_t>& particles, py::array_t<uint16_t>& input, int z, int level) {
 
         uint16_t min_val = std::numeric_limits<uint16_t>::min();
