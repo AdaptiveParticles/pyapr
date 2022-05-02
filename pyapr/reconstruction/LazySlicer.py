@@ -1,9 +1,10 @@
 from _pyaprwrapper.data_containers import LazyAccess, LazyIterator, ReconPatch
 from ..io import APRFile, get_particle_type, get_particle_names
-from ..utils import type_to_lazy_particles
+from ..utils import type_to_lazy_particles, particles_to_type
 from .reconstruct import reconstruct_constant_lazy, reconstruct_level_lazy, reconstruct_smooth_lazy
 import numpy as np
 from numbers import Integral
+from typing import Optional
 
 
 class LazySlicer:
@@ -18,11 +19,20 @@ class LazySlicer:
 
     >>> import pyapr
     >>> apr, parts = pyapr.io.read('file_without_tree.apr')
-    >>> tree_parts = type(parts)()                                # new ParticleData object of same type as parts
-    >>> pyapr.numerics.fill_tree_mean(apr, parts, tree_parts)
+    >>> tree_parts = pyapr.FloatParticles()
+    >>> pyapr.tree.fill_tree_mean(apr, parts, tree_parts)
     >>> pyapr.io.write('file_with_tree.apr', apr, parts, write_tree=True, tree_parts=tree_parts)
+    >>> slicer = pyapr.reconstruction.LazySlicer('file_with_tree.apr')
+    >>> slicer[15]  # lazy reconstruct slice at z=15
     """
-    def __init__(self, file_path: str, level_delta: int = 0, mode: str = 'constant'):
+    def __init__(self,
+                 file_path: str,
+                 level_delta: int = 0,
+                 mode: str = 'constant',
+                 parts_name: Optional[str] = None,
+                 tree_parts_name: Optional[str] = None,
+                 t: int = 0,
+                 channel_name: str = 't'):
 
         self.mode = mode
 
@@ -44,19 +54,19 @@ class LazySlicer:
         self.tree_it = LazyIterator(self.tree_access)
 
         # initialize lazy particle data
-        parts_name = get_particle_names(self.path, tree=False)
-        parts_type = get_particle_type(self.path, parts_name=parts_name[0], tree=False)
+        parts_name = parts_name or get_particle_names(self.path, t=t, channel_name=channel_name, tree=False)[0]
+        parts_type = get_particle_type(self.path, t=t, channel_name=channel_name, parts_name=parts_name, tree=False)
         self.parts = type_to_lazy_particles(parts_type)
-        self.parts.init(self.aprfile, parts_name[0], 0, 't')
+        self.parts.init(self.aprfile, parts_name, t, channel_name)
         self.parts.open()
 
-        self.dtype = parts_type
+        self.dtype = particles_to_type(self.parts)
 
         # initialize lazy tree data
-        tree_parts_name = get_particle_names(self.path, tree=True)
-        tree_parts_type = get_particle_type(self.path, parts_name=tree_parts_name[0], tree=True)
+        tree_parts_name = tree_parts_name or get_particle_names(self.path, t=t, channel_name=channel_name, tree=True)[0]
+        tree_parts_type = get_particle_type(self.path, t=t, channel_name=channel_name, parts_name=tree_parts_name, tree=True)
         self.tree_parts = type_to_lazy_particles(tree_parts_type)
-        self.tree_parts.init_tree(self.aprfile, tree_parts_name[0], 0, 't')
+        self.tree_parts.init_tree(self.aprfile, tree_parts_name, t, channel_name)
         self.tree_parts.open()
 
         self.patch = ReconPatch()
@@ -75,7 +85,7 @@ class LazySlicer:
         elif self.mode == 'level':
             self.recon = reconstruct_level_lazy
         else:
-            raise ValueError('APRArray mode argument must be \'constant\', \'smooth\' or \'level\'')
+            raise ValueError(f'Invalid mode {mode}. Allowed values are \'constant\', \'smooth\' and \'level\'')
 
         self.order = [2, 1, 0]
 
