@@ -1,6 +1,7 @@
 from _pyaprwrapper.io import APRFile
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, LongParticles, FloatParticles, \
                                           LazyDataByte, LazyDataShort, LazyDataLong, LazyDataFloat
+from ..utils import type_to_particles, type_to_lazy_particles
 from typing import Optional, Union, Tuple, List
 from warnings import warn
 
@@ -11,8 +12,7 @@ LazyData = Union[LazyDataByte, LazyDataShort, LazyDataLong, LazyDataFloat]
 
 __all__ = ['read', 'read_apr', 'read_particles', 'read_multichannel',
            'write', 'write_apr', 'write_particles', 'write_multichannel',
-           'get_particle_names', 'get_particle_type',
-           'initialize_particles_type', 'initialize_lazy_particles_type']
+           'get_particle_names', 'get_particle_type']
 
 
 def read(fpath: str,
@@ -57,7 +57,7 @@ def read(fpath: str,
     apr = apr or APR()
     if parts is None:
         dtype = aprfile.get_particle_type(parts_name, apr_or_tree=True, t=t, channel_name=channel_name)
-        parts = initialize_particles_type(dtype)
+        parts = type_to_particles(dtype)
 
     # read APR and particle data from file
     aprfile.read_apr(apr, t=t, channel_name=channel_name)
@@ -213,7 +213,7 @@ def read_particles(fpath: str,
 
     if parts is None:
         dtype = aprfile.get_particle_type(parts_name, apr_or_tree=(not tree), t=t, channel_name=channel_name)
-        parts = initialize_particles_type(dtype)
+        parts = type_to_particles(dtype)
 
     if apr is not None:
         aprfile.read_particles(apr, parts_name, parts, apr_or_tree=(not tree), t=t, channel_name=channel_name)
@@ -370,7 +370,7 @@ def get_particle_type(fpath: str,
 
     See also
     --------
-    pyapr.io.initialize_particles_type, pyapr.io.initialize_lazy_particles_type
+    pyapr.utils.type_to_particles, pyapr.utils.type_to_lazy_particles
     """
 
     aprfile = APRFile()
@@ -378,70 +378,6 @@ def get_particle_type(fpath: str,
     dtype = aprfile.get_particle_type(parts_name, apr_or_tree=(not tree), t=t, channel_name=channel_name)
     aprfile.close()
     return dtype
-
-
-def initialize_particles_type(typestr: str) -> Optional[ParticleData]:
-    """
-    Returns a ParticleData object of the specified type.
-
-    Parameters
-    ----------
-    typestr: str
-        String specifying the data type. Valid types are `uint8`, `uint16`, `uint64` or `float`.
-
-    Returns
-    -------
-    parts: ParticleData or None
-        ParticleData object if a valid type string was provided, otherwise None.
-
-    See also
-    --------
-    pyapr.io.get_particle_type, pyapr.io.read_particles
-    """
-
-    if typestr == 'uint16':
-        return ShortParticles()
-    if typestr == 'float':
-        return FloatParticles()
-    if typestr == 'uint8':
-        return ByteParticles()
-    if typestr == 'uint64':
-        return LongParticles()
-
-    print(f'initialize_particles_type: datatype {typestr} is currently not supported - returning None')
-    return None
-
-
-def initialize_lazy_particles_type(typestr: str) -> Optional[LazyData]:
-    """
-    Returns a LazyData object of the specified type.
-
-    Parameters
-    ----------
-    typestr: str
-        String specifying the data type. Valid types are `uint8`, `uint16`, `uint64` or `float`.
-
-    Returns
-    -------
-    parts: LazyData or None
-        LazyData object if a valid type string was provided, otherwise None.
-
-    See also
-    --------
-    pyapr.io.get_particle_type
-    """
-
-    if typestr == 'uint16':
-        return LazyDataShort()
-    if typestr == 'float':
-        return LazyDataFloat()
-    if typestr == 'uint8':
-        return LazyDataByte()
-    if typestr == 'uint64':
-        return LazyDataLong()
-
-    print(f'initialize_lazy_particles_type: datatype {typestr} is currently not supported - returning None')
-    return None
 
 
 # TODO: update these

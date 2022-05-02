@@ -10,7 +10,8 @@ from _pyaprwrapper.reconstruction import reconstruct_constant_inplace, \
 from _pyaprwrapper.data_containers import APR, ReconPatch, LazyIterator, LazyAccess, \
                                           ShortParticles, LongParticles, FloatParticles, \
                                           LazyDataShort, LazyDataLong, LazyDataFloat
-from ..io import APRFile, get_particle_type, initialize_lazy_particles_type
+from ..io import APRFile, get_particle_type
+from ..utils import type_to_lazy_particles
 import numpy as np
 from typing import Optional, Union
 
@@ -367,7 +368,7 @@ def reconstruct_lazy(file_path: str,
     # initialize lazy data
     if mode != 'level':
         parts_type = get_particle_type(file_path, t=t, channel_name=channel_name, parts_name=parts_name, tree=False)
-        parts = initialize_lazy_particles_type(parts_type)
+        parts = type_to_lazy_particles(parts_type)
         parts.init(apr_file, parts_name, t, channel_name)
         parts.open()
         _dtype = np.float32 if parts_type == 'float' else np.dtype(parts_type)
