@@ -30,21 +30,6 @@ int min_occupied_level(APR& apr){
  *
  * @param aPyAPR       a PyAPR object
  * @param particles    a PyParticleData object
- * @param particles_tree    a PyParticleData object
- * @type       std::string Type of downsampling
- */
-template<typename T, typename S>
-void get_down_sample_parts(APR& apr, PyParticleData<T>& particles, PyParticleData<S>& tree_particles){
-
-   APRTreeNumerics::fill_tree_max(apr, particles, tree_particles);
-
-}
-
-
-/**
- *
- * @param aPyAPR       a PyAPR object
- * @param particles    a PyParticleData object
  * @param              py:array object (should be initialized to correct size  for level already)
  * @z                  slice of image at levels resolution
  * @level              the level of particles to be added.
@@ -210,10 +195,6 @@ PixelData<float> get_points(APR& apr, PyParticleData<T>& particles, int z) {
 
 void AddViewerHelpers(py::module &m) {
 
-    m.def("get_down_sample_parts", &get_down_sample_parts<uint16_t, uint16_t>, "creates down-sampled tree particles");
-    m.def("get_down_sample_parts", &get_down_sample_parts<uint16_t, float>, "creates down-sampled tree particles");
-    m.def("get_down_sample_parts", &get_down_sample_parts<float, uint16_t>, "creates down-sampled tree particles");
-    m.def("get_down_sample_parts", &get_down_sample_parts<float, float>, "creates down-sampled tree particles");
     m.def("fill_slice", &fill_slice<uint16_t>, "fills an array with particles at that level and slice z");
     m.def("fill_slice", &fill_slice<float>, "fills an array with particles at that level and slice z");
     m.def("fill_slice_level", &fill_slice_level<uint16_t>, "fills an array particle level at that location");
