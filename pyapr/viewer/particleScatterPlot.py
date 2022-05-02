@@ -1,5 +1,5 @@
 from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
-from _pyaprwrapper.viewer.viewerHelp import get_points
+from _pyaprwrapper.viewer import get_points
 import numpy as np
 import matplotlib.pyplot as plt
 import io

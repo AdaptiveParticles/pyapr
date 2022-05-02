@@ -5,10 +5,17 @@ except ImportError:
 
 
 from .data_containers import *
-from .filegui import InteractiveIO
+from .utils import InteractiveIO
 from . import converter
+from . import filter
 from . import io
-from . import numerics
+from . import measure
+from . import morphology
+from . import reconstruction
+from . import restoration
+from . import segmentation
+from . import transform
+from . import tree
 from . import viewer
 
 

@@ -1,6 +1,6 @@
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
-from _pyaprwrapper.viewer.viewerHelp import fill_slice, fill_slice_level, min_occupied_level
+from _pyaprwrapper.viewer import fill_slice, fill_slice_level, min_occupied_level
 import numpy as np
 import pyqtgraph as pg
 import matplotlib.pyplot as plt

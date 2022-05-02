@@ -1,9 +1,8 @@
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import pyqtgraph as pg
 from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
-from _pyaprwrapper.viewer import APRRaycaster
-from _pyaprwrapper.viewer.viewerHelp import get_down_sample_parts
-from ..filegui import CustomSlider
+from _pyaprwrapper.viewer import APRRaycaster, get_down_sample_parts
+from ..utils.filegui import CustomSlider
 import math
 import matplotlib.pyplot as plt
 import numpy as np

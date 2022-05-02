@@ -51,7 +51,7 @@ class BasicTests(unittest.TestCase):
         grad = constant_upsample(grad, _shape)
 
         # check constant reconstruction error
-        recon = pyapr.numerics.reconstruction.reconstruct_constant(apr, parts).astype(np.float32)
+        recon = pyapr.reconstruction.reconstruct_constant(apr, parts).astype(np.float32)
         img = img.astype(np.float32)
         err = np.divide(np.abs(img - recon), lis)
 

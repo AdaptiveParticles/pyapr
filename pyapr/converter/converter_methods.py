@@ -1,5 +1,5 @@
-from ..data_containers import APR, APRParameters, ByteParticles, ShortParticles, FloatParticles
-from ..filegui import InteractiveIO
+from _pyaprwrapper.data_containers import APR, APRParameters, ByteParticles, ShortParticles, FloatParticles
+from ..utils.filegui import InteractiveIO
 from _pyaprwrapper.converter import FloatConverter, ShortConverter
 import numpy as np
 from typing import Union, Optional

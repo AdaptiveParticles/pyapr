@@ -1,7 +1,7 @@
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import pyqtgraph as pg
 from _pyaprwrapper.data_containers import APR, ShortParticles
-from _pyaprwrapper.viewer.viewerHelp import compress_and_fill_slice
+from _pyaprwrapper.viewer import compress_and_fill_slice
 from .partsViewer import MainWindow
 
 
