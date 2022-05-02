@@ -1,5 +1,6 @@
 from _pyaprwrapper.data_containers import LazyAccess, LazyIterator, ReconPatch
-from ..io import APRFile, get_particle_type, get_particle_names, initialize_lazy_particles_type
+from ..io import APRFile, get_particle_type, get_particle_names
+from ..utils import type_to_lazy_particles
 from .reconstruct import reconstruct_constant_lazy, reconstruct_level_lazy, reconstruct_smooth_lazy
 import numpy as np
 from numbers import Integral
@@ -45,7 +46,7 @@ class LazySlicer:
         # initialize lazy particle data
         parts_name = get_particle_names(self.path, tree=False)
         parts_type = get_particle_type(self.path, parts_name=parts_name[0], tree=False)
-        self.parts = initialize_lazy_particles_type(parts_type)
+        self.parts = type_to_lazy_particles(parts_type)
         self.parts.init(self.aprfile, parts_name[0], 0, 't')
         self.parts.open()
 
@@ -54,7 +55,7 @@ class LazySlicer:
         # initialize lazy tree data
         tree_parts_name = get_particle_names(self.path, tree=True)
         tree_parts_type = get_particle_type(self.path, parts_name=tree_parts_name[0], tree=True)
-        self.tree_parts = initialize_lazy_particles_type(tree_parts_type)
+        self.tree_parts = type_to_lazy_particles(tree_parts_type)
         self.tree_parts.init_tree(self.aprfile, tree_parts_name[0], 0, 't')
         self.tree_parts.open()
 
