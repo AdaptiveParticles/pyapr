@@ -12,7 +12,7 @@ neighbour edge costs are set based on intensity difference, resolution level and
 Note: experimental!
 """
 
-io_int = pyapr.filegui.InteractiveIO()
+io_int = pyapr.utils.InteractiveIO()
 fpath_apr = io_int.get_apr_file_name()  # get APR file path from gui
 
 # Read from APR file
@@ -44,17 +44,17 @@ num_levels = 2                      # terminal costs are only set for the num_le
 max_factor = 3.0                    # particles brighter than "local_min + max_factor * local_std" are considered foreground
 
 # Compute graphcut segmentation
-pyapr.numerics.segmentation.graphcut(apr, parts, mask, alpha=alpha, beta=beta, avg_num_neighbours=avg_num_neighbours,
-                                     num_tree_smooth=num_tree_smooth, num_part_smooth=num_part_smooth, push_depth=push_depth,
-                                     intensity_threshold=intensity_threshold, min_var=min_var, std_window_size=std_window_size,
-                                     max_factor=max_factor, num_levels=num_levels)
+pyapr.segmentation.graphcut(apr, parts, mask, alpha=alpha, beta=beta, avg_num_neighbours=avg_num_neighbours,
+                            num_tree_smooth=num_tree_smooth, num_part_smooth=num_part_smooth, push_depth=push_depth,
+                            intensity_threshold=intensity_threshold, min_var=min_var, std_window_size=std_window_size,
+                            max_factor=max_factor, num_levels=num_levels)
 
 # If you run out of memory, try using this version
-# pyapr.numerics.segmentation.graphcut_tiled(apr, parts, mask, alpha=alpha, beta=beta, avg_num_neighbours=avg_num_neighbours,
-#                                            z_block_size=z_block_size, z_ghost_size=z_ghost_size, num_tree_smooth=num_tree_smooth,
-#                                            num_part_smooth=num_part_smooth, push_depth=push_depth, intensity_threshold=intensity_threshold,
-#                                            min_var=min_var, std_window_size=std_window_size,
-#                                            max_factor=max_factor, num_levels=num_levels)
+# pyapr.segmentation.graphcut_tiled(apr, parts, mask, alpha=alpha, beta=beta, avg_num_neighbours=avg_num_neighbours,
+#                                   z_block_size=z_block_size, z_ghost_size=z_ghost_size, num_tree_smooth=num_tree_smooth,
+#                                   num_part_smooth=num_part_smooth, push_depth=push_depth, intensity_threshold=intensity_threshold,
+#                                   min_var=min_var, std_window_size=std_window_size,
+#                                   max_factor=max_factor, num_levels=num_levels)
 
 # Display the result
 pyapr.viewer.parts_viewer(apr, mask)

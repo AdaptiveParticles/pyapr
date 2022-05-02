@@ -7,7 +7,7 @@ from skimage import io as skio
 This demo converts a selected TIFF image to an APR, writes the result to file and then reads the file.
 """
 
-io_int = pyapr.filegui.InteractiveIO()
+io_int = pyapr.utils.InteractiveIO()
 
 # Read in an image
 fpath = io_int.get_tiff_file_name()

@@ -8,7 +8,7 @@ This demo shows how to convert an image to APR using a fixed set of parameters.
 """
 
 # Read in an image
-io_int = pyapr.filegui.InteractiveIO()
+io_int = pyapr.utils.InteractiveIO()
 fpath = io_int.get_tiff_file_name()  # get image file path from gui (data type must be float32 or uint16)
 img = skio.imread(fpath)
 

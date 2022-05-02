@@ -20,7 +20,7 @@ low while setting Ip_th and sigma_th, and then increasing grad_th.
 """
 
 # Read in an image
-io_int = pyapr.filegui.InteractiveIO()
+io_int = pyapr.utils.InteractiveIO()
 fpath = io_int.get_tiff_file_name()  # get image file path from gui (data type must be float32 or uint16)
 img = skio.imread(fpath)
 

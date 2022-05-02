@@ -7,7 +7,7 @@ This demo applies lossy compression to the particle intensities, with the backgr
 set interactively.
 """
 
-io_int = pyapr.filegui.InteractiveIO()
+io_int = pyapr.utils.InteractiveIO()
 fpath_apr = io_int.get_apr_file_name()  # get APR file path from gui
 
 # Read APR and particles from file

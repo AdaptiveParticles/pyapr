@@ -11,7 +11,7 @@ Note: The current Python reconstruction is very slow and needs to be improved. F
 coding example of the loop structure to access particles and their spatial properties.
 """
 
-io_int = pyapr.filegui.InteractiveIO()
+io_int = pyapr.utils.InteractiveIO()
 fpath_apr = io_int.get_apr_file_name()  # get APR file path from gui
 
 # Read from APR file
@@ -56,7 +56,7 @@ print('python reconstruction took {} seconds'.format(py_time))
 
 # Compare to the c++ reconstruction
 start = time()
-cpp_recon = pyapr.numerics.reconstruction.reconstruct_constant(apr, parts)
+cpp_recon = pyapr.reconstruction.reconstruct_constant(apr, parts)
 cpp_time = time()-start
 print('c++ reconstruction took {} seconds'.format(cpp_time))
 print('c++ was {} times faster'.format(py_time / cpp_time))

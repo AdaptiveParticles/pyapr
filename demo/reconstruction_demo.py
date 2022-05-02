@@ -1,6 +1,6 @@
 import pyapr
 from skimage import io as skio
-from pyapr.numerics.reconstruction import reconstruct_constant, reconstruct_smooth, reconstruct_level
+from pyapr.reconstruction import reconstruct_constant, reconstruct_smooth, reconstruct_level
 
 
 """
@@ -12,7 +12,7 @@ This demo illustrates three different pixel image reconstruction methods:
 """
 
 # get input APR file path from gui
-io_int = pyapr.filegui.InteractiveIO()
+io_int = pyapr.utils.InteractiveIO()
 fpath_apr = io_int.get_apr_file_name()
 
 # Read APR and particles from file

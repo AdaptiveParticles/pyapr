@@ -6,7 +6,7 @@ Read a selected APR from file and display (a rectangular region of) a given z-sl
 """
 
 # Get APR file path from gui
-io_int = pyapr.filegui.InteractiveIO()
+io_int = pyapr.utils.InteractiveIO()
 fpath_apr = io_int.get_apr_file_name()
 
 # Read APR and particles from file
