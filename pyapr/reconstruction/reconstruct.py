@@ -210,7 +210,7 @@ def reconstruct_constant_lazy(apr_it: LazyIterator,
         out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
                            dtype=_dtype)
 
-    reconstruct_constant_lazy_inplace(apr_it, tree_it, out_arr, parts, tree_parts, patch)
+    reconstruct_constant_lazy_inplace(apr_it, tree_it, parts, tree_parts, patch, out_arr)
     return out_arr
 
 
@@ -244,7 +244,7 @@ def reconstruct_level_lazy(apr_it: LazyIterator,
         out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
                            dtype=np.uint8)
 
-    reconstruct_level_lazy_inplace(apr_it, tree_it, out_arr, patch)
+    reconstruct_level_lazy_inplace(apr_it, tree_it, patch, out_arr)
     return out_arr
 
 
@@ -285,7 +285,7 @@ def reconstruct_smooth_lazy(apr_it: LazyIterator,
         out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
                            dtype=_dtype)
 
-    reconstruct_smooth_lazy_inplace(apr_it, tree_it, out_arr, parts, tree_parts, patch)
+    reconstruct_smooth_lazy_inplace(apr_it, tree_it, parts, tree_parts, patch, out_arr)
     return out_arr
 
 
@@ -371,11 +371,11 @@ def reconstruct_lazy(file_path: str,
                            dtype=_dtype)
 
     if mode == 'constant':
-        reconstruct_constant_lazy_inplace(apr_it, tree_it, out_arr, parts, tree_parts, patch)
+        reconstruct_constant_lazy_inplace(apr_it, tree_it, parts, tree_parts, patch, out_arr)
     elif mode == 'smooth':
-        reconstruct_smooth_lazy_inplace(apr_it, tree_it, out_arr, parts, tree_parts, patch)
+        reconstruct_smooth_lazy_inplace(apr_it, tree_it, parts, tree_parts, patch, out_arr)
     elif mode == 'level':
-        reconstruct_level_lazy_inplace(apr_it, tree_it, out_arr, patch)
+        reconstruct_level_lazy_inplace(apr_it, tree_it, patch, out_arr)
     else:
         raise ValueError(f'mode \'{mode}\' not recognized - allowed values are \'constant\', \'smooth\' and \'level\'')
 
