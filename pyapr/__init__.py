@@ -5,7 +5,6 @@ except ImportError:
 
 
 from .data_containers import *
-from .utils import InteractiveIO
 from . import converter
 from . import filter
 from . import io
@@ -17,6 +16,7 @@ from . import segmentation
 from . import transform
 from . import tree
 from . import viewer
+from . import utils
 
 
 try:
