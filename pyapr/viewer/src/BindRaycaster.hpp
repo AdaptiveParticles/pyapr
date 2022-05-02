@@ -55,17 +55,12 @@ public:
     void increment_phi(float angle){
         // this is required due to the fixed domain of phi (from -pi/2 to pi/2) I used a cos instead of sin.
 
-        //float curr_x =
-        //float curr_y =
-        //float curr_x =
-
         float new_angle = apr_raycaster.phi_s + angle;
         if(new_angle > M_PI/2){
             double diff = new_angle - M_PI/2;
             diff = std::min(diff, M_PI);
             apr_raycaster.phi_s = -M_PI/2 + diff;
             apr_raycaster.phi += angle;
-            //current_angle += 3.14;
         } else if (new_angle < -M_PI/2){
 
             double diff = -new_angle - M_PI/2;
@@ -75,14 +70,10 @@ public:
 
             apr_raycaster.phi_s =  M_PI/2 - diff;
             apr_raycaster.phi += angle;
-
-            //current_angle += 3.14;
         } else {
             apr_raycaster.phi_s +=  angle;
             apr_raycaster.phi += angle;
         }
-
-       // apr_raycaster.phi = new_angle;
     }
 
     void set_level_delta(int level_delta){
@@ -112,9 +103,6 @@ public:
 
         PixelData<uint16_t> input_img;
 
-//        std::cout << apr_raycaster.phi << std::endl;
-//        std::cout << current_angle << std::endl;
-
         input_img.init_from_mesh(buf.shape[0], buf.shape[1], 1, ptr); // may lead to memory issues
 
         apr_raycaster.theta_0 = current_angle; //start
@@ -126,8 +114,6 @@ public:
         apr_raycaster.perform_raycast_patch(apr,particles,particles_tree,input_img,rp,[] (const uint16_t& a,const uint16_t& b) {return std::max(a,b);});
 
         py::gil_scoped_release release;
-
-        //apr_raycaster.perform_raycast(aPyAPR.apr,particles.parts,input_img,[] (const uint16_t& a,const uint16_t& b) {return std::max(a,b);});
     }
 
 
