@@ -16,7 +16,7 @@ class APRSlicer:
     --------
     >>> import pyapr
     >>> apr, parts = pyapr.io.read('test.apr')
-    >>> slicer = pyapr.APRSlicer(apr, parts)
+    >>> slicer = pyapr.reconstruction.APRSlicer(apr, parts)
     >>> slicer[15]                     # reconstruct slice at z=15
     >>> slicer[10:15, 42:45, 57:60]    # reconstruct small 3D patch
     """
