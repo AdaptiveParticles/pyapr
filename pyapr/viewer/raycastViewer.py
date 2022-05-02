@@ -1,7 +1,8 @@
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import pyqtgraph as pg
 from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
-from _pyaprwrapper.viewer import APRRaycaster, get_down_sample_parts
+from _pyaprwrapper.viewer import APRRaycaster
+from _pyaprwrapper.tree import fill_tree_max
 from ..utils.filegui import CustomSlider
 import math
 import matplotlib.pyplot as plt
@@ -333,7 +334,7 @@ def raycast_viewer(apr: APR,
     win.raycaster_ref.set_phi(win.current_phi)
 
     tree_parts = FloatParticles()
-    get_down_sample_parts(apr, parts, tree_parts)
+    fill_tree_max(apr, parts, tree_parts)
 
     win.set_image(apr, parts_short, tree_parts)
     app.exec_()
