@@ -1,5 +1,6 @@
 from _pyaprwrapper.data_containers import APR, ReconPatch, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.tree import fill_tree_mean, fill_tree_max
+from ..utils import particles_to_type
 from . import reconstruct_constant, reconstruct_level, reconstruct_smooth
 import numpy as np
 from numbers import Integral
@@ -28,17 +29,7 @@ class APRSlicer:
         self.apr = apr
         self.parts = parts
         self.mode = mode
-        if self.mode == 'level':
-            self.dtype = np.uint8
-        else:
-            if isinstance(parts, FloatParticles):
-                self.dtype = np.float32
-            elif isinstance(parts, LongParticles):
-                self.dtype = np.uint64
-            elif isinstance(parts, ShortParticles):
-                self.dtype = np.uint16
-            else:
-                raise ValueError('parts type not recognized')
+        self.dtype = np.uint8 if self.mode == 'level' else particles_to_type(parts)
 
         self.patch = ReconPatch()
         self.patch.level_delta = level_delta
@@ -47,19 +38,15 @@ class APRSlicer:
         self.dims = []
         self.update_dims()
 
-        if isinstance(parts, LongParticles):
-            self.tree_parts = LongParticles()
-        elif isinstance(parts, ShortParticles):
-            self.tree_parts = ShortParticles()
-        else:
-            self.tree_parts = FloatParticles()
+        self.tree_parts = FloatParticles()
 
         if tree_mode == 'mean':
             fill_tree_mean(self.apr, self.parts, self.tree_parts)
         elif tree_mode == 'max':
             fill_tree_max(self.apr, self.parts, self.tree_parts)
         else:
-            raise ValueError('Unknown tree mode.')
+            raise ValueError(f'Invalid tree mode {tree_mode}. Allowed values are \'mean\' and \'max\'')
+
         self._slice = self.new_empty_slice()
         if self.mode == 'constant':
             self.recon = reconstruct_constant
@@ -68,7 +55,7 @@ class APRSlicer:
         elif self.mode == 'level':
             self.recon = reconstruct_level
         else:
-            raise ValueError('mode argument must be \'constant\', \'smooth\' or \'level\'')
+            raise ValueError(f'Invalid mode {mode}. Allowed values are \'constant\', \'smooth\' and \'level\'')
 
     @property
     def shape(self):
