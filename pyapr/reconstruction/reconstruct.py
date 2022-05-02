@@ -8,16 +8,16 @@ from _pyaprwrapper.reconstruction import reconstruct_constant_inplace, \
                                          reconstruct_smooth_lazy_inplace, \
                                          reconstruct_level_lazy_inplace
 from _pyaprwrapper.data_containers import APR, ReconPatch, LazyIterator, LazyAccess, \
-                                          ShortParticles, LongParticles, FloatParticles, \
-                                          LazyDataShort, LazyDataLong, LazyDataFloat
+                                          ByteParticles, ShortParticles, LongParticles, FloatParticles, \
+                                          LazyDataByte, LazyDataShort, LazyDataLong, LazyDataFloat
 from ..io import APRFile, get_particle_type
-from ..utils import type_to_lazy_particles
+from ..utils import type_to_lazy_particles, particles_to_type
 import numpy as np
 from typing import Optional, Union
 
 
-ParticleData = Union[ShortParticles, FloatParticles, LongParticles]
-LazyData = Union[LazyDataShort, LazyDataFloat, LazyDataLong]
+ParticleData = Union[ByteParticles, ShortParticles, FloatParticles, LongParticles]
+LazyData = Union[LazyDataByte, LazyDataShort, LazyDataFloat, LazyDataLong]
 
 
 __all__ = ['reconstruct_constant',
@@ -58,14 +58,7 @@ def reconstruct_constant(apr: APR,
         The reconstructed pixel values.
     """
 
-    if isinstance(parts, FloatParticles):
-        _dtype = np.float32
-    elif isinstance(parts, LongParticles):
-        _dtype = np.uint64
-    elif isinstance(parts, ShortParticles):
-        _dtype = np.uint16
-    else:
-        raise ValueError('parts type not recognized')
+    _dtype = particles_to_type(parts)
 
     if patch is not None:
         if not patch.check_limits(apr):
@@ -117,14 +110,7 @@ def reconstruct_smooth(apr: APR,
         The reconstructed pixel values.
     """
 
-    if isinstance(parts, FloatParticles):
-        _dtype = np.float32
-    elif isinstance(parts, LongParticles):
-        _dtype = np.uint64
-    elif isinstance(parts, ShortParticles):
-        _dtype = np.uint16
-    else:
-        raise ValueError('parts type not recognized')
+    _dtype = particles_to_type(parts)
 
     if patch is not None:
         if not patch.check_limits(apr):
@@ -218,14 +204,7 @@ def reconstruct_constant_lazy(apr_it: LazyIterator,
         The reconstructed pixel values.
     """
 
-    if isinstance(parts, LazyDataFloat):
-        _dtype = np.float32
-    elif isinstance(parts, LazyDataLong):
-        _dtype = np.uint64
-    elif isinstance(parts, LazyDataShort):
-        _dtype = np.uint16
-    else:
-        raise ValueError('parts type not recognized')
+    _dtype = particles_to_type(parts)
 
     if out_arr is None or out_arr.size != patch.size():
         out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
@@ -260,11 +239,10 @@ def reconstruct_level_lazy(apr_it: LazyIterator,
     out_arr : numpy.ndarray
         The reconstructed pixel values.
     """
-    _dtype = np.uint8
 
     if out_arr is None or out_arr.size != patch.size():
         out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
-                           dtype=_dtype)
+                           dtype=np.uint8)
 
     reconstruct_level_lazy_inplace(apr_it, tree_it, out_arr, patch)
     return out_arr
@@ -272,8 +250,8 @@ def reconstruct_level_lazy(apr_it: LazyIterator,
 
 def reconstruct_smooth_lazy(apr_it: LazyIterator,
                             tree_it: LazyIterator,
-                            parts: (LazyDataShort, LazyDataLong, LazyDataFloat),
-                            tree_parts: (LazyDataShort, LazyDataLong, LazyDataFloat),
+                            parts: LazyData,
+                            tree_parts: LazyData,
                             patch: ReconPatch,
                             out_arr: (None, np.ndarray) = None) -> np.ndarray:
     """
@@ -300,14 +278,8 @@ def reconstruct_smooth_lazy(apr_it: LazyIterator,
     out_arr : numpy.ndarray
         The reconstructed pixel values.
     """
-    if isinstance(parts, LazyDataFloat):
-        _dtype = np.float32
-    elif isinstance(parts, LazyDataLong):
-        _dtype = np.uint64
-    elif isinstance(parts, LazyDataShort):
-        _dtype = np.uint16
-    else:
-        raise ValueError('parts type not recognized')
+
+    _dtype = particles_to_type(parts)
 
     if out_arr is None or out_arr.size != patch.size():
         out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
