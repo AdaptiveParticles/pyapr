@@ -36,7 +36,7 @@ t0 = time()
 output_tv = pyapr.FloatParticles()
 reg_factor = 1e-2
 pyapr.restoration.richardson_lucy_tv(apr, parts, output_tv, psf, niter, reg_factor, use_stencil_downsample=True,
-                                  normalize_stencil=True, resume=False)
+                                     normalize_stencil=True, resume=False)
 print('RLTV took {} seconds'.format(time()-t0))
 
 
@@ -46,7 +46,7 @@ if pyapr.cuda_enabled() and psf.shape in [(3, 3, 3), (5, 5, 5)]:
     t0 = time()
     output_cuda = pyapr.FloatParticles()
     pyapr.restoration.richardson_lucy_cuda(apr, parts, output_cuda, psf, niter, use_stencil_downsample=True,
-                                        normalize_stencil=True, resume=False)
+                                           normalize_stencil=True, resume=False)
     print('RL cuda took {} seconds'.format(time()-t0))
     cuda = True
 
