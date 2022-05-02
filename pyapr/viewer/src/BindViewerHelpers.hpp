@@ -172,15 +172,20 @@ PixelData<float> get_points(APR& apr, PyParticleData<T>& particles, int z) {
 
 
 void AddViewerHelpers(py::module &m) {
-
+    m.def("fill_slice", &fill_slice<uint8_t>, "fills an array with particles at that level and slice z");
     m.def("fill_slice", &fill_slice<uint16_t>, "fills an array with particles at that level and slice z");
+    m.def("fill_slice", &fill_slice<uint64_t>, "fills an array with particles at that level and slice z");
     m.def("fill_slice", &fill_slice<float>, "fills an array with particles at that level and slice z");
+    m.def("fill_slice_level", &fill_slice_level<uint8_t>, "fills an array particle level at that location");
     m.def("fill_slice_level", &fill_slice_level<uint16_t>, "fills an array particle level at that location");
+    m.def("fill_slice_level", &fill_slice_level<uint64_t>, "fills an array particle level at that location");
     m.def("fill_slice_level", &fill_slice_level<float>, "fills an array particle level at that location");
     m.def("min_occupied_level", &min_occupied_level, "Returns the minimum occupied level in the APR", "apr"_a);
     m.def("compress_and_fill_slice", &compress_and_fill_slice, "compresses and fills the slice");
-    m.def("get_points", &get_points<float>, py::return_value_policy::take_ownership, "extract particles in a given slice as an array of coordinates and properties");
+    m.def("get_points", &get_points<uint8_t>, py::return_value_policy::take_ownership, "extract particles in a given slice as an array of coordinates and properties");
     m.def("get_points", &get_points<uint16_t>, py::return_value_policy::take_ownership, "extract particles in a given slice as an array of coordinates and properties");
+    m.def("get_points", &get_points<uint64_t>, py::return_value_policy::take_ownership, "extract particles in a given slice as an array of coordinates and properties");
+    m.def("get_points", &get_points<float>, py::return_value_policy::take_ownership, "extract particles in a given slice as an array of coordinates and properties");
 }
 
 #endif //PYLIBAPR_BINDVIEWERHELPERS_HPP
