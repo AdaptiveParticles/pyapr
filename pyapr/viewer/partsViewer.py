@@ -1,6 +1,7 @@
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
-from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.viewer import fill_slice, fill_slice_level, min_occupied_level
+from ..utils import particles_to_type
 import numpy as np
 import pyqtgraph as pg
 import matplotlib.pyplot as plt
@@ -176,12 +177,7 @@ class MainWindow(QtGui.QWidget):
         self.aAPR_ref = aAPR
         self.parts_ref = parts
 
-        if isinstance(parts, FloatParticles):
-            self.dtype = np.float32
-        elif isinstance(parts, ShortParticles):
-            self.dtype = np.uint16
-        else:
-            raise Exception("APR viewer is currently only implemented for particles of type Float or Short")
+        self.dtype = particles_to_type(parts)
 
         self.z_num = aAPR.z_num(aAPR.level_max())
         self.x_num = aAPR.x_num(aAPR.level_max())
@@ -355,7 +351,7 @@ class MainWindow(QtGui.QWidget):
 
 
 def parts_viewer(apr: APR,
-                 parts: Union[ShortParticles, FloatParticles]):
+                 parts: Union[ByteParticles, ShortParticles, FloatParticles, LongParticles]):
     """
     Spawns an interactive 2D APR viewer.
 
@@ -363,7 +359,7 @@ def parts_viewer(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ShortParticles or FloatParticles
+    parts: ParticleData
         Input particle intensity values.
     """
 
