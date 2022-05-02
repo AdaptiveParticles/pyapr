@@ -87,9 +87,9 @@ namespace PyAPRReconstruction {
     template<typename S, typename T>
     void
     reconstruct_constant_patch_inplace(APR& apr, PyParticleData<S>& parts, PyParticleData<T>& tree_parts,
-                                       ReconPatch& patch, py::array_t<T, py::array::c_style>& arr) {
+                                       ReconPatch& patch, py::array_t<S, py::array::c_style>& arr) {
         auto buf = arr.request(true);
-        PixelData<T> recon;
+        PixelData<S> recon;
         initialize_pixeldata_from_buffer(recon, buf);
 
         if(recon.mesh.size() != patch.size()) {
@@ -124,10 +124,10 @@ namespace PyAPRReconstruction {
     template<typename S, typename T>
     void
     reconstruct_smooth_patch_inplace(APR& apr, PyParticleData<S>& parts, PyParticleData<T>& tree_parts,
-                                     ReconPatch& patch, py::array_t<T, py::array::c_style>& arr) {
+                                     ReconPatch& patch, py::array_t<S, py::array::c_style>& arr) {
 
         auto buf = arr.request(true);
-        PixelData<T> recon;
+        PixelData<S> recon;
         initialize_pixeldata_from_buffer(recon, buf);
 
         if(recon.mesh.size() != patch.size()) {
@@ -145,10 +145,10 @@ namespace PyAPRReconstruction {
     template<typename S, typename T>
     void reconstruct_constant_lazy_inplace(LazyIterator& apr_it, LazyIterator& tree_it,
                                            LazyData<S>& parts, LazyData<T>& tree_parts,
-                                           ReconPatch& patch, py::array_t<T, py::array::c_style>& arr) {
+                                           ReconPatch& patch, py::array_t<S, py::array::c_style>& arr) {
 
         auto buf = arr.request(true);
-        PixelData<T> recon;
+        PixelData<S> recon;
         initialize_pixeldata_from_buffer(recon, buf);
 
         if(recon.mesh.size() != patch.size()) {
@@ -184,10 +184,10 @@ namespace PyAPRReconstruction {
     template<typename S, typename T>
     void reconstruct_smooth_lazy_inplace(LazyIterator& apr_it, LazyIterator& tree_it,
                                          LazyData<S>& parts, LazyData<T>& tree_parts,
-                                         ReconPatch& patch, py::array_t<T, py::array::c_style>& arr) {
+                                         ReconPatch& patch, py::array_t<S, py::array::c_style>& arr) {
 
         auto buf = arr.request(true);
-        PixelData<T> recon;
+        PixelData<S> recon;
         initialize_pixeldata_from_buffer(recon, buf);
 
         if(recon.mesh.size() != patch.size()) {
@@ -209,11 +209,6 @@ void bindReconstruct(py::module &m) {
     m.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<partsType, partsType>,
           "Piecewise constant reconstruction", "apr"_a, "parts"_a, "arr"_a);
 
-    if(!std::is_same<partsType, float>::value) {
-        m.def("reconstruct_constant_inplace", &PyAPRReconstruction::reconstruct_constant_inplace<partsType, float>,
-              "Piecewise constant reconstruction", "apr"_a, "parts"_a, "arr"_a);
-    }
-
     /// level
     m.def("reconstruct_level_inplace", &PyAPRReconstruction::reconstruct_level_inplace<partsType>,
           "Particle level reconstruction", "apr"_a, "arr"_a);
@@ -221,11 +216,6 @@ void bindReconstruct(py::module &m) {
     /// smooth
     m.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<partsType, partsType>,
           "Smooth reconstruction", "apr"_a, "parts"_a, "arr"_a);
-
-    if(!std::is_same<partsType, float>::value) {
-        m.def("reconstruct_smooth_inplace", &PyAPRReconstruction::reconstruct_smooth_inplace<partsType, float>,
-              "Smooth reconstruction", "apr"_a, "parts"_a, "arr"_a);
-    }
 }
 
 
@@ -238,12 +228,6 @@ void bindReconstructPatch(py::module &m) {
     m.def("reconstruct_constant_patch_inplace", &PyAPRReconstruction::reconstruct_constant_patch_inplace<partsType, partsType>,
           "Piecewise constant patch reconstruction", "apr"_a, "parts"_a, "tree_parts"_a, "patch"_a, "arr"_a);
 
-    if(!std::is_same<partsType, float>::value) {
-        m.def("reconstruct_constant_patch_inplace",
-              &PyAPRReconstruction::reconstruct_constant_patch_inplace<partsType, float>,
-              "Piecewise constant patch reconstruction", "apr"_a, "parts"_a, "tree_parts"_a, "patch"_a, "arr"_a);
-    }
-
     /// level
     m.def("reconstruct_level_patch_inplace", &PyAPRReconstruction::reconstruct_level_patch_inplace<partsType>,
           "Particle level patch reconstruction", "apr"_a, "patch"_a, "arr"_a);
@@ -252,7 +236,12 @@ void bindReconstructPatch(py::module &m) {
     m.def("reconstruct_smooth_patch_inplace", &PyAPRReconstruction::reconstruct_smooth_patch_inplace<partsType, partsType>,
           "Smooth patch reconstruction", "apr"_a, "parts"_a, "tree_parts"_a, "patch"_a, "arr"_a);
 
+    /// constant and smooth reconstruction with tree_parts of float type
     if(!std::is_same<partsType, float>::value) {
+        m.def("reconstruct_constant_patch_inplace",
+              &PyAPRReconstruction::reconstruct_constant_patch_inplace<partsType, float>,
+              "Piecewise constant patch reconstruction", "apr"_a, "parts"_a, "tree_parts"_a, "patch"_a, "arr"_a);
+
         m.def("reconstruct_smooth_patch_inplace",
               &PyAPRReconstruction::reconstruct_smooth_patch_inplace<partsType, float>,
               "Smooth patch reconstruction", "apr"_a, "parts"_a, "tree_parts"_a, "patch"_a, "arr"_a);
@@ -270,13 +259,6 @@ void bindReconstructLazy(py::module &m) {
           "Piecewise constant lazy patch reconstruction",
           "apr_it"_a, "tree_it"_a, "parts"_a, "tree_parts"_a, "patch"_a, "arr"_a);
 
-    if(!std::is_same<partsType, float>::value) {
-        m.def("reconstruct_constant_lazy_inplace",
-              &PyAPRReconstruction::reconstruct_constant_lazy_inplace<partsType, float>,
-              "Piecewise constant lazy patch reconstruction",
-              "apr_it"_a, "tree_it"_a, "parts"_a, "tree_parts"_a, "patch"_a, "arr"_a);
-    }
-
     /// level
     m.def("reconstruct_level_lazy_inplace", &PyAPRReconstruction::reconstruct_level_lazy_inplace<partsType>,
           "Particle level lazy patch reconstruction", "apr_it"_a, "tree_it"_a, "patch"_a, "arr"_a);
@@ -286,7 +268,13 @@ void bindReconstructLazy(py::module &m) {
           "Smooth lazy patch reconstruction",
           "apr_it"_a, "tree_it"_a, "parts"_a, "tree_parts"_a, "patch"_a, "arr"_a);
 
+    /// constant and smooth reconstruction with tree_parts of float type
     if(!std::is_same<partsType, float>::value) {
+        m.def("reconstruct_constant_lazy_inplace",
+              &PyAPRReconstruction::reconstruct_constant_lazy_inplace<partsType, float>,
+              "Piecewise constant lazy patch reconstruction",
+              "apr_it"_a, "tree_it"_a, "parts"_a, "tree_parts"_a, "patch"_a, "arr"_a);
+
         m.def("reconstruct_smooth_lazy_inplace",
               &PyAPRReconstruction::reconstruct_smooth_lazy_inplace<partsType, float>,
               "Smooth lazy patch reconstruction",
