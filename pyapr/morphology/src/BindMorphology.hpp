@@ -234,7 +234,7 @@ void find_perimeter(APR& apr, ParticleData<T>& parts, ParticleData<T>& perimeter
                     uint64_t ct_id = apr_it;
                     if(parts[ct_id] > 0){
                         if(find_zero_neighbour(apr_it, neigh_it, parts)) {
-                            perimeter[ct_id] = 1;
+                            perimeter[ct_id] = parts[ct_id];
                         }
                     }
                 }
