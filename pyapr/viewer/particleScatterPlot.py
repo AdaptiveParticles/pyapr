@@ -1,4 +1,4 @@
-from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.viewer import get_points
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +8,7 @@ from typing import Union, Optional, Tuple, List, Any
 
 
 def particle_scatter_plot(apr: APR,
-                          parts: Union[ShortParticles, FloatParticles],
+                          parts: Union[ByteParticles, ShortParticles, FloatParticles, LongParticles],
                           z: Optional[int] = None,
                           base_markersize: int = 1,
                           markersize_scale_factor: int = 1,
@@ -27,7 +27,7 @@ def particle_scatter_plot(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ShortParticles or FloatParticles
+    parts: ParticleData
         Input particle intensity values
     z: int, optional
         Index of the z-slice to plot. If `None`, the center slice of the volume is taken. (default: None)
