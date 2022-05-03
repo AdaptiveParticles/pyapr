@@ -17,24 +17,21 @@ out = pyapr.FloatParticles()
 
 # Convolve using CPU:
 t0 = time()
-pyapr.filter.convolve(apr, parts, out, stencil, use_stencil_downsample=True,
-                      normalize_stencil=True, use_reflective_boundary=False)
-print('convolve took {} seconds'.format(time()-t0))
+out = pyapr.filter.convolve(apr, parts, stencil, output=out, method='slice')
+print('convolve (method \'slice\') took {} seconds'.format(time()-t0))
 
 
 # Alternative CPU convolution algorithm:
 t0 = time()
-pyapr.filter.convolve_pencil(apr, parts, out, stencil, use_stencil_downsample=True,
-                             normalize_stencil=True, use_reflective_boundary=False)
-print('convolve_pencil took {} seconds'.format(time()-t0))
+out = pyapr.filter.convolve(apr, parts, stencil, output=out, method='pencil')
+print('convolve (method \'pencil\') took {} seconds'.format(time()-t0))
 
 
 # Convolve using GPU (stencil must be of shape 3x3x3 or 5x5x5):
 if pyapr.cuda_enabled() and stencil.shape in [(3, 3, 3), (5, 5, 5)]:
     t0 = time()
-    pyapr.filter.convolve_cuda(apr, parts, out, stencil, use_stencil_downsample=True,
-                               normalize_stencil=True, use_reflective_boundary=False)
-    print('convolve_cuda took {} seconds'.format(time()-t0))
+    out = pyapr.filter.convolve(apr, parts, stencil, output=out, method='cuda')
+    print('convolve (method \'cuda\') took {} seconds'.format(time()-t0))
 
 # Display the result
 pyapr.viewer.parts_viewer(apr, out)
