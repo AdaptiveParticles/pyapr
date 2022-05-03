@@ -1,21 +1,11 @@
-from _pyaprwrapper.data_containers import APR, APRParameters, ByteParticles, ShortParticles, FloatParticles
-from ..utils.filegui import InteractiveIO
+from _pyaprwrapper.data_containers import APR, APRParameters
+from ..utils import InteractiveIO, type_to_particles
 from _pyaprwrapper.converter import FloatConverter, ShortConverter
 import numpy as np
 from typing import Union, Optional
 
 
 __allowed_image_types__ = [np.uint8, np.uint16, np.float32]
-
-
-def _type_to_particles(dtype):
-    if dtype == np.uint8:
-        return ByteParticles()
-    if dtype == np.uint16:
-        return ShortParticles()
-    if dtype == np.float32:
-        return FloatParticles()
-    return None
 
 
 def get_apr(image: np.ndarray,
@@ -67,7 +57,7 @@ def get_apr(image: np.ndarray,
     converter.set_parameters(par)
     converter.verbose = verbose
 
-    parts = _type_to_particles(image.dtype)
+    parts = type_to_particles(image.dtype)
 
     # compute the APR and sample particles
     converter.get_apr(apr, image)
@@ -136,7 +126,7 @@ def get_apr_interactive(image: np.ndarray,
     converter.set_parameters(par)
     converter.verbose = verbose
 
-    parts = _type_to_particles(image.dtype)
+    parts = type_to_particles(image.dtype)
 
     # launch interactive APR converter
     io_int.interactive_apr(converter, apr, image, slider_decimals=slider_decimals)
