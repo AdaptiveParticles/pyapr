@@ -39,8 +39,10 @@ void get_terminal_energies(APR& apr, PyParticleData<inputType>& input_parts, PyP
 
     timer.start_timer("compute local scale");
     ParticleData<float> local_scale;
-    std::vector<int> size = {std_window_size, std_window_size, std_window_size};
-    APRNumerics::local_std(apr, input_parts, local_scale, size);
+    std::vector<int> window_size = {std::min((int)apr.org_dims(0), std_window_size),
+                                    std::min((int)apr.org_dims(1), std_window_size),
+                                    std::min((int)apr.org_dims(2), std_window_size)};
+    APRNumerics::local_std(apr, input_parts, local_scale, window_size);
     timer.stop_timer();
 
     // Loop over particles and edd edges
@@ -105,7 +107,9 @@ void segment_apr(APR& apr, PyParticleData<inputType>& input_parts, PyParticleDat
 
     timer.start_timer("compute local scale");
     ParticleData<float> local_scale;
-    std::vector<int> window_size = {std_window_size, std_window_size, std_window_size};
+    std::vector<int> window_size = {std::min((int)apr.org_dims(0), std_window_size),
+                                    std::min((int)apr.org_dims(1), std_window_size),
+                                    std::min((int)apr.org_dims(2), std_window_size)};
     APRNumerics::local_std(apr, input_parts, local_scale, window_size);
     timer.stop_timer();
 
@@ -239,7 +243,9 @@ void segment_apr_tiled(APR& apr, const PyParticleData<inputType>& input_parts, P
 
     timer.start_timer("compute local scale");
     ParticleData<float> local_scale;
-    std::vector<int> window_size = {std_window_size, std_window_size, std_window_size};
+    std::vector<int> window_size = {std::min((int)apr.org_dims(0), std_window_size),
+                                    std::min((int)apr.org_dims(1), std_window_size),
+                                    std::min(std::min((int)apr.org_dims(2), z_block_size), std_window_size)};
     APRNumerics::local_std(apr, input_parts, local_scale, window_size);
     timer.stop_timer();
 
