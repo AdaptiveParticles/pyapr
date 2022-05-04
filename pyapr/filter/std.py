@@ -9,7 +9,7 @@ ParticleData = Union[ByteParticles, ShortParticles, FloatParticles]
 def std(apr: APR,
         parts: ParticleData,
         size: Union[int, Tuple[int, int, int], List[int]],
-        output: Optional[FloatParticles]) -> FloatParticles:
+        output: Optional[FloatParticles] = None) -> FloatParticles:
     """
     Compute the local standard deviation in a neighborhood around each particle.
 
