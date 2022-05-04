@@ -1,1 +1,1 @@
-from _pyaprwrapper.segmentation.graphcut import *
+from .graphcut import graphcut, compute_terminal_costs
