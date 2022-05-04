@@ -7,6 +7,10 @@ __allowed_sizes_min__ = [(x, x, x) for x in [3, 5]] + [(1, x, x) for x in [3, 5]
 __allowed_sizes_max__ = __allowed_sizes_min__
 
 
+def _check_size(size, allowed_sizes):
+    assert size in allowed_sizes, ValueError(f'Invalid size {size}. Allowed values are {allowed_sizes}')
+
+
 def median_filter(apr: APR,
                   parts: Union[ShortParticles, FloatParticles],
                   size: Tuple[int, int, int] = (5, 5, 5)):
@@ -31,11 +35,7 @@ def median_filter(apr: APR,
     output: ShortParticles or FloatParticles
         Median filtered particle values of the same type as the input.
     """
-
-    if size not in __allowed_sizes_median__:
-        raise ValueError(f'median_filter received an invalid argument \'size\' = {size}. '
-                         f'Allowed values are \n\t{__allowed_sizes_median__}')
-
+    _check_size(size, __allowed_sizes_median__)
     fname = 'median_filter_{}{}{}'.format(*size)
     output = ShortParticles() if isinstance(parts, ShortParticles) else FloatParticles()
     globals()[fname](apr, parts, output)
@@ -66,10 +66,7 @@ def min_filter(apr: APR,
     output: ShortParticles or FloatParticles
         Minimum filtered particle values of the same type as the input.
     """
-    if size not in __allowed_sizes_min__:
-        raise ValueError(f'min_filter received an invalid argument \'size\' = {size}. '
-                         f'Allowed values are \n\t{__allowed_sizes_min__}')
-
+    _check_size(size, __allowed_sizes_min__)
     fname = 'min_filter_{}{}{}'.format(*size)
     output = ShortParticles() if isinstance(parts, ShortParticles) else FloatParticles()
     globals()[fname](apr, parts, output)
@@ -100,11 +97,7 @@ def max_filter(apr: APR,
     output: ShortParticles or FloatParticles
         Maximum filtered particle values of the same type as the input.
     """
-
-    if size not in __allowed_sizes_max__:
-        raise ValueError(f'max_filter received an invalid argument \'size\' = {size}. '
-                         f'Allowed values are \n\t{__allowed_sizes_max__}')
-
+    _check_size(size, __allowed_sizes_max__)
     fname = 'max_filter_{}{}{}'.format(*size)
     output = ShortParticles() if isinstance(parts, ShortParticles) else FloatParticles()
     globals()[fname](apr, parts, output)
