@@ -5,10 +5,8 @@ Content-adaptive storage and processing of volumetric images in Python.
 Adaptive Particle Representation (APR), as well as to manipulate and view APR
 images. The base namespace `pyapr` holds a number of data container classes,
 while functions for generating, viewing and processing APR images are divided
-among several submodules.
+among several submodules:
 
-Submodules
-----------
 converter
     Conversion from pixel images to APR.
 data_containers
