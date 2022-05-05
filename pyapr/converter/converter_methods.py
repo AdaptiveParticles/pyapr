@@ -13,12 +13,12 @@ def get_apr(image: np.ndarray,
             params: Optional[APRParameters] = None,
             verbose: bool = False):
     """
-    Convert an image array to the APR.
+    Convert an image to the APR.
 
     Parameters
     ----------
     image: numpy.ndarray
-        Input (pixel) image as an array of 1-3 dimensions.
+        Input pixel image as an array of 1-3 dimensions.
     converter: FloatConverter or ShortConverter (optional)
         Converter object used to compute the APR. By default, FloatConverter is used to avoid rounding errors in
         internal steps.
@@ -30,8 +30,11 @@ def get_apr(image: np.ndarray,
 
     Returns
     -------
-    apr, parts
-        The generated APR object and sampled particle values.
+    apr: APR
+        Generated APR object containing the adaptively sampled structure.
+    parts: ByteParticles, ShortParticles, FloatParticles
+        Sampled particle values (average downsampled from pixel values). The data type matches that of the input image
+        (uint8, uint16 or float).
     """
 
     if not image.flags['C_CONTIGUOUS']:
@@ -49,12 +52,10 @@ def get_apr(image: np.ndarray,
 
     # set parameters
     if params is None:
-        par = converter.get_parameters()
-        par.auto_parameters = True
-    else:
-        par = params
+        params = converter.get_parameters()
+        params.auto_parameters = True
 
-    converter.set_parameters(par)
+    converter.set_parameters(params)
     converter.verbose = verbose
 
     parts = type_to_particles(image.dtype)
@@ -95,8 +96,11 @@ def get_apr_interactive(image: np.ndarray,
 
     Returns
     -------
-    apr, parts
-        The generated APR object and sampled particle values.
+    apr: APR
+        Generated APR object containing the adaptively sampled structure.
+    parts: ByteParticles, ShortParticles, FloatParticles
+        Sampled particle values (average downsampled from pixel values). The data type matches that of the input image
+        (uint8, uint16 or float).
     """
 
     if not image.flags['C_CONTIGUOUS']:
@@ -118,12 +122,10 @@ def get_apr_interactive(image: np.ndarray,
     converter = converter or FloatConverter()
 
     if params is None:
-        par = converter.get_parameters()
-        par.auto_parameters = False
-    else:
-        par = params
+        params = converter.get_parameters()
+        params.auto_parameters = False
 
-    converter.set_parameters(par)
+    converter.set_parameters(params)
     converter.verbose = verbose
 
     parts = type_to_particles(image.dtype)
@@ -165,8 +167,8 @@ def find_parameters_interactive(image: np.ndarray,
 
     Returns
     -------
-    par
-        APRParameters object with the chosen parameter values.
+    params: APRParameters
+        The parameters with the selected values.
     """
 
     if not image.flags['C_CONTIGUOUS']:
@@ -188,21 +190,19 @@ def find_parameters_interactive(image: np.ndarray,
     converter = converter or FloatConverter()
 
     if params is None:
-        par = converter.get_parameters()
-        par.auto_parameters = False
-    else:
-        par = params
+        params = converter.get_parameters()
+        params.auto_parameters = False
 
-    converter.set_parameters(par)
+    converter.set_parameters(params)
     converter.verbose = verbose
 
-    # launch interactive APR converter
-    par = io_int.find_parameters_interactive(converter, apr, image, slider_decimals=slider_decimals)
+    # launch the interactive parameter tool
+    params = io_int.find_parameters_interactive(converter, apr, image, slider_decimals=slider_decimals)
 
     if verbose:
         print("---------------------------------")
         print("Using the following parameters:")
-        print("grad_th = {}, sigma_th = {}, Ip_th = {}".format(par.grad_th, par.sigma_th, par.Ip_th))
+        print("grad_th = {}, sigma_th = {}, Ip_th = {}".format(params.grad_th, params.sigma_th, params.Ip_th))
         print("---------------------------------")
 
-    return par
+    return params
