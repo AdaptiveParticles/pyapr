@@ -2,6 +2,7 @@ from _pyaprwrapper.tree import fill_tree_mean as _fill_tree_mean, \
                                fill_tree_min as _fill_tree_min, \
                                fill_tree_max as _fill_tree_max
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
+from .._common import _check_input
 from typing import Union, Optional
 
 
@@ -38,6 +39,7 @@ def fill_tree_mean(apr: APR,
     output: ParticleData
         The computed tree values.
     """
+    _check_input(apr, parts)
     output = _check_output_type(parts, output)
     _fill_tree_mean(apr, parts, output)
     return output
@@ -64,6 +66,7 @@ def fill_tree_max(apr: APR,
     output: ParticleData
         The computed tree values.
     """
+    _check_input(apr, parts)
     output = _check_output_type(parts, output)
     _fill_tree_max(apr, parts, output)
     return output
@@ -90,6 +93,7 @@ def fill_tree_min(apr: APR,
     output: ParticleData
         The computed tree values.
     """
+    _check_input(apr, parts)
     output = _check_output_type(parts, output)
     _fill_tree_min(apr, parts, output)
     return output

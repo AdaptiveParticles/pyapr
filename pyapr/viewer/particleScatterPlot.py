@@ -1,5 +1,6 @@
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.viewer import get_points
+from .._common import _check_input
 import numpy as np
 import matplotlib.pyplot as plt
 import io
@@ -50,7 +51,7 @@ def particle_scatter_plot(apr: APR,
     cmap: str
         Matplotlib color map to use.
     """
-
+    _check_input(apr, parts)
     if z is None:
         z = apr.z_num(apr.level_max())//2
 

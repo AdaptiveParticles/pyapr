@@ -1,6 +1,9 @@
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles
 from _pyaprwrapper.segmentation.graphcut import graphcut as _graphcut, graphcut_tiled, get_terminal_energies
+from .._common import _check_input
 from typing import Union, Optional, Tuple
+
+__allowed_input_types__ = (ShortParticles, FloatParticles)
 
 
 def graphcut(apr: APR,
@@ -83,6 +86,7 @@ def graphcut(apr: APR,
      (2004): 1124-1137.
     [2] https://pub.ist.ac.at/~vnk/software.html
     """
+    _check_input(apr, parts, __allowed_input_types__)
     if output is None:
         output = ByteParticles()
     assert isinstance(output, (ByteParticles, ShortParticles)), TypeError(f'output must be ByteParticles or '
@@ -154,6 +158,7 @@ def compute_terminal_costs(apr: APR,
      (2004): 1124-1137.
     [2] https://pub.ist.ac.at/~vnk/software.html
     """
+    _check_input(apr, parts, __allowed_input_types__)
     foreground = FloatParticles()
     background = FloatParticles()
 

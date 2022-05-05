@@ -1,5 +1,6 @@
 from _pyaprwrapper.transform import *
 from _pyaprwrapper.data_containers import APR, ReconPatch, ByteParticles, ShortParticles, FloatParticles, LongParticles
+from .._common import _check_input
 import numpy as np
 from warnings import warn
 from typing import Optional, Union
@@ -38,10 +39,8 @@ def maximum_projection(apr: APR,
     out : numpy.ndarray
         The computed maximum intensity projection
     """
-
-    if dim not in (0, 1, 2):
-        raise ValueError("dim must be 0, 1 or 2 corresponding to projection along y, x or z")
-
+    assert dim in (0, 1, 2), ValueError("dim must be 0, 1 or 2 corresponding to projection along y, x or z")
+    _check_input(apr, parts)
     args = (apr, parts)
 
     if patch is not None:

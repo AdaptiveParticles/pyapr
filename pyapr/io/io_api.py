@@ -2,6 +2,7 @@ from _pyaprwrapper.io import APRFile
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, LongParticles, FloatParticles, \
                                           LazyDataByte, LazyDataShort, LazyDataLong, LazyDataFloat
 from ..utils import type_to_particles, type_to_lazy_particles
+from .._common import _check_input
 from typing import Optional, Union, Tuple, List
 from warnings import warn
 
@@ -113,6 +114,8 @@ def write(fpath: str,
         print('Empty path given. Ignoring call to pyapr.io.write')
         return
 
+    _check_input(apr, parts)
+
     aprfile = APRFile()
     aprfile.set_write_linear_flag(write_linear)
     aprfile.open(fpath, 'WRITE')
@@ -162,6 +165,8 @@ def write_particles(fpath: str,
     if not fpath:
         print('Empty path given. Ignoring call to pyapr.io.write_particles')
         return
+
+    assert len(parts) > 0, ValueError(f'Input particle dataset {parts} is empty.')
 
     aprfile = APRFile()
     aprfile.open(fpath, 'READWRITE' if append else 'WRITE')
@@ -263,6 +268,8 @@ def write_apr(fpath: str,
     if not fpath:
         print('Empty path given. Ignoring call to pyapr.io.write_apr')
         return
+
+    assert apr.total_number_particles() > 0, ValueError(f'Input APR {apr} is not initialized.')
 
     aprfile = APRFile()
     aprfile.set_write_linear_flag(write_linear)

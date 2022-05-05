@@ -1,6 +1,9 @@
 from _pyaprwrapper.data_containers import APR, ShortParticles, LongParticles, ByteParticles
-import _pyaprwrapper.measure as _measure
+from _pyaprwrapper.measure import connected_component as _connected_component
+from .._common import _check_input
 from typing import Union, Optional
+
+__allowed_types__ = (ByteParticles, ShortParticles, LongParticles)
 
 
 def connected_component(apr: APR,
@@ -26,11 +29,12 @@ def connected_component(apr: APR,
     output: ByteParticles, ShortParticles or LongParticles
         Particle data containing the connected component labels
     """
+    _check_input(apr, mask, __allowed_types__)
+    if output is None:
+        output = LongParticles()
 
-    if not isinstance(output, (type(None), ByteParticles, ShortParticles, LongParticles)):
-        raise TypeError(f'Invalid argument \'output\' of type {type(output)}. Allowed types are \'NoneType\', '
-                        f'ByteParticles, ShortParticles and LongParticles.')
+    assert isinstance(output, __allowed_types__), \
+        TypeError(f'output (if provided) must be of type {__allowed_types__}, received {type(output)}.')
 
-    output = output or LongParticles()
-    _measure.connected_component(apr, mask, output)
+    _connected_component(apr, mask, output)
     return output

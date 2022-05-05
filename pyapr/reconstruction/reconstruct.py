@@ -12,6 +12,7 @@ from _pyaprwrapper.data_containers import APR, ReconPatch, LazyIterator, LazyAcc
                                           LazyDataByte, LazyDataShort, LazyDataLong, LazyDataFloat
 from ..io import APRFile, get_particle_type
 from ..utils import type_to_lazy_particles, particles_to_type
+from .._common import _check_input
 import numpy as np
 from typing import Optional, Union
 
@@ -57,7 +58,7 @@ def reconstruct_constant(apr: APR,
     out_arr : numpy.ndarray
         The reconstructed pixel values.
     """
-
+    _check_input(apr, parts)
     _dtype = particles_to_type(parts)
 
     if patch is not None:
@@ -109,7 +110,7 @@ def reconstruct_smooth(apr: APR,
     out_arr : numpy.ndarray
         The reconstructed pixel values.
     """
-
+    _check_input(apr, parts)
     _dtype = particles_to_type(parts)
 
     if patch is not None:
@@ -154,7 +155,7 @@ def reconstruct_level(apr: APR,
     out_arr : numpy.ndarray
         The reconstructed pixel values.
     """
-
+    assert apr.total_number_particles() > 0, ValueError(f'APR not initialized!')
     if patch is not None:
         if not patch.check_limits(apr):
             return None

@@ -2,6 +2,7 @@ from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.viewer import fill_slice, fill_slice_level, min_occupied_level
 from ..utils import particles_to_type
+from .._common import _check_input
 import numpy as np
 import pyqtgraph as pg
 import matplotlib.pyplot as plt
@@ -362,7 +363,7 @@ def parts_viewer(apr: APR,
     parts: ParticleData
         Input particle intensity values.
     """
-
+    _check_input(apr, parts)
     app = QtGui.QApplication.instance()
     if app is None:
         app = QtGui.QApplication([])

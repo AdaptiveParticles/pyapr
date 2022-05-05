@@ -1,9 +1,11 @@
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles
 from _pyaprwrapper.filter import gradient_cfd, gradient_sobel, gradient_magnitude_cfd, gradient_magnitude_sobel
+from .._common import _check_input
 from typing import Union, Optional, Tuple, List
 
 
 ParticleData = Union[ByteParticles, ShortParticles, FloatParticles]
+__allowed_input_types__ = (ByteParticles, ShortParticles, FloatParticles)
 
 
 def gradient(apr: APR,
@@ -34,6 +36,7 @@ def gradient(apr: APR,
     output: FloatParticles
         The gradient value at each particle location.
     """
+    _check_input(apr, parts, __allowed_input_types__)
     assert 0 <= dim <= 2, ValueError(f'argument \'dim\' must be an integer between 0 and 2, got {dim}.')
     output = output or FloatParticles()
     gradient_cfd(apr, parts, output, dim, delta)
@@ -68,6 +71,7 @@ def sobel(apr: APR,
     output: FloatParticles
         The gradient value at each particle location.
     """
+    _check_input(apr, parts, __allowed_input_types__)
     assert 0 <= dim <= 2, ValueError(f'argument \'dim\' must be an integer between 0 and 2, got {dim}.')
     output = output or FloatParticles()
     gradient_sobel(apr, parts, output, dim, delta)
@@ -99,6 +103,7 @@ def gradient_magnitude(apr: APR,
     output: FloatParticles
         The gradient magnitude at each particle location.
     """
+    _check_input(apr, parts, __allowed_input_types__)
     assert len(deltas) == 3, ValueError(f'argument \'deltas\' must be a tuple or list of length 3, got {deltas}.')
     output = output or FloatParticles()
     gradient_magnitude_cfd(apr, parts, output, deltas)
@@ -130,6 +135,7 @@ def sobel_magnitude(apr: APR,
     output: FloatParticles
         The Sobel gradient magnitude at each particle location.
     """
+    _check_input(apr, parts, __allowed_input_types__)
     assert len(deltas) == 3, ValueError(f'argument \'deltas\' must be a tuple or list of length 3, got {deltas}.')
     output = output or FloatParticles()
     gradient_magnitude_sobel(apr, parts, output, deltas)

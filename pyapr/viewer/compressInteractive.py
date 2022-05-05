@@ -3,6 +3,7 @@ import pyqtgraph as pg
 from _pyaprwrapper.data_containers import APR, ShortParticles
 from _pyaprwrapper.viewer import compress_and_fill_slice
 from .partsViewer import MainWindow
+from .._common import _check_input
 
 
 class CustomSlider:
@@ -150,7 +151,7 @@ def interactive_compression(apr: APR,
     parts: ShortParticles
         Input particle intensity values.
     """
-
+    _check_input(apr, parts, (ShortParticles,))
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
     pg.setConfigOption('imageAxisOrder', 'row-major')

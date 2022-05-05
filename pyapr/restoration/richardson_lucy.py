@@ -2,11 +2,12 @@ from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
 import _pyaprwrapper.restoration as _internals
 from _pyaprwrapper import __cuda_build__
 from ..filter.convolution import __check_stencil
+from .._common import _check_input
 import numpy as np
 from warnings import warn
 from typing import Union, Optional
 
-
+__allowed_input_types__ = (ShortParticles, FloatParticles)
 ParticleData = Union[ShortParticles, FloatParticles]
 
 
@@ -57,6 +58,7 @@ def richardson_lucy(apr: APR,
         The restored particle intensities.
     """
 
+    _check_input(apr, parts, __allowed_input_types__)
     psf = __check_stencil(psf)
     if resume:
         _check_output(apr, output)
@@ -109,6 +111,7 @@ def richardson_lucy_tv(apr: APR,
         The restored particle intensities.
     """
 
+    _check_input(apr, parts, __allowed_input_types__)
     psf = __check_stencil(psf)
     if resume:
         _check_output(apr, output)
@@ -159,6 +162,7 @@ def richardson_lucy_cuda(apr: APR,
         The restored particle intensities.
     """
 
+    _check_input(apr, parts, __allowed_input_types__)
     if __cuda_build__:
         psf = __check_stencil(psf)
         if psf.shape not in [(3, 3, 3), (5, 5, 5)]:

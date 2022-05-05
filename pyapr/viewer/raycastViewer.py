@@ -1,13 +1,15 @@
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import pyqtgraph as pg
-from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.viewer import APRRaycaster
 from _pyaprwrapper.tree import fill_tree_max
 from ..utils.filegui import CustomSlider
+from .._common import _check_input
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import Union
+from warnings import warn
 
 
 class MainWindowImage(QtGui.QWidget):
@@ -300,15 +302,13 @@ def raycast_viewer(apr: APR,
     parts: ShortParticles or FloatParticles
         Input particle intensity values.
     """
+    _check_input(apr, parts)
 
     # Raycast viewer currently only works for ShortParticles
-    if isinstance(parts, FloatParticles):
-        print('Warning: raycast_viewer is currently only implemented for ShortParticles. '
-              'Using a uint16 copy of the input particles.')
-        parts_short = ShortParticles()
-        parts_short.copy(parts)
-    else:
-        parts_short = parts
+    if not isinstance(parts, ShortParticles):
+        warn('raycast_viewer is currently only implemented for ShortParticles. Using a uint16 '
+             'copy of the input particles.', UserWarning)
+        parts = ShortParticles(parts)
 
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
@@ -336,5 +336,5 @@ def raycast_viewer(apr: APR,
     tree_parts = FloatParticles()
     fill_tree_max(apr, parts, tree_parts)
 
-    win.set_image(apr, parts_short, tree_parts)
+    win.set_image(apr, parts, tree_parts)
     app.exec_()

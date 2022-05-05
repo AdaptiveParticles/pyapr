@@ -5,12 +5,13 @@ try:
     from _pyaprwrapper.filter import convolve_cuda as _convolve_cuda
 except ImportError:
     _convolve_cuda = _convolve_pencil
-
+from .._common import _check_input
 import numpy as np
 from warnings import warn
 from typing import Union, Optional
 
 
+__allowed_input_types__ = (ShortParticles, FloatParticles)
 ParticleData = Union[ShortParticles, FloatParticles]
 
 
@@ -86,6 +87,7 @@ def correlate(apr: APR,
         The cross-correlation value at each particle location.
     """
 
+    _check_input(apr, parts, __allowed_input_types__)
     stencil = __check_stencil(stencil)
     method = __check_method(method, stencil)
     output = output or FloatParticles()
@@ -152,6 +154,7 @@ def convolve(apr: APR,
         The convolution value at each particle location.
     """
 
+    _check_input(apr, parts, __allowed_input_types__)
     stencil = np.ascontiguousarray(np.flip(__check_stencil(stencil)))
     method = __check_method(method, stencil)
     output = output or FloatParticles()

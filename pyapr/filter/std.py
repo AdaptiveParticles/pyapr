@@ -1,8 +1,10 @@
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles
 from _pyaprwrapper.filter import local_std
+from .._common import _check_input
 from typing import Union, Optional, Tuple, List
 
 
+__allowed_input_types__ = (ByteParticles, ShortParticles, FloatParticles)
 ParticleData = Union[ByteParticles, ShortParticles, FloatParticles]
 
 
@@ -27,11 +29,11 @@ def std(apr: APR,
         (optional) Particle object to which the resulting values are written. If not provided, a new object
         is generated. (default: None)
     """
+    _check_input(apr, parts, __allowed_input_types__)
     if isinstance(size, int):
         size = (min(size, apr.org_dims(0)), min(size, apr.org_dims(1)), min(size, apr.org_dims(2)))
     else:
-        assert isinstance(size, (tuple, list)), TypeError(f'argument \'size\' must be an integer, tuple or list, '
-                                                          f'got {type(size)}')
+        size = tuple(size)
         assert len(size) == 3, ValueError(f'argument size must be an integer or tuple/list of length 3, got {size}')
     output = output or FloatParticles()
     local_std(apr, parts, output, size)
