@@ -37,6 +37,9 @@ extensions = [
     'myst_parser'
 ]
 
+# turn on autosummary
+autosummary_generate = True
+
 # autodoc settings
 autodoc_member_order = 'bysource'
 
