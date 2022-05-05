@@ -77,7 +77,7 @@ def correlate(apr: APR,
             - 'pencil': construct isotropic neighborhoods of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])
             - 'slice': construct isotropic neighborhoods of shape (stencil.shape[0], apr.shape[1], apr.shape[2])
             - 'cuda': compute the correlation using the GPU. Requires the package to be built with CUDA support,
-                      and ``stencil`` to have shape (3, 3, 3) or (5, 5, 5).
+              and ``stencil`` to have shape (3, 3, 3) or (5, 5, 5).
 
         The methods may differ in performance, depending on the input data, but produce the same result. (default: 'pencil')
 
@@ -144,7 +144,7 @@ def convolve(apr: APR,
             - 'pencil': construct isotropic neighborhoods of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])
             - 'slice': construct isotropic neighborhoods of shape (stencil.shape[0], apr.shape[1], apr.shape[2])
             - 'cuda': compute the convolution using the GPU. Requires the package to be built with CUDA support,
-                      and ``stencil`` to have shape (3, 3, 3) or (5, 5, 5).
+              and ``stencil`` to have shape (3, 3, 3) or (5, 5, 5).
 
         The methods may differ in performance, depending on the input data, but produce the same result. (default: 'pencil')
 
