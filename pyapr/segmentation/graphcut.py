@@ -84,6 +84,7 @@ def graphcut(apr: APR,
     [1] Yuri Boykov and Vladimir Kolmogorov. "An experimental comparison of min-cut/max-flow algorithms for
      energy minimization in vision." IEEE transactions on pattern analysis and machine intelligence 26.9
      (2004): 1124-1137.
+
     [2] https://pub.ist.ac.at/~vnk/software.html
     """
     _check_input(apr, parts, __allowed_input_types__)
@@ -150,14 +151,8 @@ def compute_terminal_costs(apr: APR,
         The cost on the edge from each particle to the "foreground" terminal.
     background: FloatParticles
         The cost on the edge from each particle to the "background" terminal.
-
-    References
-    ----------
-    [1] Yuri Boykov and Vladimir Kolmogorov. "An experimental comparison of min-cut/max-flow algorithms for
-     energy minimization in vision." IEEE transactions on pattern analysis and machine intelligence 26.9
-     (2004): 1124-1137.
-    [2] https://pub.ist.ac.at/~vnk/software.html
     """
+
     _check_input(apr, parts, __allowed_input_types__)
     foreground = FloatParticles()
     background = FloatParticles()
