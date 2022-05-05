@@ -3,9 +3,9 @@ Content-adaptive storage and processing of volumetric images in Python.
 
 `pyapr` is a collection of tools and algorithms to convert images to and from the
 Adaptive Particle Representation (APR), as well as to manipulate and view APR
-images. The base namespace `pyapr` holds a number of data container classes,
-while functions for generating, viewing and processing APR images are divided
-among several submodules:
+images. The base namespace `pyapr` holds a number of data container classes
+(see data_containers), while functions for generating, viewing and processing APR
+images are imported via submodules:
 
 converter
     Conversion from pixel images to APR.
