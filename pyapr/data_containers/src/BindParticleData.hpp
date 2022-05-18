@@ -83,12 +83,6 @@ public:
         return min_val;
     }
 
-    void copy_float(PyParticleData<float>& partsToCopy) { this->copy(partsToCopy); }
-    void copy_short(PyParticleData<uint16_t>& partsToCopy) { this->copy(partsToCopy); }
-    void copy_byte(PyParticleData<uint8_t>& partsToCopy) { this->copy(partsToCopy); }
-    void copy_parts_float(APR &apr, PyParticleData<float>& partsToCopy, int level=0) { this->copy_parts(apr, partsToCopy, level); }
-    void copy_parts_short(APR &apr, PyParticleData<uint16_t>& partsToCopy, int level=0) { this->copy_parts(apr, partsToCopy, level); }
-    void copy_parts_byte(APR &apr, PyParticleData<uint8_t>& partsToCopy, int level=0) { this->copy_parts(apr, partsToCopy, level); }
 
     /**
      *  return a copy of this
@@ -488,6 +482,8 @@ public:
 template<typename DataType>
 void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
 
+    using namespace py::literals;
+
     /// wrap base class (ParticleData)
     using BaseParticles = ParticleData<DataType>;
     std::string baseName = aTypeString + "Particles_CPP";
@@ -509,34 +505,49 @@ void AddPyParticleData(pybind11::module &m, const std::string &aTypeString) {
             .def("__len__", [](const TypeParticles &p){ return p.size(); })
             .def("__contains__", [](const TypeParticles &p, DataType v) { return p.contains(v); })
             .def("resize", &TypeParticles::resize, "resize the data array to a specified number of elements")
-            .def("fill", &TypeParticles::fill, "fill all elements with a given value")
+            .def("fill", &TypeParticles::fill, "fill all elements with a given value", "value"_a)
             .def("min", &TypeParticles::min, "return the minimum value")
             .def("max", &TypeParticles::max, "return the maximum value")
-            .def("copy", &TypeParticles::copy_float, "copy particles from another PyParticleData object", py::arg("partsToCopy"))
-            .def("copy", &TypeParticles::copy_short, "copy particles from another PyParticleData object", py::arg("partsToCopy"))
-            .def("copy", &TypeParticles::copy_byte, "copy particles from another PyParticleData object", py::arg("partsToCopy"))
-            .def("copy", &TypeParticles::copy_parts_float, "copy particles from another PyParticleData object",
-                 py::arg("aPyAPR"), py::arg("partsToCopy"), py::arg("level")=0)
-            .def("copy", &TypeParticles::copy_parts_short, "copy particles from another PyParticleData object",
-                 py::arg("aPyAPR"), py::arg("partsToCopy"), py::arg("level")=0)
-            .def("copy", &TypeParticles::copy_parts_byte, "copy particles from another PyParticleData object",
-                 py::arg("aPyAPR"), py::arg("partsToCopy"), py::arg("level")=0)
+            .def("copy", &TypeParticles::template copy<uint8_t>, "copy data from ByteParticles object",
+                 "partsToCopy"_a)
+            .def("copy", &TypeParticles::template copy<uint16_t>, "copy data from ShortParticles object",
+                 "partsToCopy"_a)
+            .def("copy", &TypeParticles::template copy<uint64_t>, "copy data from LongParticles object",
+                 "partsToCopy"_a)
+            .def("copy", &TypeParticles::template copy<float>, "copy data from FloatParticles object",
+                 "partsToCopy"_a)
+            .def("copy", &TypeParticles::template copy_parts<uint8_t>,
+                 "partially copy data from ByteParticles object, up to a certain level (default 0 -> all levels)",
+                 "apr"_a, "partsToCopy"_a, "level"_a=0, "numBlocks"_a=10)
+            .def("copy", &TypeParticles::template copy_parts<uint16_t>,
+                 "partially copy data from ShortParticles object, up to a certain level (default 0 -> all levels)",
+                 "apr"_a, "partsToCopy"_a, "level"_a=0, "numBlocks"_a=10)
+            .def("copy", &TypeParticles::template copy_parts<uint64_t>,
+                 "partially copy data from LongParticles object, up to a certain level (default 0 -> all levels)",
+                 "apr"_a, "partsToCopy"_a, "level"_a=0, "numBlocks"_a=10)
+            .def("copy", &TypeParticles::template copy_parts<float>,
+                 "partially copy data from FloatParticles object, up to a certain level (default 0 -> all levels)",
+                 "apr"_a, "partsToCopy"_a, "level"_a=0, "numBlocks"_a=10)
             .def("copy", &TypeParticles::ret_copy, "return a copy of self")
             .def("sample_image", &TypeParticles::template sample_image_py<uint8_t>, "sample particle values from an image (numpy array)",
-                 py::arg("apr"), py::arg("img").noconvert())
+                 "apr"_a, "img"_a.noconvert())
             .def("sample_image", &TypeParticles::template sample_image_py<uint16_t>, "sample particle values from an image (numpy array)",
-                 py::arg("apr"), py::arg("img").noconvert())
+                 "apr"_a, "img"_a.noconvert())
             .def("sample_image", &TypeParticles::template sample_image_py<uint64_t>, "sample particle values from an image (numpy array)",
-                 py::arg("apr"), py::arg("img").noconvert())
+                 "apr"_a, "img"_a.noconvert())
             .def("sample_image", &TypeParticles::template sample_image_py<float>, "sample particle values from an image (numpy array)",
-                 py::arg("apr"), py::arg("img").noconvert())
+                 "apr"_a, "img"_a.noconvert())
             .def("sample_image_blocked", &TypeParticles::sample_image_blocked,
-                 "sample particle values from a file in z-blocks to reduce memory usage")
+                 "sample particle values from a file in z-blocks to reduce memory usage",
+                 "apr"_a, "fileName"_a, "blockSize"_a, "ghostSize"_a)
             .def("fill_with_levels", &TypeParticles::fill_with_levels, "fill particle values with levels",
-                 py::arg("aPyAPR"))
-            .def("set_quantization_factor", &TypeParticles::set_quantization_factor, "set lossy quantization factor")
-            .def("set_background", &TypeParticles::set_background, "set lossy background cut off")
-            .def("set_compression_type", &TypeParticles::set_compression_type, "turn lossy compression on and off")
+                 "apr"_a)
+            .def("set_quantization_factor", &TypeParticles::set_quantization_factor, "set lossy quantization factor",
+                 "value"_a)
+            .def("set_background", &TypeParticles::set_background, "set lossy background cut off",
+                 "value"_a)
+            .def("set_compression_type", &TypeParticles::set_compression_type, "turn lossy compression on (1) or off (0)",
+                 "value"_a)
             .def(py::self += PyParticleData<uint16_t>())
             .def(py::self += PyParticleData<float>())
             .def(py::self -= PyParticleData<uint16_t>())
