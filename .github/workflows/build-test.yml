@@ -116,4 +116,3 @@ jobs:
           pip install sphinx sphinx_rtd_theme myst_parser
           cd docs
           make html
-          ls build/html/
