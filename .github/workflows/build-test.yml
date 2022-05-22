@@ -10,6 +10,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# for deploying docs to gh-pages branch
+permissions:
+  contents: write
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build-test:
@@ -111,8 +115,16 @@ jobs:
         run: |
           python3 -m unittest
 
-      - name: build docs
+      - name: Build documentation
         run: |
           pip install sphinx sphinx_rtd_theme myst_parser
           cd docs
           make html
+
+      - name: Deploy documentation
+        if: ${{ github.ref == 'ref/head/update_develop' }}    # to be changed
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        with:
+          branch: gh-pages  # The branch the action should deploy to.
+          folder: docs/build/html     # The folder the action should deploy.
+          target-folder: test
