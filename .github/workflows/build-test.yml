@@ -110,3 +110,10 @@ jobs:
       - name: Python Test
         run: |
           python3 -m unittest
+
+      - name: build docs
+        run: |
+          pip install sphinx sphinx_rtd_theme myst_parser
+          cd docs
+          make html
+          ls build/html/
