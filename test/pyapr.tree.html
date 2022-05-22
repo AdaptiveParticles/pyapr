@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tree &mdash; pyapr 0.0.1.rc1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="utils" href="pyapr.utils.html" />
+    <link rel="prev" title="transform" href="pyapr.transform.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> pyapr
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Submodules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pyapr.html">pyapr</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pyapr.converter.html">converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.data_containers.html">data_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.filter.html">filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.measure.html">measure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.morphology.html">morphology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.reconstruction.html">reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.restoration.html">restoration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.segmentation.html">segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.transform.html">transform</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.viewer.html">viewer</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyapr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="pyapr.html">pyapr</a> &raquo;</li>
+      <li>tree</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pyapr.tree.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tree">
+<h1>tree<a class="headerlink" href="#tree" title="Permalink to this headline"></a></h1>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.tree.fill_tree_mean" title="pyapr.tree.fill_tree_mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.tree.fill_tree_mean</span></code></a>(apr, parts[, output])</p></td>
+<td><p>Compute the values of all tree nodes (parent nodes of APR particles) by average downsampling.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.tree.fill_tree_max" title="pyapr.tree.fill_tree_max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.tree.fill_tree_max</span></code></a>(apr, parts[, output])</p></td>
+<td><p>Compute the values of all tree nodes (parent nodes of APR particles) by max downsampling.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.tree.fill_tree_min" title="pyapr.tree.fill_tree_min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.tree.fill_tree_min</span></code></a>(apr, parts[, output])</p></td>
+<td><p>Compute the values of all tree nodes (parent nodes of APR particles) by min downsampling.</p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-pyapr.tree"></span><dl class="py function">
+<dt class="sig sig-object py" id="pyapr.tree.fill_tree_mean">
+<span class="sig-prename descclassname"><span class="pre">pyapr.tree.</span></span><span class="sig-name descname"><span class="pre">fill_tree_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.tree.fill_tree_mean" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the values of all tree nodes (parent nodes of APR particles) by average downsampling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<em>ParticleData</em>) – Input APR particle values.</p></li>
+<li><p><strong>output</strong> (<em>ParticleData</em><em>, </em><em>optional</em>) – (optional) Particle data object for the output values. If provided, the type must either be FloatParticles
+or the same type as <code class="docutils literal notranslate"><span class="pre">parts</span></code>. If None, generates a new object of the same type as <code class="docutils literal notranslate"><span class="pre">parts</span></code>. (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>output</strong> – The computed tree values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ParticleData</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.tree.fill_tree_max">
+<span class="sig-prename descclassname"><span class="pre">pyapr.tree.</span></span><span class="sig-name descname"><span class="pre">fill_tree_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.tree.fill_tree_max" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the values of all tree nodes (parent nodes of APR particles) by max downsampling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<em>ParticleData</em>) – Input APR particle values.</p></li>
+<li><p><strong>output</strong> (<em>ParticleData</em><em>, </em><em>optional</em>) – (optional) Particle data object for the output values. If provided, the type must either be FloatParticles
+or the same type as <code class="docutils literal notranslate"><span class="pre">parts</span></code>. If None, generates a new object of the same type as <code class="docutils literal notranslate"><span class="pre">parts</span></code>. (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>output</strong> – The computed tree values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ParticleData</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.tree.fill_tree_min">
+<span class="sig-prename descclassname"><span class="pre">pyapr.tree.</span></span><span class="sig-name descname"><span class="pre">fill_tree_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.tree.fill_tree_min" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the values of all tree nodes (parent nodes of APR particles) by min downsampling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<em>ParticleData</em>) – Input APR particle values.</p></li>
+<li><p><strong>output</strong> (<em>ParticleData</em><em>, </em><em>optional</em>) – (optional) Particle data object for the output values. If provided, the type must either be FloatParticles
+or the same type as <code class="docutils literal notranslate"><span class="pre">parts</span></code>. If None, generates a new object of the same type as <code class="docutils literal notranslate"><span class="pre">parts</span></code>. (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>output</strong> – The computed tree values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ParticleData</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyapr.transform.html" class="btn btn-neutral float-left" title="transform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyapr.utils.html" class="btn btn-neutral float-right" title="utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Joel Jonsson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
