@@ -6,6 +6,8 @@
 [![PyPI](https://img.shields.io/pypi/v/pyapr.svg?color=green)](https://pypi.org/project/pyapr/)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/p/DNS.1.1.1.1)
 
+Documentation can be found [here](https://adaptiveparticles.github.io/pyapr/index.html).
+
 Content-adaptive storage and processing of large volumetric microscopy data using 
 the Adaptive Particle Representation (APR).
 
