@@ -16,7 +16,7 @@ jobs:
     if: |
       github.ref == 'refs/heads/master' ||
       github.ref == 'refs/heads/develop' ||
-      github.ref == 'refs/heads/update_develop'  #TODO: remove after testing
+      github.ref == 'refs/heads/update_develop'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
