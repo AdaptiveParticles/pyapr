@@ -13,6 +13,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
+from pyapr import __version__ as __pyapr_version__
 
 
 # -- Project information -----------------------------------------------------
@@ -22,7 +23,7 @@ copyright = '2022, Joel Jonsson'
 author = 'Joel Jonsson'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.1.rc1'
+release = __pyapr_version__
 
 
 # -- General configuration ---------------------------------------------------
