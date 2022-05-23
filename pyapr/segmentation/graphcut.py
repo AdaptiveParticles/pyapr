@@ -82,8 +82,8 @@ def graphcut(apr: APR,
     References
     ----------
     [1] Yuri Boykov and Vladimir Kolmogorov. "An experimental comparison of min-cut/max-flow algorithms for
-     energy minimization in vision." IEEE transactions on pattern analysis and machine intelligence 26.9
-     (2004): 1124-1137.
+    energy minimization in vision." IEEE transactions on pattern analysis and machine intelligence 26.9
+    (2004): 1124-1137.
 
     [2] https://pub.ist.ac.at/~vnk/software.html
     """
