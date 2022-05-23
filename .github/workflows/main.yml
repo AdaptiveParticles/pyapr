@@ -10,7 +10,7 @@ on:
       - master
       - develop
     tags:
-      - "v*"
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
   pull_request:
     branches:
       - master
@@ -191,7 +191,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: windows-tests
     name: publish to pypi
-    if: contains(github.ref, 'tags')  # only run on tagged commits starting with "v*"
+    # only run on push of (version) tag to master/develop
+    if: |
+      contains(github.ref, 'tags') &&
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+
     steps:
       - name: Download wheels from artifacts
         uses: actions/download-artifact@v2
