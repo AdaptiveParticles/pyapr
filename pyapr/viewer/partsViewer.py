@@ -1,13 +1,15 @@
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
+from _pyaprwrapper.viewer import fill_slice, fill_slice_level, min_occupied_level
+from ..utils import particles_to_type
+from .._common import _check_input
 import numpy as np
 import pyqtgraph as pg
-import sys
-import pyapr
 import matplotlib.pyplot as plt
+from typing import Union
 
 
 class MainWindow(QtGui.QWidget):
-
     def __init__(self):
         super(MainWindow, self).__init__()
 
@@ -176,18 +178,13 @@ class MainWindow(QtGui.QWidget):
         self.aAPR_ref = aAPR
         self.parts_ref = parts
 
-        if isinstance(parts, pyapr.FloatParticles):
-            self.dtype = np.float32
-        elif isinstance(parts, pyapr.ShortParticles):
-            self.dtype = np.uint16
-        else:
-            raise Exception("APR viewer is currently only implemented for particles of type Float or Short")
+        self.dtype = particles_to_type(parts)
 
         self.z_num = aAPR.z_num(aAPR.level_max())
         self.x_num = aAPR.x_num(aAPR.level_max())
         self.y_num = aAPR.y_num(aAPR.level_max())
         self.level_max = aAPR.level_max()
-        self.level_min = pyapr.viewer.min_occupied_level(self.aAPR_ref)
+        self.level_min = min_occupied_level(self.aAPR_ref)
 
         ## Set up the slide
         self.slider.setMinimum(0)
@@ -276,9 +273,9 @@ class MainWindow(QtGui.QWidget):
                 if prev_z != curr_z:
 
                     if self.level_toggle.isChecked():
-                        pyapr.viewer.fill_slice_level(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
+                        fill_slice_level(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
                     else:
-                        pyapr.viewer.fill_slice(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
+                        fill_slice(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
 
                     self.img_list[l].setImage(self.array_list[l], False)
 
@@ -354,8 +351,19 @@ class MainWindow(QtGui.QWidget):
         self.cursor.setText(text_string)
 
 
-def parts_viewer(apr, parts):
+def parts_viewer(apr: APR,
+                 parts: Union[ByteParticles, ShortParticles, FloatParticles, LongParticles]):
+    """
+    Spawns an interactive 2D APR viewer.
 
+    Parameters
+    ----------
+    apr: APR
+        Input APR data structure.
+    parts: ParticleData
+        Input particle intensity values.
+    """
+    _check_input(apr, parts)
     app = QtGui.QApplication.instance()
     if app is None:
         app = QtGui.QApplication([])

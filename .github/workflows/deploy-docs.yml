@@ -1,0 +1,132 @@
+name: Deploy documentation
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'    # only run on semantic version tags
+
+# need write permission to push to gh-pages branch
+permissions:
+  contents: write
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy-docs:
+    name: build and deploy docs
+    # only run on push to master/develop
+    if: |
+      github.ref == 'refs/heads/master' ||
+      github.ref == 'refs/heads/develop'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        include:
+          - os: ubuntu-latest
+            triplet: x64-linux
+            extblosc: OFF
+            openmp: ON
+            buildfolder: build/temp.linux-x86_64-3.7
+
+    env:
+      # Indicates the CMake build directory where project files and binaries are being produced.
+      CMAKE_BUILD_DIR: ${{ github.workspace }}/${{ matrix.buildfolder }}
+      # Indicates the location of the vcpkg as a Git submodule of the project repository.
+      VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
+      EXTRA_CMAKE_ARGS: "-DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake'"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Submodule recursive
+        run: git submodule update --init --recursive
+
+      - name: Checkout develop branch of LibAPR
+        shell: bash
+        run: |
+          cd external/LibAPR
+          git checkout develop
+
+      # Setup the build machine with the most recent versions of CMake and Ninja. Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
+      - uses: lukka/get-cmake@latest
+      # Restore both vcpkg and its artifacts from the GitHub cache service.
+      - name: Restore vcpkg and its artifacts.
+        uses: actions/cache@v2
+        with:
+          # The first path is where vcpkg generates artifacts while consuming the vcpkg.json manifest file.
+          # The second path is the location of vcpkg (it contains the vcpkg executable and data files).
+          # The other paths starting with '!' are exclusions: they contain termporary files generated during the build of the installed packages.
+          path: |
+            ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
+            ${{ env.VCPKG_ROOT }}
+            !${{ env.VCPKG_ROOT }}/buildtrees
+            !${{ env.VCPKG_ROOT }}/packages
+            !${{ env.VCPKG_ROOT }}/downloads
+          # The key is composed in a way that it gets properly invalidated: this must happen whenever vcpkg's Git commit id changes, or the list of packages changes. In this case a cache miss must happen and a new entry with a new key with be pushed to GitHub the cache service.
+          # The key includes: hash of the vcpkg.json file, the hash of the vcpkg Git commit id, and the used vcpkg's triplet. The vcpkg's commit id would suffice, but computing an hash out it does not harm.
+          # Note: given a key, the cache content is immutable. If a cache entry has been created improperly, in order the recreate the right content the key must be changed as well, and it must be brand new (i.e. not existing already).
+          key: |
+            ${{ hashFiles( '${{ env.VCPKG_ROOT }}/.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}-invalidate
+
+      - name: Show content of workspace after cache has been restored
+        run: find $RUNNER_WORKSPACE
+        shell: bash
+
+      # On Windows runners, let's ensure to have the Developer Command Prompt environment setup correctly. As used here the Developer Command Prompt created is targeting x64 and using the default the Windows SDK.
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.7'
+
+      - name: Check file existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "${{ env.VCPKG_ROOT }}/vcpkg"
+
+      - name: VCPKG setup
+        if: steps.check_files.outputs.files_exists == 'false'
+        run: |
+          ${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.sh
+
+      - name: VCPKG install dependencies
+        run: |
+          ${{ env.VCPKG_ROOT }}/vcpkg install tiff blosc hdf5 szip --triplet=${{ matrix.triplet }}
+
+      - name: Build wheel
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install wheel setuptools setuptools_scm
+          python3 setup.py bdist_wheel -b ${{ env.CMAKE_BUILD_DIR }}
+
+      - name: Install pyapr
+        run: |
+          pip install dist/pyapr*.whl
+
+      - name: Run tests
+        run: |
+          python3 -m unittest
+
+      - name: Build documentation
+        run: |
+          pip install sphinx sphinx_rtd_theme myst_parser
+          cd docs
+          make html
+
+      - name: Get version
+        id: get_version
+        run: |
+          echo ::set-output name=VERSION_TAG::${GITHUB_REF#refs/tags/}
+
+      - name: Deploy documentation
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        with:
+          branch: gh-pages            # The branch the action should deploy to.
+          folder: docs/build/html     # The folder the action should deploy.
+          target-folder: ${{ steps.get_version.outputs.VERSION_TAG }}
+

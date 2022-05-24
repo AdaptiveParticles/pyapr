@@ -1,4 +1,18 @@
-### Dependencies
+# Installing via pip
+
+For Windows 10, OSX, and Linux and Python versions 3.6-3.9 direct 
+installation with OpenMP support should work via [pip]:
+```
+pip install pyapr
+```
+We recommend using a virtual environment (see below).
+
+CUDA functionality is currently not enabled when installing via pip. 
+For this, it is necessary to build the package from source.
+
+# Installing from source
+
+## Dependencies
 
 [LibAPR](https://github.com/AdaptiveParticles/LibAPR) is included as a submodule, and built alongside the wrappers.
 This requires the following packages:
@@ -8,7 +22,7 @@ This requires the following packages:
 * CMake 3.6 or higher
 * LibTIFF 4.0 or higher
 
-The Python library additionally requires Python 3, and the packages listed in [requirements.txt](requirements.txt).
+pyapr additionally requires Python 3, and the packages listed in [requirements.txt](requirements.txt).
 
 ### Installing dependencies on Linux
 
@@ -25,11 +39,11 @@ as the clang version shipped by Apple currently does not support OpenMP.
 
 ### Note for windows users
 
-Please see https://github.com/AdaptiveParticles/LibAPR for the latest windows install instructions.
+Please see [LibAPR](https://github.com/AdaptiveParticles/LibAPR) for the latest windows install instructions.
 
 ## Building
 
-The repository requires submodules, so the repository needs to be cloned recursively:
+The repository requires submodules, and needs to be cloned recursively:
 
 ```
 git clone --recursive https://github.com/AdaptiveParticles/PyLibAPR.git
@@ -48,10 +62,16 @@ The required Python packages can be installed via the command
 pip install -r requirements.txt 
 ```
 
-Once the dependencies are installed, PyLibAPR can be built via the setup.py script:
+Once the dependencies are installed, pyapr can be built via the setup.py script,
+e.g. by running
 ```
 python setup.py install
 ```
+or
+```
+pip install .
+```
+in the root directory of the repository.
 
 ### CMake build options
 
@@ -68,7 +88,8 @@ When building via the setup.py script, these options can be set via the environm
 EXTRA_CMAKE_ARGS="-DPYAPR_USE_OPENMP=OFF -DPYAPR_USE_CUDA=OFF" python setup.py install
 ```
 will install the package with both OpenMP and CUDA disabled. If building from an installed version of LibAPR in a non-standard
-location, help CMake find it, e.g., by passing `-DCMAKE_PREFIX_PATH=/path/to/APR`.
+location, help CMake find it, e.g., by passing `-DCMAKE_PREFIX_PATH=/path/to/APR`. Additional compiler options can be
+set similarly, e.g. via the variables `CMAKE_CXX_FLAGS` and `CMAKE_CUDA_FLAGS`
 
 ### OpenMP support on OSX
 

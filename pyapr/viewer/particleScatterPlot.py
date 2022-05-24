@@ -1,17 +1,61 @@
-import pyapr
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
+from _pyaprwrapper.viewer import get_points
+from .._common import _check_input
 import numpy as np
 import matplotlib.pyplot as plt
 import io
 from PIL import Image
+from typing import Union, Optional, Tuple, List, Any
 
 
-def particle_scatter_plot(apr, parts, z=None, base_markersize=1, markersize_scale_factor=1, save_path=None,
-                          figsize=None, dpi=100, xrange=None, yrange=None, display=False, cmap='viridis'):
+def particle_scatter_plot(apr: APR,
+                          parts: Union[ByteParticles, ShortParticles, FloatParticles, LongParticles],
+                          z: Optional[int] = None,
+                          base_markersize: int = 1,
+                          markersize_scale_factor: int = 1,
+                          save_path: Optional[str] = None,
+                          figsize: Optional[Any] = None,
+                          dpi: int = 100,
+                          xrange: Optional[Union[Tuple, List]] = None,
+                          yrange: Optional[Union[Tuple, List]] = None,
+                          display: bool = False,
+                          cmap: str = 'viridis'):
+    """
+    Plot particles in a z-slice (sub-) region as dots colored by intensity and sized according to particle size.
+    Uses matplotlib for plotting.
 
+    Parameters
+    ----------
+    apr: APR
+        Input APR data structure.
+    parts: ParticleData
+        Input particle intensity values
+    z: int, optional
+        Index of the z-slice to plot. If `None`, the center slice of the volume is taken. (default: None)
+    base_markersize: int
+        Marker size of the finest dots to plot.
+    markersize_scale_factor: int
+        Grow dot size exponentially according to `base_markersize * particle_side_length ** markersize_scale_factor`.
+    save_path: str, optional
+        If provided, the resulting figure is saved to this path.
+    figsize: Any, optional
+        Size specification of the matplotlib window.
+    dpi: int
+        Figure resolution in dots-per-inch.
+    xrange: tuple or list, optional
+        Specify the range to plot in the x dimension. If `None`, plots the entire image range. (default: None)
+    yrange: tuple or list, optional
+        Specify the range to plot in the y dimension. If `None`, plots the entire image range. (default: None)
+    display: bool
+        If `True`, calls matplotlib.pyplot.show() to display the figure.
+    cmap: str
+        Matplotlib color map to use.
+    """
+    _check_input(apr, parts)
     if z is None:
         z = apr.z_num(apr.level_max())//2
 
-    arr = np.array(pyapr.viewer.get_points(apr, parts, z), copy=False).squeeze()
+    arr = np.array(get_points(apr, parts, z), copy=False).squeeze()
     # arr is an array of size (4, num_particles), where the rows are: [x, y, particle size in pixels, intensity]
 
     # x and y are inverted in the APR

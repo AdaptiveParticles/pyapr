@@ -1,4 +1,4 @@
-# PyLibAPR
+# pyapr
 
 [![build and deploy](https://github.com/AdaptiveParticles/PyLibAPR/actions/workflows/main.yml/badge.svg)](https://github.com/AdaptiveParticles/PyLibAPR/actions)
 [![License](https://img.shields.io/pypi/l/pyapr.svg?color=green)](https://raw.githubusercontent.com/AdaptiveParticles/PyLibAPR/master/LICENSE)
@@ -6,9 +6,12 @@
 [![PyPI](https://img.shields.io/pypi/v/pyapr.svg?color=green)](https://pypi.org/project/pyapr/)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/p/DNS.1.1.1.1)
 
-Python wrappers for [LibAPR]: A library for producing and processing on the Adaptive Particle Representation (APR).
+Documentation can be found [here](https://adaptiveparticles.github.io/pyapr/index.html).
 
-The APR is an adaptive image representation designed primarily for large volumetric
+Content-adaptive storage and processing of large volumetric microscopy data using 
+the Adaptive Particle Representation (APR).
+
+The APR is an adaptive image representation designed primarily for large 3D fluorescence
 microscopy datasets. By replacing pixels with particles positioned according to the
 image content, it enables orders-of-magnitude compression of sparse image data
 while maintaining image quality. However, unlike most compression formats, the APR
@@ -17,6 +20,8 @@ can be used directly in a wide range of processing tasks - even on the GPU!
 For more detailed information about the APR and its use, see:
 - [Adaptive particle representation of fluorescence microscopy images](https://www.nature.com/articles/s41467-018-07390-9) (nature communications)
 - [Parallel Discrete Convolutions on Adaptive Particle Representations of Images](https://arxiv.org/abs/2112.03592) (arXiv preprint)
+
+**pyapr** is built on top of the C++ library [LibAPR] using [pybind11].
 
 ## Installation
 For Windows 10, OSX, and Linux and Python versions 3.7-3.9 direct installation with OpenMP support should work via [pip]:
@@ -59,6 +64,7 @@ in touch with us. We would be happy to assist you!
 
 
 [LibAPR]: https://github.com/AdaptiveParticles/LibAPR
+[pybind11]: https://github.com/pybind/pybind11
 [pip]: https://pypi.org/project/pip/
 [INSTALL]: INSTALL.md
 [demo scripts]: demo

@@ -10,9 +10,13 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# for deploying docs to gh-pages branch
+permissions:
+  contents: write
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  job:
+  build-test:
     name: ${{ matrix.os }}-build-and-test
     runs-on: ${{ matrix.os }}
     strategy:
@@ -40,6 +44,12 @@ jobs:
 
       - name: Submodule recursive
         run: git submodule update --init --recursive
+
+      - name: Checkout develop branch of LibAPR
+        shell: bash
+        run: |
+          cd external/LibAPR
+          git checkout develop
 
       # Setup the build machine with the most recent versions of CMake and Ninja. Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
       - uses: lukka/get-cmake@latest
@@ -104,3 +114,9 @@ jobs:
       - name: Python Test
         run: |
           python3 -m unittest
+
+      - name: Build documentation
+        run: |
+          pip install sphinx sphinx_rtd_theme myst_parser
+          cd docs
+          make html
