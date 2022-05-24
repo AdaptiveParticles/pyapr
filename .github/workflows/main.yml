@@ -10,7 +10,8 @@ on:
       - master
       - develop
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+*'
+      - 'v[0-9]+.[0-9]+.[0-9]+'            # run on semantic version tags
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+'   # pre-release
   pull_request:
     branches:
       - master
@@ -65,15 +66,23 @@ jobs:
 
       # PR/push to develop should use the develop branch of LibAPR
       # for pull requests, we set the LibAPR branch based on the target (base) branch
-      - name: set LibAPR branch name (pull request)
+      - name: Get branch name (pull request)
         if: ${{ github.event_name == 'pull_request' }}
         shell: bash
         run: echo "BRANCH_NAME=$(echo ${GITHUB_BASE_REF} | tr / -)" >> $GITHUB_ENV
 
-      - name: set LibAPR branch name (push)
-        if: ${{ github.event_name != 'pull_request' }}
+      - name: Get branch name (push)
+        if: ${{ (github.event_name == 'push') && !contains(github.ref, 'tags') }}
         shell: bash
         run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
+      
+      - name: Get branch name (tag push)
+        if: ${{ (github.event_name == 'push') && contains(github.ref, 'tags') }}
+        shell: bash
+        run: |
+          raw=$(git branch -r --contains ${{ github.ref }})
+          branch=${raw/origin\/}
+          echo "BRANCH_NAME=$(echo $branch)" >> $GITHUB_ENV
 
       - name: Checkout LibAPR develop/master branch
         shell: bash
