@@ -45,7 +45,8 @@ jobs:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
       CIBW_ENVIRONMENT_WINDOWS: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=D:\\a\\pyapr\\pyapr\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\pyapr\\pyapr\\external\\LibAPR\\"
-      CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-*"
+      CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-* cp310-*"
+      CIBW_SKIP: "*musllinux*"
       CIBW_ARCHS: "auto64"
       CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_24"
       CIBW_BUILD_VERBOSITY: 1
@@ -131,7 +132,7 @@ jobs:
 
       - name: Install cibuildwheel
         run: |
-          python3 -m pip install cibuildwheel==1.10.0
+          python3 -m pip install cibuildwheel==2.5.0
 
       - name: Install OpenMP dependencies with brew for OSX
         if: contains(matrix.os,'macos')
@@ -158,7 +159,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
         include:
           - os: windows-latest
             triplet: x64-windows

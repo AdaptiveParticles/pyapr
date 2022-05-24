@@ -46,7 +46,7 @@ Please see [LibAPR](https://github.com/AdaptiveParticles/LibAPR) for the latest 
 The repository requires submodules, and needs to be cloned recursively:
 
 ```
-git clone --recursive https://github.com/AdaptiveParticles/PyLibAPR.git
+git clone --recursive https://github.com/AdaptiveParticles/pyapr.git
 ```
 
 It is recommended to use a virtual environment, such as `virtualenv`. To set this up, use e.g.
