@@ -1,7 +1,7 @@
 # pyapr
 
-[![build and deploy](https://github.com/AdaptiveParticles/PyLibAPR/actions/workflows/main.yml/badge.svg)](https://github.com/AdaptiveParticles/PyLibAPR/actions)
-[![License](https://img.shields.io/pypi/l/pyapr.svg?color=green)](https://raw.githubusercontent.com/AdaptiveParticles/PyLibAPR/master/LICENSE)
+[![build and deploy](https://github.com/AdaptiveParticles/pyapr/actions/workflows/main.yml/badge.svg)](https://github.com/AdaptiveParticles/pyapr/actions)
+[![License](https://img.shields.io/pypi/l/pyapr.svg?color=green)](https://raw.githubusercontent.com/AdaptiveParticles/pyapr/master/LICENSE)
 [![Python Version](https://img.shields.io/pypi/pyversions/pyapr.svg?color=blue)]((https://python.org))
 [![PyPI](https://img.shields.io/pypi/v/pyapr.svg?color=green)](https://pypi.org/project/pyapr/)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/p/DNS.1.1.1.1)
@@ -71,4 +71,4 @@ in touch with us. We would be happy to assist you!
 [napari]: https://napari.org
 [napari-apr-viewer]: https://github.com/AdaptiveParticles/napari-apr-viewer
 [Apache Software License 2.0]: http://www.apache.org/licenses/LICENSE-2.0
-[file an issue]: https://github.com/AdaptiveParticles/PyLibAPR/issues
+[file an issue]: https://github.com/AdaptiveParticles/pyapr/issues
