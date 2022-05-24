@@ -131,7 +131,7 @@ jobs:
 
       - name: Install cibuildwheel
         run: |
-          python3 -m pip install cibuildwheel==1.10.0
+          python3 -m pip install cibuildwheel==2.5.0
 
       - name: Install OpenMP dependencies with brew for OSX
         if: contains(matrix.os,'macos')
