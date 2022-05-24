@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: build
+name: Build and deploy
 
 # Controls when the workflow will run
 on:
@@ -200,12 +200,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: windows-tests
     name: publish to pypi
-    # only run on push of (version) tag to master/develop
-    if: |
-      contains(github.ref, 'tags') &&
-      github.event_name == 'push' &&
-      (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
-
+    # only run on push of (version) tag
+    if: contains(github.ref, 'tags')
     steps:
       - name: Download wheels from artifacts
         uses: actions/download-artifact@v2
