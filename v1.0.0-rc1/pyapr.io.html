@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>io &mdash; pyapr 1.0.0rc1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="measure" href="pyapr.measure.html" />
+    <link rel="prev" title="filter" href="pyapr.filter.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> pyapr
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Submodules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pyapr.html">pyapr</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pyapr.converter.html">converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.data_containers.html">data_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.filter.html">filter</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.measure.html">measure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.morphology.html">morphology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.reconstruction.html">reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.restoration.html">restoration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.segmentation.html">segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.transform.html">transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.tree.html">tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.viewer.html">viewer</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyapr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="pyapr.html">pyapr</a> &raquo;</li>
+      <li>io</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pyapr.io.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="io">
+<h1>io<a class="headerlink" href="#io" title="Permalink to this headline"></a></h1>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.io.read" title="pyapr.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read</span></code></a>(fpath[, apr, parts, t, ...])</p></td>
+<td><p>Read APR structure and one set of particles from file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.io.write" title="pyapr.io.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.write</span></code></a>(fpath, apr, parts[, t, ...])</p></td>
+<td><p>Write APR structure and particles to file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.io.read_apr" title="pyapr.io.read_apr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read_apr</span></code></a>(fpath[, apr, t, channel_name])</p></td>
+<td><p>Read APR structure from file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.io.write_apr" title="pyapr.io.write_apr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.write_apr</span></code></a>(fpath, apr[, t, ...])</p></td>
+<td><p>Write APR structure to file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.io.read_particles" title="pyapr.io.read_particles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read_particles</span></code></a>(fpath[, apr, parts, ...])</p></td>
+<td><p>Read particle values from file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.io.write_particles" title="pyapr.io.write_particles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.write_particles</span></code></a>(fpath, parts[, t, ...])</p></td>
+<td><p>Write particle values to a new or existing file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.io.get_particle_names" title="pyapr.io.get_particle_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.get_particle_names</span></code></a>(fpath[, t, ...])</p></td>
+<td><p>List the particle field names present in an APR file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.io.get_particle_type" title="pyapr.io.get_particle_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.get_particle_type</span></code></a>(fpath[, t, ...])</p></td>
+<td><p>Return the datatype of a given particle dataset on file as a string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.io.APRFile" title="pyapr.io.APRFile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.APRFile</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.io.read_multichannel" title="pyapr.io.read_multichannel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read_multichannel</span></code></a>(fpath, apr, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.io.write_multichannel" title="pyapr.io.write_multichannel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.write_multichannel</span></code></a>(fpath, apr, ...)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-pyapr.io"></span><dl class="py function">
+<dt class="sig sig-object py" id="pyapr.io.read">
+<span class="sig-prename descclassname"><span class="pre">pyapr.io.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'particles'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.io.read" title="Permalink to this definition"></a></dt>
+<dd><p>Read APR structure and one set of particles from file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpath</strong> (<em>str</em>) – APR file path, e.g. <cite>/home/data/test.apr</cite></p></li>
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a><em>, </em><em>optional</em>) – APR object to read the file into. If None, a new object is generated. (default: None)</p></li>
+<li><p><strong>parts</strong> (<em>ParticleData</em><em>, </em><em>optional</em>) – ParticleData object to read particles into. If provided, the type must match the data in the file.
+If None, a new object of the correct datatype is generated. (default: None)</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – Time point to read. (default: 0)</p></li>
+<li><p><strong>channel_name</strong> (<em>str</em>) – Channel to read. (default: <cite>t</cite>)</p></li>
+<li><p><strong>parts_name</strong> (<em>str</em>) – Name of the particle field to read. (default: <cite>particles</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The APR data structure and particle values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>apr, parts</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pyapr.io.read_apr" title="pyapr.io.read_apr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read_apr</span></code></a>, <a class="reference internal" href="#pyapr.io.read_particles" title="pyapr.io.read_particles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read_particles</span></code></a>, <a class="reference internal" href="#pyapr.io.get_particle_names" title="pyapr.io.get_particle_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.get_particle_names</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.io.write">
+<span class="sig-prename descclassname"><span class="pre">pyapr.io.</span></span><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'particles'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_linear</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.io.write" title="Permalink to this definition"></a></dt>
+<dd><p>Write APR structure and particles to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpath</strong> (<em>str</em>) – APR file path, e.g. <cite>/home/data/test.apr</cite></p></li>
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a><em>, </em><em>optional</em>) – APR object to write.</p></li>
+<li><p><strong>parts</strong> (<em>ParticleData</em><em>, </em><em>optional</em>) – ParticleData object to write.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – Time point under which the data is written. (default: 0)</p></li>
+<li><p><strong>channel_name</strong> (<em>str</em>) – Channel under which the data is written. (default: <cite>t</cite>)</p></li>
+<li><p><strong>parts_name</strong> (<em>str</em>) – Name of the particle field to write. (default: <cite>particles</cite>)</p></li>
+<li><p><strong>write_linear</strong> (<em>bool</em>) – If <cite>True</cite>, writes linear APR structure, otherwise the sparse (random access) structure is written. The
+linear structure is used in most processing methods, but requires more memory. (default: <cite>True</cite>)</p></li>
+<li><p><strong>write_tree</strong> (<em>bool</em>) – If <cite>True</cite>, the APR tree structure (all parent nodes of APR particles) is written to file. Results in slightly
+larger files (roughly 14.3% additional particles in 3D), but typically saves time when reading a file and
+subsequently using the tree. (default: <cite>True</cite>)</p></li>
+<li><p><strong>tree_parts</strong> (<em>ParticleData</em><em>, </em><em>optional</em>) – Values of tree particles (computed via e.g. <cite>pyapr.numerics.fill_tree_mean</cite>). If provided, and
+<cite>write_tree=True</cite>, the values are written to file. This allows, e.g. lazy reconstruction at coarse resolutions
+using <cite>pyapr.LazySlicer</cite>. (default: None)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pyapr.io.write_apr" title="pyapr.io.write_apr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.write_apr</span></code></a>, <a class="reference internal" href="#pyapr.io.write_particles" title="pyapr.io.write_particles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.write_particles</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.io.read_apr">
+<span class="sig-prename descclassname"><span class="pre">pyapr.io.</span></span><span class="sig-name descname"><span class="pre">read_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.io.read_apr" title="Permalink to this definition"></a></dt>
+<dd><p>Read APR structure from file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpath</strong> (<em>str</em>) – APR file path, e.g. <cite>/home/data/test.apr</cite></p></li>
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a><em>, </em><em>optional</em>) – APR object to read the file into. If None, a new object is generated. (default: None)</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – Time point to read. (default: 0)</p></li>
+<li><p><strong>channel_name</strong> (<em>str</em>) – Channel to read. (default: <cite>t</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>apr</strong> – The APR data structure.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR">APR</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pyapr.io.read" title="pyapr.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read</span></code></a>, <a class="reference internal" href="#pyapr.io.read_particles" title="pyapr.io.read_particles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read_particles</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.io.write_apr">
+<span class="sig-prename descclassname"><span class="pre">pyapr.io.</span></span><span class="sig-name descname"><span class="pre">write_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_linear</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.io.write_apr" title="Permalink to this definition"></a></dt>
+<dd><p>Write APR structure to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpath</strong> (<em>str</em>) – APR file path, e.g. <cite>/home/data/test.apr</cite></p></li>
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a><em>, </em><em>optional</em>) – APR object to write.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – Time point under which the data is written. (default: 0)</p></li>
+<li><p><strong>channel_name</strong> (<em>str</em>) – Channel under which the data is written. (default: <cite>t</cite>)</p></li>
+<li><p><strong>write_linear</strong> (<em>bool</em>) – If <cite>True</cite>, writes linear APR structure, otherwise the sparse (random access) structure is written. The
+linear structure is used in most processing methods, but requires more memory. (default: <cite>True</cite>)</p></li>
+<li><p><strong>write_tree</strong> (<em>bool</em>) – If <cite>True</cite>, the APR tree structure (all parent nodes of APR particles) is written to file. Results in slightly
+larger files, (roughly 14.3% additional particles in 3D) but typically saves time when reading a file and
+subsequently using the tree. (default: <cite>True</cite>)</p></li>
+<li><p><strong>append</strong> (<em>bool</em>) – If <cite>True</cite>, writes the data to an existing file, leaving other fields (channels/time points) intact. Otherwise,
+creates a new file, possibly overwriting if the file name already exists. (default: False)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pyapr.io.write" title="pyapr.io.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.write</span></code></a>, <a class="reference internal" href="#pyapr.io.write_particles" title="pyapr.io.write_particles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.write_particles</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.io.read_particles">
+<span class="sig-prename descclassname"><span class="pre">pyapr.io.</span></span><span class="sig-name descname"><span class="pre">read_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'particles'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.io.read_particles" title="Permalink to this definition"></a></dt>
+<dd><p>Read particle values from file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpath</strong> (<em>str</em>) – APR file path, e.g. <cite>/home/data/test.apr</cite></p></li>
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a><em>, </em><em>optional</em>) – Corresponding APR object, allowing an alternative (equivalent) read method to be used. Currently does not
+affect the result. (default: None)</p></li>
+<li><p><strong>parts</strong> (<em>ParticleData</em><em>, </em><em>optional</em>) – ParticleData object to read particles into. If provided, the type must match the data in the file.
+If None, a new object of the correct datatype is generated. (default: None)</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – Time point under which the data is written. (default: 0)</p></li>
+<li><p><strong>channel_name</strong> (<em>str</em>) – Channel under which the data is written. (default: <cite>t</cite>)</p></li>
+<li><p><strong>parts_name</strong> (<em>str</em>) – Name of the particle field to write. (default: <cite>particles</cite>)</p></li>
+<li><p><strong>tree</strong> (<em>bool</em>) – If <cite>True</cite>, reads the particles under the tree structure in the file. (default: <cite>False</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parts</strong> – The particle values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ParticleData</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pyapr.io.read" title="pyapr.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read</span></code></a>, <a class="reference internal" href="#pyapr.io.read_apr" title="pyapr.io.read_apr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read_apr</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.io.write_particles">
+<span class="sig-prename descclassname"><span class="pre">pyapr.io.</span></span><span class="sig-name descname"><span class="pre">write_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'particles'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.io.write_particles" title="Permalink to this definition"></a></dt>
+<dd><p>Write particle values to a new or existing file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpath</strong> (<em>str</em>) – APR file path, e.g. <cite>/home/data/test.apr</cite></p></li>
+<li><p><strong>parts</strong> (<em>ParticleData</em><em>, </em><em>optional</em>) – ParticleData object to write.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – Time point under which the data is written. (default: 0)</p></li>
+<li><p><strong>channel_name</strong> (<em>str</em>) – Channel under which the data is written. (default: <cite>t</cite>)</p></li>
+<li><p><strong>parts_name</strong> (<em>str</em>) – Name of the particle field to write. (default: <cite>particles</cite>)</p></li>
+<li><p><strong>tree</strong> (<em>bool</em>) – If <cite>True</cite>, writes the particles under the tree structure. The provided particles should then correspond
+to the APR tree. Otherwise the data is written under the standard APR structure (default: <cite>False</cite>)</p></li>
+<li><p><strong>append</strong> (<em>bool</em>) – If <cite>True</cite>, writes the data to an existing file, leaving other fields intact. Otherwise, creates a new
+file, possibly overwriting if the file name already exists. (default: True)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pyapr.io.write" title="pyapr.io.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.write</span></code></a>, <a class="reference internal" href="#pyapr.io.write_apr" title="pyapr.io.write_apr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.write_apr</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.io.get_particle_names">
+<span class="sig-prename descclassname"><span class="pre">pyapr.io.</span></span><span class="sig-name descname"><span class="pre">get_particle_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.io.get_particle_names" title="Permalink to this definition"></a></dt>
+<dd><p>List the particle field names present in an APR file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpath</strong> (<em>str</em>) – APR file path, e.g. <cite>/home/data/test.apr</cite></p></li>
+<li><p><strong>t</strong> (<em>int</em>) – Time point to read. (default: 0)</p></li>
+<li><p><strong>channel_name</strong> (<em>str</em>) – Channel to read. (default: <cite>t</cite>)</p></li>
+<li><p><strong>tree</strong> (<em>bool</em>) – If <cite>True</cite>, checks the tree structure under the given channel and time point. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>names</strong> – A list containing the detected particle names. If no data is found, returns an empty list.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pyapr.io.read" title="pyapr.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read</span></code></a>, <a class="reference internal" href="#pyapr.io.read_particles" title="pyapr.io.read_particles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.io.read_particles</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.io.get_particle_type">
+<span class="sig-prename descclassname"><span class="pre">pyapr.io.</span></span><span class="sig-name descname"><span class="pre">get_particle_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'particles'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.io.get_particle_type" title="Permalink to this definition"></a></dt>
+<dd><p>Return the datatype of a given particle dataset on file as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpath</strong> (<em>str</em>) – APR file path, e.g. <cite>/home/data/test.apr</cite></p></li>
+<li><p><strong>t</strong> (<em>int</em>) – Time point to read. (default: 0)</p></li>
+<li><p><strong>channel_name</strong> (<em>str</em>) – Channel to read. (default: <cite>t</cite>)</p></li>
+<li><p><strong>parts_name</strong> (<em>str</em>) – Name of the particle field whose type is to be determined.</p></li>
+<li><p><strong>tree</strong> (<em>bool</em>) – If <cite>True</cite>, checks the tree structure under the given channel and time point. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>dtype</strong> – String describing the datatype (e.g. <cite>float</cite> or <cite>uint16</cite>)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="pyapr.utils.html#pyapr.utils.type_to_particles" title="pyapr.utils.type_to_particles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.utils.type_to_particles</span></code></a>, <a class="reference internal" href="pyapr.utils.html#pyapr.utils.type_to_lazy_particles" title="pyapr.utils.type_to_lazy_particles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.utils.type_to_lazy_particles</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyapr.io.APRFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyapr.io.</span></span><span class="sig-name descname"><span class="pre">APRFile</span></span><a class="headerlink" href="#pyapr.io.APRFile" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_pyaprwrapper.io.APRFile_CPP</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.io.APRFile" title="_pyaprwrapper.io.APRFile"><span class="pre">_pyaprwrapper.io.APRFile</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.io.APRFile.close" title="Permalink to this definition"></a></dt>
+<dd><p>close the file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.current_file_size_GB">
+<span class="sig-name descname"><span class="pre">current_file_size_GB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.io.APRFile" title="_pyaprwrapper.io.APRFile"><span class="pre">_pyaprwrapper.io.APRFile</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyapr.io.APRFile.current_file_size_GB" title="Permalink to this definition"></a></dt>
+<dd><p>get current file size in GB</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.current_file_size_MB">
+<span class="sig-name descname"><span class="pre">current_file_size_MB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.io.APRFile" title="_pyaprwrapper.io.APRFile"><span class="pre">_pyaprwrapper.io.APRFile</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyapr.io.APRFile.current_file_size_MB" title="Permalink to this definition"></a></dt>
+<dd><p>get current file size in MB</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.get_channel_names">
+<span class="sig-name descname"><span class="pre">get_channel_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.io.APRFile" title="_pyaprwrapper.io.APRFile"><span class="pre">_pyaprwrapper.io.APRFile</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.io.APRFile.get_channel_names" title="Permalink to this definition"></a></dt>
+<dd><p>return list of channel names</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.get_particle_type">
+<span class="sig-name descname"><span class="pre">get_particle_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.io.APRFile" title="_pyaprwrapper.io.APRFile"><span class="pre">_pyaprwrapper.io.APRFile</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">particles_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr_or_tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pyapr.io.APRFile.get_particle_type" title="Permalink to this definition"></a></dt>
+<dd><p>return type (string) of particle dataset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.get_particles_names">
+<span class="sig-name descname"><span class="pre">get_particles_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.io.APRFile" title="_pyaprwrapper.io.APRFile"><span class="pre">_pyaprwrapper.io.APRFile</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr_or_tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.io.APRFile.get_particles_names" title="Permalink to this definition"></a></dt>
+<dd><p>return list of field names for stored particle values</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.open">
+<span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.io.APRFile" title="_pyaprwrapper.io.APRFile"><span class="pre">_pyaprwrapper.io.APRFile</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_write</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'WRITE'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyapr.io.APRFile.open" title="Permalink to this definition"></a></dt>
+<dd><p>open a file for reading and/or writing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.read_apr">
+<span class="sig-name descname"><span class="pre">read_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.io.APRFile" title="_pyaprwrapper.io.APRFile"><span class="pre">_pyaprwrapper.io.APRFile</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyapr.io.APRFile.read_apr" title="Permalink to this definition"></a></dt>
+<dd><p>read an APR from file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.read_particles">
+<span class="sig-name descname"><span class="pre">read_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.io.APRFile.read_particles" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>read_particles(self: _pyaprwrapper.io.APRFile, apr: _pyaprwrapper.data_containers.APR, particles_name: str, particles: _pyaprwrapper.data_containers.ByteParticles, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>read particles from file</p>
+<ol class="arabic simple" start="2">
+<li><p>read_particles(self: _pyaprwrapper.io.APRFile, apr: _pyaprwrapper.data_containers.APR, particles_name: str, particles: _pyaprwrapper.data_containers.ShortParticles, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>read particles from file</p>
+<ol class="arabic simple" start="3">
+<li><p>read_particles(self: _pyaprwrapper.io.APRFile, apr: _pyaprwrapper.data_containers.APR, particles_name: str, particles: _pyaprwrapper.data_containers.LongParticles, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>read particles from file</p>
+<ol class="arabic simple" start="4">
+<li><p>read_particles(self: _pyaprwrapper.io.APRFile, apr: _pyaprwrapper.data_containers.APR, particles_name: str, particles: _pyaprwrapper.data_containers.FloatParticles, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>read particles from file</p>
+<ol class="arabic simple" start="5">
+<li><p>read_particles(self: _pyaprwrapper.io.APRFile, particles_name: str, particles: _pyaprwrapper.data_containers.ByteParticles, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>read particles from file</p>
+<ol class="arabic simple" start="6">
+<li><p>read_particles(self: _pyaprwrapper.io.APRFile, particles_name: str, particles: _pyaprwrapper.data_containers.ShortParticles, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>read particles from file</p>
+<ol class="arabic simple" start="7">
+<li><p>read_particles(self: _pyaprwrapper.io.APRFile, particles_name: str, particles: _pyaprwrapper.data_containers.LongParticles, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>read particles from file</p>
+<ol class="arabic simple" start="8">
+<li><p>read_particles(self: _pyaprwrapper.io.APRFile, particles_name: str, particles: _pyaprwrapper.data_containers.FloatParticles, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>read particles from file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.set_write_linear_flag">
+<span class="sig-name descname"><span class="pre">set_write_linear_flag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.io.APRFile" title="_pyaprwrapper.io.APRFile"><span class="pre">_pyaprwrapper.io.APRFile</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.io.APRFile.set_write_linear_flag" title="Permalink to this definition"></a></dt>
+<dd><p>write linear access structure?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.write_apr">
+<span class="sig-name descname"><span class="pre">write_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.io.APRFile" title="_pyaprwrapper.io.APRFile"><span class="pre">_pyaprwrapper.io.APRFile</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyapr.io.APRFile.write_apr" title="Permalink to this definition"></a></dt>
+<dd><p>write apr to file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.io.APRFile.write_particles">
+<span class="sig-name descname"><span class="pre">write_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.io.APRFile.write_particles" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>write_particles(self: _pyaprwrapper.io.APRFile, particles_name: str, particles: _pyaprwrapper.data_containers.ByteParticles_CPP, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>write particles to file</p>
+<ol class="arabic simple" start="2">
+<li><p>write_particles(self: _pyaprwrapper.io.APRFile, particles_name: str, particles: _pyaprwrapper.data_containers.ShortParticles_CPP, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>write particles to file</p>
+<ol class="arabic simple" start="3">
+<li><p>write_particles(self: _pyaprwrapper.io.APRFile, particles_name: str, particles: _pyaprwrapper.data_containers.LongParticles_CPP, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>write particles to file</p>
+<ol class="arabic simple" start="4">
+<li><p>write_particles(self: _pyaprwrapper.io.APRFile, particles_name: str, particles: _pyaprwrapper.data_containers.FloatParticles_CPP, apr_or_tree: bool = True, t: int = 0, channel_name: str = ‘t’) -&gt; bool</p></li>
+</ol>
+<p>write particles to file</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.io.read_multichannel">
+<span class="sig-prename descclassname"><span class="pre">pyapr.io.</span></span><span class="sig-name descname"><span class="pre">read_multichannel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_names_parts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.io.read_multichannel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.io.write_multichannel">
+<span class="sig-prename descclassname"><span class="pre">pyapr.io.</span></span><span class="sig-name descname"><span class="pre">write_multichannel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_names_parts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.io.write_multichannel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyapr.filter.html" class="btn btn-neutral float-left" title="filter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyapr.measure.html" class="btn btn-neutral float-right" title="measure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Joel Jonsson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
