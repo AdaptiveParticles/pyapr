@@ -13,10 +13,6 @@ permissions:
 jobs:
   deploy-docs:
     name: build and deploy docs
-    # only run on push to master/develop
-    if: |
-      github.ref == 'refs/heads/master' ||
-      github.ref == 'refs/heads/develop'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -43,12 +39,20 @@ jobs:
 
       - name: Submodule recursive
         run: git submodule update --init --recursive
-
-      - name: Checkout develop branch of LibAPR
+      
+      - name: Get branch name
         shell: bash
         run: |
+          raw=$(git branch -r --contains ${{ github.ref }})
+          branch=${raw/origin\/}
+          echo "BRANCH_NAME=$(echo $branch)" >> $GITHUB_ENV
+
+      - name: Checkout master/develop branch of LibAPR
+        shell: bash
+        run: |
+          echo "checking out branch ${{ env.BRANCH_NAME }} of submodule external/LibAPR"
           cd external/LibAPR
-          git checkout develop
+          git checkout ${{ env.BRANCH_NAME }}
 
       # Setup the build machine with the most recent versions of CMake and Ninja. Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
       - uses: lukka/get-cmake@latest
@@ -125,6 +129,7 @@ jobs:
           echo ::set-output name=VERSION_TAG::${GITHUB_REF#refs/tags/}
 
       - name: Deploy documentation
+        if: ${{ (env.BRANCH_NAME == 'master') || (env.BRANCH_NAME == 'develop') }}
         uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
           branch: gh-pages            # The branch the action should deploy to.
