@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils &mdash; pyapr 1.0.0rc2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="viewer" href="pyapr.viewer.html" />
+    <link rel="prev" title="tree" href="pyapr.tree.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> pyapr
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Submodules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pyapr.html">pyapr</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pyapr.converter.html">converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.data_containers.html">data_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.filter.html">filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.measure.html">measure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.morphology.html">morphology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.reconstruction.html">reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.restoration.html">restoration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.segmentation.html">segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.transform.html">transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.tree.html">tree</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.viewer.html">viewer</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyapr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="pyapr.html">pyapr</a> &raquo;</li>
+      <li>utils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pyapr.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="utils">
+<h1>utils<a class="headerlink" href="#utils" title="Permalink to this headline"></a></h1>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.utils.particles_to_type" title="pyapr.utils.particles_to_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.utils.particles_to_type</span></code></a>(parts)</p></td>
+<td><p>Returns the numpy dtype corresponding to a ParticleData or LazyData object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.utils.type_to_particles" title="pyapr.utils.type_to_particles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.utils.type_to_particles</span></code></a>(typespec)</p></td>
+<td><p>Returns a ParticleData object of the specified type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.utils.type_to_lazy_particles" title="pyapr.utils.type_to_lazy_particles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.utils.type_to_lazy_particles</span></code></a>(typespec)</p></td>
+<td><p>Returns a LazyData object of the specified type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.utils.InteractiveIO" title="pyapr.utils.InteractiveIO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.utils.InteractiveIO</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-pyapr.utils"></span><dl class="py function">
+<dt class="sig sig-object py" id="pyapr.utils.particles_to_type">
+<span class="sig-prename descclassname"><span class="pre">pyapr.utils.</span></span><span class="sig-name descname"><span class="pre">particles_to_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LazyDataByte" title="_pyaprwrapper.data_containers.LazyDataByte"><span class="pre">_pyaprwrapper.data_containers.LazyDataByte</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LazyDataShort" title="_pyaprwrapper.data_containers.LazyDataShort"><span class="pre">_pyaprwrapper.data_containers.LazyDataShort</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LazyDataLong" title="_pyaprwrapper.data_containers.LazyDataLong"><span class="pre">_pyaprwrapper.data_containers.LazyDataLong</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LazyDataFloat" title="_pyaprwrapper.data_containers.LazyDataFloat"><span class="pre">_pyaprwrapper.data_containers.LazyDataFloat</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">type</span></span></span><a class="headerlink" href="#pyapr.utils.particles_to_type" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the numpy dtype corresponding to a ParticleData or LazyData object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parts</strong> (<em>ParticleData</em><em> or </em><em>LazyData</em>) – ParticleData or LazyData object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>output</strong> – numpy type corresponding to the data type of the input object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.utils.type_to_particles">
+<span class="sig-prename descclassname"><span class="pre">pyapr.utils.</span></span><span class="sig-name descname"><span class="pre">type_to_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typespec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">_pyaprwrapper.data_containers.ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">_pyaprwrapper.data_containers.ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">_pyaprwrapper.data_containers.LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">_pyaprwrapper.data_containers.FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.utils.type_to_particles" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a ParticleData object of the specified type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>typespec</strong> (<em>str</em><em> or </em><em>type</em>) – String specifying the data type. Valid types are <cite>uint8</cite>, <cite>uint16</cite>, <cite>uint64</cite>, <cite>float</cite> or corresponding numpy
+types.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parts</strong> – ParticleData of the specified type (if valid).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ParticleData</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.utils.type_to_lazy_particles">
+<span class="sig-prename descclassname"><span class="pre">pyapr.utils.</span></span><span class="sig-name descname"><span class="pre">type_to_lazy_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">typespec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LazyDataByte" title="_pyaprwrapper.data_containers.LazyDataByte"><span class="pre">_pyaprwrapper.data_containers.LazyDataByte</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LazyDataShort" title="_pyaprwrapper.data_containers.LazyDataShort"><span class="pre">_pyaprwrapper.data_containers.LazyDataShort</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LazyDataLong" title="_pyaprwrapper.data_containers.LazyDataLong"><span class="pre">_pyaprwrapper.data_containers.LazyDataLong</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LazyDataFloat" title="_pyaprwrapper.data_containers.LazyDataFloat"><span class="pre">_pyaprwrapper.data_containers.LazyDataFloat</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.utils.type_to_lazy_particles" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a LazyData object of the specified type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>typespec</strong> (<em>str</em><em> or </em><em>type</em>) – String specifying the data type. Valid types are <cite>uint8</cite>, <cite>uint16</cite>, <cite>uint64</cite>, <cite>float</cite> or corresponding numpy
+types.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parts</strong> – LazyData of the specified type (if valid).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>LazyData</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyapr.utils.InteractiveIO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyapr.utils.</span></span><span class="sig-name descname"><span class="pre">InteractiveIO</span></span><a class="headerlink" href="#pyapr.utils.InteractiveIO" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.utils.InteractiveIO.get_tiff_file_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tiff_file_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.utils.InteractiveIO.get_tiff_file_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.utils.InteractiveIO.get_apr_file_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_apr_file_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.utils.InteractiveIO.get_apr_file_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.utils.InteractiveIO.save_apr_file_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_apr_file_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output.apr'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.utils.InteractiveIO.save_apr_file_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.utils.InteractiveIO.save_tiff_file_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_tiff_file_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output.tif'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.utils.InteractiveIO.save_tiff_file_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.utils.InteractiveIO.interactive_apr">
+<span class="sig-name descname"><span class="pre">interactive_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">converter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slider_decimals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.utils.InteractiveIO.interactive_apr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.utils.InteractiveIO.find_parameters_interactive">
+<span class="sig-name descname"><span class="pre">find_parameters_interactive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">converter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slider_decimals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.utils.InteractiveIO.find_parameters_interactive" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyapr.tree.html" class="btn btn-neutral float-left" title="tree" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyapr.viewer.html" class="btn btn-neutral float-right" title="viewer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Joel Jonsson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

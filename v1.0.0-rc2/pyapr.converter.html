@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>converter &mdash; pyapr 1.0.0rc2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="data_containers" href="pyapr.data_containers.html" />
+    <link rel="prev" title="pyapr" href="pyapr.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> pyapr
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Submodules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pyapr.html">pyapr</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.data_containers.html">data_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.filter.html">filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.measure.html">measure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.morphology.html">morphology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.reconstruction.html">reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.restoration.html">restoration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.segmentation.html">segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.transform.html">transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.tree.html">tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.viewer.html">viewer</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyapr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="pyapr.html">pyapr</a> &raquo;</li>
+      <li>converter</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pyapr.converter.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="converter">
+<h1>converter<a class="headerlink" href="#converter" title="Permalink to this headline"></a></h1>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.converter.get_apr" title="pyapr.converter.get_apr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.converter.get_apr</span></code></a>(image[, converter, ...])</p></td>
+<td><p>Convert an image to the APR.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.converter.get_apr_interactive" title="pyapr.converter.get_apr_interactive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.converter.get_apr_interactive</span></code></a>(image[, ...])</p></td>
+<td><p>Interactively convert an image array to the APR.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.converter.find_parameters_interactive" title="pyapr.converter.find_parameters_interactive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.converter.find_parameters_interactive</span></code></a>(image)</p></td>
+<td><p>Interactively find the APR conversion parameters <cite>Ip_th</cite>, <cite>sigma_th</cite> and <cite>grad_th</cite> with visual feedback.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.converter.ByteConverter" title="pyapr.converter.ByteConverter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.converter.ByteConverter</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.converter.ShortConverter" title="pyapr.converter.ShortConverter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.converter.ShortConverter</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.converter.FloatConverter" title="pyapr.converter.FloatConverter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.converter.FloatConverter</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.converter.ByteConverterBatch" title="pyapr.converter.ByteConverterBatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.converter.ByteConverterBatch</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.converter.ShortConverterBatch" title="pyapr.converter.ShortConverterBatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.converter.ShortConverterBatch</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.converter.FloatConverterBatch" title="pyapr.converter.FloatConverterBatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.converter.FloatConverterBatch</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-pyapr.converter"></span><dl class="py function">
+<dt class="sig sig-object py" id="pyapr.converter.get_apr">
+<span class="sig-prename descclassname"><span class="pre">pyapr.converter.</span></span><span class="sig-name descname"><span class="pre">get_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">converter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyapr.converter.FloatConverter" title="_pyaprwrapper.converter.FloatConverter"><span class="pre">_pyaprwrapper.converter.FloatConverter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pyapr.converter.ShortConverter" title="_pyaprwrapper.converter.ShortConverter"><span class="pre">_pyaprwrapper.converter.ShortConverter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.converter.get_apr" title="Permalink to this definition"></a></dt>
+<dd><p>Convert an image to the APR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>numpy.ndarray</em>) – Input pixel image as an array of 1-3 dimensions.</p></li>
+<li><p><strong>converter</strong> (<a class="reference internal" href="#pyapr.converter.FloatConverter" title="pyapr.converter.FloatConverter"><em>FloatConverter</em></a><em> or </em><a class="reference internal" href="#pyapr.converter.ShortConverter" title="pyapr.converter.ShortConverter"><em>ShortConverter</em></a><em> (</em><em>optional</em><em>)</em>) – Converter object used to compute the APR. By default, FloatConverter is used to avoid rounding errors in
+internal steps.</p></li>
+<li><p><strong>params</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="pyapr.data_containers.APRParameters"><em>APRParameters</em></a><em> (</em><em>optional</em><em>)</em>) – If provided, sets parameters of the converter. If not, the parameters of the converter object is used, with
+‘auto_parameters’ set to True.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – Set the verbose mode of the converter (default: False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>apr</strong> (<em>APR</em>) – Generated APR object containing the adaptively sampled structure.</p></li>
+<li><p><strong>parts</strong> (<em>ByteParticles, ShortParticles, FloatParticles</em>) – Sampled particle values (average downsampled from pixel values). The data type matches that of the input image
+(uint8, uint16 or float).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.converter.get_apr_interactive">
+<span class="sig-prename descclassname"><span class="pre">pyapr.converter.</span></span><span class="sig-name descname"><span class="pre">get_apr_interactive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">converter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyapr.converter.FloatConverter" title="_pyaprwrapper.converter.FloatConverter"><span class="pre">_pyaprwrapper.converter.FloatConverter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pyapr.converter.ShortConverter" title="_pyaprwrapper.converter.ShortConverter"><span class="pre">_pyaprwrapper.converter.ShortConverter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slider_decimals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.converter.get_apr_interactive" title="Permalink to this definition"></a></dt>
+<dd><p>Interactively convert an image array to the APR. The parameters <cite>Ip_th</cite>, <cite>sigma_th</cite> and <cite>grad_th</cite> are set
+with visual feedback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>numpy.ndarray</em>) – Input (pixel) image as an array of 1-3 dimensions.</p></li>
+<li><p><strong>converter</strong> (<a class="reference internal" href="#pyapr.converter.FloatConverter" title="pyapr.converter.FloatConverter"><em>FloatConverter</em></a><em> or </em><a class="reference internal" href="#pyapr.converter.ShortConverter" title="pyapr.converter.ShortConverter"><em>ShortConverter</em></a><em> (</em><em>optional</em><em>)</em>) – Converter object used to compute the APR. By default, FloatConverter is used to avoid rounding errors in
+internal steps.</p></li>
+<li><p><strong>params</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="pyapr.data_containers.APRParameters"><em>APRParameters</em></a><em> (</em><em>optional</em><em>)</em>) – If provided, sets parameters of the converter. Otherwise default parameters are used.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – Set the verbose mode of the converter (default: False).</p></li>
+<li><p><strong>slider_decimals</strong> (<em>int</em>) – Number of decimals to use in the parameter sliders.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>apr</strong> (<em>APR</em>) – Generated APR object containing the adaptively sampled structure.</p></li>
+<li><p><strong>parts</strong> (<em>ByteParticles, ShortParticles, FloatParticles</em>) – Sampled particle values (average downsampled from pixel values). The data type matches that of the input image
+(uint8, uint16 or float).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.converter.find_parameters_interactive">
+<span class="sig-prename descclassname"><span class="pre">pyapr.converter.</span></span><span class="sig-name descname"><span class="pre">find_parameters_interactive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">converter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyapr.converter.FloatConverter" title="_pyaprwrapper.converter.FloatConverter"><span class="pre">_pyaprwrapper.converter.FloatConverter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#pyapr.converter.ShortConverter" title="_pyaprwrapper.converter.ShortConverter"><span class="pre">_pyaprwrapper.converter.ShortConverter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slider_decimals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.converter.find_parameters_interactive" title="Permalink to this definition"></a></dt>
+<dd><p>Interactively find the APR conversion parameters <cite>Ip_th</cite>, <cite>sigma_th</cite> and <cite>grad_th</cite> with visual feedback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>numpy.ndarray</em>) – Input (pixel) image as an array of 1-3 dimensions.</p></li>
+<li><p><strong>converter</strong> (<a class="reference internal" href="#pyapr.converter.FloatConverter" title="pyapr.converter.FloatConverter"><em>FloatConverter</em></a><em> or </em><a class="reference internal" href="#pyapr.converter.ShortConverter" title="pyapr.converter.ShortConverter"><em>ShortConverter</em></a><em> (</em><em>optional</em><em>)</em>) – Converter object used to compute the APR. By default, FloatConverter is used to avoid rounding errors in
+internal steps.</p></li>
+<li><p><strong>params</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="pyapr.data_containers.APRParameters"><em>APRParameters</em></a><em> (</em><em>optional</em><em>)</em>) – If provided, sets parameters of the converter. Otherwise default parameters are used.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – Set the verbose mode of the converter (default: False).</p></li>
+<li><p><strong>slider_decimals</strong> (<em>int</em>) – Number of decimals to use in the parameter sliders.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>params</strong> – The parameters with the selected values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="pyapr.data_containers.APRParameters">APRParameters</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyapr.converter.</span></span><span class="sig-name descname"><span class="pre">ByteConverter</span></span><a class="headerlink" href="#pyapr.converter.ByteConverter" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverter.get_apr">
+<span class="sig-name descname"><span class="pre">get_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.converter.ByteConverter.get_apr" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>get_apr(self: _pyaprwrapper.converter.ByteConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.float32]) -&gt; None</p></li>
+</ol>
+<p>compute APR from an image (input as a numpy array)</p>
+<ol class="arabic simple" start="2">
+<li><p>get_apr(self: _pyaprwrapper.converter.ByteConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint16]) -&gt; None</p></li>
+</ol>
+<p>compute APR from an image (input as a numpy array)</p>
+<ol class="arabic simple" start="3">
+<li><p>get_apr(self: _pyaprwrapper.converter.ByteConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint8]) -&gt; None</p></li>
+</ol>
+<p>compute APR from an image (input as a numpy array)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverter.get_apr_step1">
+<span class="sig-name descname"><span class="pre">get_apr_step1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.converter.ByteConverter.get_apr_step1" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>get_apr_step1(self: _pyaprwrapper.converter.ByteConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.float32]) -&gt; None</p></li>
+</ol>
+<p>Interactive APR generation</p>
+<ol class="arabic simple" start="2">
+<li><p>get_apr_step1(self: _pyaprwrapper.converter.ByteConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint16]) -&gt; None</p></li>
+</ol>
+<p>Interactive APR generation</p>
+<ol class="arabic simple" start="3">
+<li><p>get_apr_step1(self: _pyaprwrapper.converter.ByteConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint8]) -&gt; None</p></li>
+</ol>
+<p>Interactive APR generation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverter.get_apr_step2">
+<span class="sig-name descname"><span class="pre">get_apr_step2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ByteConverter" title="_pyaprwrapper.converter.ByteConverter"><span class="pre">_pyaprwrapper.converter.ByteConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.ByteConverter.get_apr_step2" title="Permalink to this definition"></a></dt>
+<dd><p>Interactive APR generation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverter.get_level_slice">
+<span class="sig-name descname"><span class="pre">get_level_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ByteConverter" title="_pyaprwrapper.converter.ByteConverter"><span class="pre">_pyaprwrapper.converter.ByteConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float32</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg3</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.ByteConverter.get_level_slice" title="Permalink to this definition"></a></dt>
+<dd><p>gets the current level slice for the applied parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverter.get_parameters">
+<span class="sig-name descname"><span class="pre">get_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ByteConverter" title="_pyaprwrapper.converter.ByteConverter"><span class="pre">_pyaprwrapper.converter.ByteConverter</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></span><a class="headerlink" href="#pyapr.converter.ByteConverter.get_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>get parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverter.set_parameters">
+<span class="sig-name descname"><span class="pre">set_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ByteConverter" title="_pyaprwrapper.converter.ByteConverter"><span class="pre">_pyaprwrapper.converter.ByteConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.ByteConverter.set_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>set parameters</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverter.verbose">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">verbose</span></span><a class="headerlink" href="#pyapr.converter.ByteConverter.verbose" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyapr.converter.</span></span><span class="sig-name descname"><span class="pre">ShortConverter</span></span><a class="headerlink" href="#pyapr.converter.ShortConverter" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverter.get_apr">
+<span class="sig-name descname"><span class="pre">get_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.converter.ShortConverter.get_apr" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>get_apr(self: _pyaprwrapper.converter.ShortConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.float32]) -&gt; None</p></li>
+</ol>
+<p>compute APR from an image (input as a numpy array)</p>
+<ol class="arabic simple" start="2">
+<li><p>get_apr(self: _pyaprwrapper.converter.ShortConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint16]) -&gt; None</p></li>
+</ol>
+<p>compute APR from an image (input as a numpy array)</p>
+<ol class="arabic simple" start="3">
+<li><p>get_apr(self: _pyaprwrapper.converter.ShortConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint8]) -&gt; None</p></li>
+</ol>
+<p>compute APR from an image (input as a numpy array)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverter.get_apr_step1">
+<span class="sig-name descname"><span class="pre">get_apr_step1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.converter.ShortConverter.get_apr_step1" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>get_apr_step1(self: _pyaprwrapper.converter.ShortConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.float32]) -&gt; None</p></li>
+</ol>
+<p>Interactive APR generation</p>
+<ol class="arabic simple" start="2">
+<li><p>get_apr_step1(self: _pyaprwrapper.converter.ShortConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint16]) -&gt; None</p></li>
+</ol>
+<p>Interactive APR generation</p>
+<ol class="arabic simple" start="3">
+<li><p>get_apr_step1(self: _pyaprwrapper.converter.ShortConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint8]) -&gt; None</p></li>
+</ol>
+<p>Interactive APR generation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverter.get_apr_step2">
+<span class="sig-name descname"><span class="pre">get_apr_step2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ShortConverter" title="_pyaprwrapper.converter.ShortConverter"><span class="pre">_pyaprwrapper.converter.ShortConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.ShortConverter.get_apr_step2" title="Permalink to this definition"></a></dt>
+<dd><p>Interactive APR generation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverter.get_level_slice">
+<span class="sig-name descname"><span class="pre">get_level_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ShortConverter" title="_pyaprwrapper.converter.ShortConverter"><span class="pre">_pyaprwrapper.converter.ShortConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float32</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg3</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.ShortConverter.get_level_slice" title="Permalink to this definition"></a></dt>
+<dd><p>gets the current level slice for the applied parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverter.get_parameters">
+<span class="sig-name descname"><span class="pre">get_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ShortConverter" title="_pyaprwrapper.converter.ShortConverter"><span class="pre">_pyaprwrapper.converter.ShortConverter</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></span><a class="headerlink" href="#pyapr.converter.ShortConverter.get_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>get parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverter.set_parameters">
+<span class="sig-name descname"><span class="pre">set_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ShortConverter" title="_pyaprwrapper.converter.ShortConverter"><span class="pre">_pyaprwrapper.converter.ShortConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.ShortConverter.set_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>set parameters</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverter.verbose">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">verbose</span></span><a class="headerlink" href="#pyapr.converter.ShortConverter.verbose" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyapr.converter.</span></span><span class="sig-name descname"><span class="pre">FloatConverter</span></span><a class="headerlink" href="#pyapr.converter.FloatConverter" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverter.get_apr">
+<span class="sig-name descname"><span class="pre">get_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.converter.FloatConverter.get_apr" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>get_apr(self: _pyaprwrapper.converter.FloatConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.float32]) -&gt; None</p></li>
+</ol>
+<p>compute APR from an image (input as a numpy array)</p>
+<ol class="arabic simple" start="2">
+<li><p>get_apr(self: _pyaprwrapper.converter.FloatConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint16]) -&gt; None</p></li>
+</ol>
+<p>compute APR from an image (input as a numpy array)</p>
+<ol class="arabic simple" start="3">
+<li><p>get_apr(self: _pyaprwrapper.converter.FloatConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint8]) -&gt; None</p></li>
+</ol>
+<p>compute APR from an image (input as a numpy array)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverter.get_apr_step1">
+<span class="sig-name descname"><span class="pre">get_apr_step1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.converter.FloatConverter.get_apr_step1" title="Permalink to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>get_apr_step1(self: _pyaprwrapper.converter.FloatConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.float32]) -&gt; None</p></li>
+</ol>
+<p>Interactive APR generation</p>
+<ol class="arabic simple" start="2">
+<li><p>get_apr_step1(self: _pyaprwrapper.converter.FloatConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint16]) -&gt; None</p></li>
+</ol>
+<p>Interactive APR generation</p>
+<ol class="arabic simple" start="3">
+<li><p>get_apr_step1(self: _pyaprwrapper.converter.FloatConverter, apr: _pyaprwrapper.data_containers.APR, img: numpy.ndarray[numpy.uint8]) -&gt; None</p></li>
+</ol>
+<p>Interactive APR generation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverter.get_apr_step2">
+<span class="sig-name descname"><span class="pre">get_apr_step2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.FloatConverter" title="_pyaprwrapper.converter.FloatConverter"><span class="pre">_pyaprwrapper.converter.FloatConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.FloatConverter.get_apr_step2" title="Permalink to this definition"></a></dt>
+<dd><p>Interactive APR generation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverter.get_level_slice">
+<span class="sig-name descname"><span class="pre">get_level_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.FloatConverter" title="_pyaprwrapper.converter.FloatConverter"><span class="pre">_pyaprwrapper.converter.FloatConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float32</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg3</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.FloatConverter.get_level_slice" title="Permalink to this definition"></a></dt>
+<dd><p>gets the current level slice for the applied parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverter.get_parameters">
+<span class="sig-name descname"><span class="pre">get_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.FloatConverter" title="_pyaprwrapper.converter.FloatConverter"><span class="pre">_pyaprwrapper.converter.FloatConverter</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></span><a class="headerlink" href="#pyapr.converter.FloatConverter.get_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>get parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverter.set_parameters">
+<span class="sig-name descname"><span class="pre">set_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.FloatConverter" title="_pyaprwrapper.converter.FloatConverter"><span class="pre">_pyaprwrapper.converter.FloatConverter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.FloatConverter.set_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>set parameters</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverter.verbose">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">verbose</span></span><a class="headerlink" href="#pyapr.converter.FloatConverter.verbose" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverterBatch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyapr.converter.</span></span><span class="sig-name descname"><span class="pre">ByteConverterBatch</span></span><a class="headerlink" href="#pyapr.converter.ByteConverterBatch" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverterBatch.get_apr">
+<span class="sig-name descname"><span class="pre">get_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ByteConverterBatch" title="_pyaprwrapper.converter.ByteConverterBatch"><span class="pre">_pyaprwrapper.converter.ByteConverterBatch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyapr.converter.ByteConverterBatch.get_apr" title="Permalink to this definition"></a></dt>
+<dd><p>compute APR from an image (input as a numpy array)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverterBatch.get_parameters">
+<span class="sig-name descname"><span class="pre">get_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ByteConverterBatch" title="_pyaprwrapper.converter.ByteConverterBatch"><span class="pre">_pyaprwrapper.converter.ByteConverterBatch</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></span><a class="headerlink" href="#pyapr.converter.ByteConverterBatch.get_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>get parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverterBatch.set_parameters">
+<span class="sig-name descname"><span class="pre">set_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ByteConverterBatch" title="_pyaprwrapper.converter.ByteConverterBatch"><span class="pre">_pyaprwrapper.converter.ByteConverterBatch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.ByteConverterBatch.set_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>set parameters</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverterBatch.verbose">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">verbose</span></span><a class="headerlink" href="#pyapr.converter.ByteConverterBatch.verbose" title="Permalink to this definition"></a></dt>
+<dd><p>print timings and additional information</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverterBatch.z_block_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z_block_size</span></span><a class="headerlink" href="#pyapr.converter.ByteConverterBatch.z_block_size" title="Permalink to this definition"></a></dt>
+<dd><p>number of z slices to process simultaneously</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.ByteConverterBatch.z_ghost_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z_ghost_size</span></span><a class="headerlink" href="#pyapr.converter.ByteConverterBatch.z_ghost_size" title="Permalink to this definition"></a></dt>
+<dd><p>number of ‘ghost slices’ on each side of each block</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverterBatch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyapr.converter.</span></span><span class="sig-name descname"><span class="pre">ShortConverterBatch</span></span><a class="headerlink" href="#pyapr.converter.ShortConverterBatch" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverterBatch.get_apr">
+<span class="sig-name descname"><span class="pre">get_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ShortConverterBatch" title="_pyaprwrapper.converter.ShortConverterBatch"><span class="pre">_pyaprwrapper.converter.ShortConverterBatch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyapr.converter.ShortConverterBatch.get_apr" title="Permalink to this definition"></a></dt>
+<dd><p>compute APR from an image (input as a numpy array)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverterBatch.get_parameters">
+<span class="sig-name descname"><span class="pre">get_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ShortConverterBatch" title="_pyaprwrapper.converter.ShortConverterBatch"><span class="pre">_pyaprwrapper.converter.ShortConverterBatch</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></span><a class="headerlink" href="#pyapr.converter.ShortConverterBatch.get_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>get parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverterBatch.set_parameters">
+<span class="sig-name descname"><span class="pre">set_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.ShortConverterBatch" title="_pyaprwrapper.converter.ShortConverterBatch"><span class="pre">_pyaprwrapper.converter.ShortConverterBatch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.ShortConverterBatch.set_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>set parameters</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverterBatch.verbose">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">verbose</span></span><a class="headerlink" href="#pyapr.converter.ShortConverterBatch.verbose" title="Permalink to this definition"></a></dt>
+<dd><p>print timings and additional information</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverterBatch.z_block_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z_block_size</span></span><a class="headerlink" href="#pyapr.converter.ShortConverterBatch.z_block_size" title="Permalink to this definition"></a></dt>
+<dd><p>number of z slices to process simultaneously</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.ShortConverterBatch.z_ghost_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z_ghost_size</span></span><a class="headerlink" href="#pyapr.converter.ShortConverterBatch.z_ghost_size" title="Permalink to this definition"></a></dt>
+<dd><p>number of ‘ghost slices’ on each side of each block</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverterBatch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyapr.converter.</span></span><span class="sig-name descname"><span class="pre">FloatConverterBatch</span></span><a class="headerlink" href="#pyapr.converter.FloatConverterBatch" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverterBatch.get_apr">
+<span class="sig-name descname"><span class="pre">get_apr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.FloatConverterBatch" title="_pyaprwrapper.converter.FloatConverterBatch"><span class="pre">_pyaprwrapper.converter.FloatConverterBatch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">_pyaprwrapper.data_containers.APR</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyapr.converter.FloatConverterBatch.get_apr" title="Permalink to this definition"></a></dt>
+<dd><p>compute APR from an image (input as a numpy array)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverterBatch.get_parameters">
+<span class="sig-name descname"><span class="pre">get_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.FloatConverterBatch" title="_pyaprwrapper.converter.FloatConverterBatch"><span class="pre">_pyaprwrapper.converter.FloatConverterBatch</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></span><a class="headerlink" href="#pyapr.converter.FloatConverterBatch.get_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>get parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverterBatch.set_parameters">
+<span class="sig-name descname"><span class="pre">set_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyapr.converter.FloatConverterBatch" title="_pyaprwrapper.converter.FloatConverterBatch"><span class="pre">_pyaprwrapper.converter.FloatConverterBatch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APRParameters" title="_pyaprwrapper.data_containers.APRParameters"><span class="pre">_pyaprwrapper.data_containers.APRParameters</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyapr.converter.FloatConverterBatch.set_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>set parameters</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverterBatch.verbose">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">verbose</span></span><a class="headerlink" href="#pyapr.converter.FloatConverterBatch.verbose" title="Permalink to this definition"></a></dt>
+<dd><p>print timings and additional information</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverterBatch.z_block_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z_block_size</span></span><a class="headerlink" href="#pyapr.converter.FloatConverterBatch.z_block_size" title="Permalink to this definition"></a></dt>
+<dd><p>number of z slices to process simultaneously</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyapr.converter.FloatConverterBatch.z_ghost_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z_ghost_size</span></span><a class="headerlink" href="#pyapr.converter.FloatConverterBatch.z_ghost_size" title="Permalink to this definition"></a></dt>
+<dd><p>number of ‘ghost slices’ on each side of each block</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyapr.html" class="btn btn-neutral float-left" title="pyapr" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyapr.data_containers.html" class="btn btn-neutral float-right" title="data_containers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Joel Jonsson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
