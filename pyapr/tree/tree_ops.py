@@ -1,6 +1,6 @@
 from _pyaprwrapper.tree import sample_from_tree as _sample_from_tree
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
-from .._common import _check_input
+from .._common import _check_input, _check_input_tree
 from typing import Union
 
 ParticleData = Union[ByteParticles, ShortParticles, FloatParticles, LongParticles]
@@ -37,9 +37,9 @@ def sample_from_tree(apr: APR,
     """
     if num_levels <= 0:
         return parts
+
     _check_input(apr, parts)
-    assert isinstance(tree_parts, (FloatParticles, type(parts))), TypeError(f'\'tree_parts\' must be FloatParticles or '
-                                                                            f'the same type as \'parts\' ({type(parts)})')
+    _check_input_tree(apr, tree_parts, (FloatParticles, type(parts)))
 
     parts = parts if in_place else parts.copy()
     tree_parts = tree_parts if in_place else tree_parts.copy()
