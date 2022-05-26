@@ -14,7 +14,7 @@
 
 namespace py = pybind11;
 
-auto _find_particle= [](LinearIterator& it, int z, int x, int y) -> uint64_t {
+auto _find_particle= [](LinearIterator& it, const int z, const int x, const int y) -> uint64_t {
     if (z < 0 || z >= it.z_num(it.level_max()) ||
         x < 0 || x >= it.x_num(it.level_max()) ||
         y < 0 || y >= it.y_num(it.level_max())) {
@@ -33,6 +33,38 @@ auto _find_particle= [](LinearIterator& it, int z, int x, int y) -> uint64_t {
     }
     throw std::runtime_error("no particle found at (" + std::to_string(z) + ", " + std::to_string(x) +
                              ", " + std::to_string(y) + ")");
+};
+
+
+auto _find_coordinates = [](LinearIterator& it, const uint64_t idx) -> py::tuple {
+
+    if(idx >= it.total_number_particles()) {
+        throw std::invalid_argument("index " + std::to_string(idx) + " is out of bounds");
+    }
+
+    int level = it.level_min(), z=0, x=0, y=0;
+
+    while(it.particles_level_end(level) < idx) {
+        level++;
+    }
+
+    const int z_num = it.z_num(level);
+    const int x_num = it.x_num(level);
+
+    it.begin(level, z, x_num-1);
+    while(it.end() < idx && z < z_num) {
+        z++;
+        it.begin(level, z, x_num-1);
+    }
+
+    it.begin(level, z, x);
+    while(it.end() < idx && x < x_num) {
+        x++;
+        it.begin(level, z, x);
+    }
+
+    y = it.get_y(idx);
+    return py::make_tuple(level, z, x, y);
 };
 
 
@@ -56,7 +88,9 @@ void AddLinearIterator(pybind11::module &m) {
             .def("end", &LinearIterator::end,
                  "returns the (exclusive) end index of the current sparse row (level, z, x) opened using 'begin'")
             .def("find_particle", _find_particle,
-                 "return the particle index corresponding to a given pixel location", "z"_a, "x"_a, "y"_a);
+                 "return the particle index corresponding to a given pixel location", "z"_a, "x"_a, "y"_a)
+            .def("find_coordinates", _find_coordinates,
+                 "return the location of the particle at a given index as a tuple (level, z, x, y)", "idx"_a);
 }
 
 #endif //PYLIBAPR_PYLINEARITERATOR_HPP
