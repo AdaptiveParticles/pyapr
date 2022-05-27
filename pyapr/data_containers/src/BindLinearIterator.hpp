@@ -52,15 +52,13 @@ auto _find_coordinates = [](LinearIterator& it, const uint64_t idx) -> py::tuple
     const int x_num = it.x_num(level);
 
     it.begin(level, z, x_num-1);
-    while(it.end() < idx && z < z_num) {
-        z++;
-        it.begin(level, z, x_num-1);
+    while(it.end() <= idx && z < z_num) {
+        it.begin(level, ++z, x_num-1);
     }
 
     it.begin(level, z, x);
-    while(it.end() < idx && x < x_num) {
-        x++;
-        it.begin(level, z, x);
+    while(it.end() <= idx && x < x_num) {
+        it.begin(level, z, ++x);
     }
 
     y = it.get_y(idx);
