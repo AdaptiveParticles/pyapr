@@ -12,7 +12,7 @@ from typing import Union
 from warnings import warn
 
 
-class MainWindowImage(QtGui.QWidget):
+class MainWindowImage(QtWidgets.QWidget):
     def __init__(self):
         super(MainWindowImage, self).__init__()
 
