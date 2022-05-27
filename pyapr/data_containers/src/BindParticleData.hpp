@@ -222,8 +222,8 @@ public:
      * compare each value to a constant.
      * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
      */
-    PyParticleData operator==(float v) const {
-        PyParticleData output(this->size());
+    PyParticleData<uint8_t> operator==(float v) const {
+        PyParticleData<uint8_t> output(this->size());
         this->unary_map(output, [v](const T a){return a==v;});
         return output;
     }
@@ -233,8 +233,8 @@ public:
      * compare each value to a constant.
      * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
      */
-    PyParticleData operator!=(float v) const {
-        PyParticleData output(this->size());
+    PyParticleData<uint8_t> operator!=(float v) const {
+        PyParticleData<uint8_t> output(this->size());
         this->unary_map(output, [v](const T a){return a!=v;});
         return output;
     }
@@ -244,8 +244,8 @@ public:
      * compare each value to a constant.
      * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
      */
-    PyParticleData operator<(float v) const {
-        PyParticleData output(this->size());
+    PyParticleData<uint8_t> operator<(float v) const {
+        PyParticleData<uint8_t> output(this->size());
         this->unary_map(output, [v](const T a){return a<v;});
         return output;
     }
@@ -255,8 +255,8 @@ public:
      * compare each value to a constant.
      * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
      */
-    PyParticleData operator<=(float v) const {
-        PyParticleData output(this->size());
+    PyParticleData<uint8_t> operator<=(float v) const {
+        PyParticleData<uint8_t> output(this->size());
         this->unary_map(output, [v](const T a){return a<=v;});
         return output;
     }
@@ -266,8 +266,8 @@ public:
      * compare each value to a constant.
      * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
      */
-    PyParticleData operator>(float v) const {
-        PyParticleData output(this->size());
+    PyParticleData<uint8_t> operator>(float v) const {
+        PyParticleData<uint8_t> output(this->size());
         this->unary_map(output, [v](const T a){return a>v;});
         return output;
     }
@@ -277,8 +277,8 @@ public:
      * compare each value to a constant.
      * @returns a new PyParticleData object with 1's and 0's indicating where the condition is true or false
      */
-    PyParticleData operator>=(float v) const {
-        PyParticleData output(this->size());
+    PyParticleData<uint8_t> operator>=(float v) const {
+        PyParticleData<uint8_t> output(this->size());
         this->unary_map(output, [v](const T a){return a>=v;});
         return output;
     }
