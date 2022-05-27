@@ -1,3 +1,4 @@
+import os
 from _pyaprwrapper.io import APRFile
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, LongParticles, FloatParticles, \
                                           LazyDataByte, LazyDataShort, LazyDataLong, LazyDataFloat
@@ -169,7 +170,7 @@ def write_particles(fpath: str,
     assert len(parts) > 0, ValueError(f'Input particle dataset {parts} is empty.')
 
     aprfile = APRFile()
-    aprfile.open(fpath, 'READWRITE' if append else 'WRITE')
+    aprfile.open(fpath, 'READWRITE' if append and os.path.isfile(fpath) else 'WRITE')
     aprfile.write_particles(parts_name, parts, apr_or_tree=(not tree), t=t, channel_name=channel_name)
     aprfile.close()
 
@@ -273,7 +274,7 @@ def write_apr(fpath: str,
 
     aprfile = APRFile()
     aprfile.set_write_linear_flag(write_linear)
-    aprfile.open(fpath, 'READWRITE' if append else 'WRITE')
+    aprfile.open(fpath, 'READWRITE' if append and os.path.isfile(fpath) else 'WRITE')
     aprfile.write_apr(apr, t=t, channel_name=channel_name, write_tree=write_tree)
     aprfile.close()
 
