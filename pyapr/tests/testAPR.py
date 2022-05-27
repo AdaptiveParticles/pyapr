@@ -24,7 +24,7 @@ class BasicTests(unittest.TestCase):
 
     def setUp(self):
         self.data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_files')
-        self.impath_3D = os.path.abspath(os.path.join(self.data_dir, 'sphere_original.tif'))
+        self.impath_3D = os.path.abspath(os.path.join(self.data_dir, 'sphere_3D.tif'))
         self.impath_2D = os.path.abspath(os.path.join(self.data_dir, 'sphere_2D.tif'))
         self.impath_1D = os.path.abspath(os.path.join(self.data_dir, 'sphere_1D.tif'))
 
