@@ -299,14 +299,32 @@ public:
 
 
     /**
-     *  addition of two PyParticleData, where neither is float -> return own type
+     *  addition of two PyParticleData, where neither is float -> return largest type (case S > T)
      */
-    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && !std::is_floating_point<S>::value, bool> = false>
-    PyParticleData operator+(const PyParticleData<S>& other) const {
+    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && \
+                                          !std::is_floating_point<S>::value && \
+                                          (sizeof(S) > sizeof(T)), bool> = false>
+    PyParticleData<S> operator+(const PyParticleData<S>& other) const {
         if(this->size() != other.size()) {
             throw std::invalid_argument("cannot add PyParticleData of different sizes");
         }
-        PyParticleData output(this->size());
+        PyParticleData<S> output(this->size());
+        this->binary_map(other, output, [](const T a, const S b){return a+b;});
+        return output;
+    }
+
+
+    /**
+     *  addition of two PyParticleData, where neither is float -> return largest type (case S <= T)
+     */
+    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && \
+                                          !std::is_floating_point<S>::value && \
+                                          (sizeof(S) <= sizeof(T)), bool> = false>
+    PyParticleData<T> operator+(const PyParticleData<S>& other) const {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot add PyParticleData of different sizes");
+        }
+        PyParticleData<T> output(this->size());
         this->binary_map(other, output, [](const T a, const S b){return a+b;});
         return output;
     }
@@ -326,14 +344,31 @@ public:
     }
 
     /**
-     *  subtraction of two PyParticleData, where neither is float -> return own type
+     *  subtraction of two PyParticleData, where neither is float -> return largest type (case S > T)
      */
-    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && !std::is_floating_point<S>::value, bool> = false>
-    PyParticleData operator-(const PyParticleData<S>& other) const {
+    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && \
+                                          !std::is_floating_point<S>::value && \
+                                          (sizeof(S) > sizeof(T)), bool> = false>
+    PyParticleData<S> operator-(const PyParticleData<S>& other) const {
         if(this->size() != other.size()) {
             throw std::invalid_argument("cannot subtract PyParticleData of different sizes");
         }
-        PyParticleData output(this->size());
+        PyParticleData<S> output(this->size());
+        this->binary_map(other, output, [](const T a, const S b){return a-b;});
+        return output;
+    }
+
+    /**
+     *  subtraction of two PyParticleData, where neither is float -> return largest type (case S <= T)
+     */
+    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && \
+                                          !std::is_floating_point<S>::value && \
+                                          (sizeof(S) <= sizeof(T)), bool> = false>
+    PyParticleData<T> operator-(const PyParticleData<S>& other) const {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot subtract PyParticleData of different sizes");
+        }
+        PyParticleData<T> output(this->size());
         this->binary_map(other, output, [](const T a, const S b){return a-b;});
         return output;
     }
@@ -354,14 +389,31 @@ public:
 
 
     /**
-     *  elementwise multiplication of two PyParticleData, where at least one is float -> return own type
+     *  elementwise multiplication of two PyParticleData, where none is float -> return largest type (case S > T)
      */
-    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && !std::is_floating_point<S>::value, bool> = false>
-    PyParticleData operator*(const PyParticleData<S>& other) const {
+    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && \
+                                          !std::is_floating_point<S>::value && \
+                                          (sizeof(S) > sizeof(T)), bool> = false>
+    PyParticleData<S> operator*(const PyParticleData<S>& other) const {
         if(this->size() != other.size()) {
             throw std::invalid_argument("cannot multiply PyParticleData of different sizes");
         }
-        PyParticleData output(this->size());
+        PyParticleData<S> output(this->size());
+        this->binary_map(other, output, [](const T a, const S b){return a*b;});
+        return output;
+    }
+
+    /**
+     *  elementwise multiplication of two PyParticleData, where none is float -> return largest type (case S <= T)
+     */
+    template<typename S, std::enable_if_t<!std::is_floating_point<T>::value && \
+                                          !std::is_floating_point<S>::value && \
+                                          (sizeof(S) <= sizeof(T)), bool> = false>
+    PyParticleData<T> operator*(const PyParticleData<S>& other) const {
+        if(this->size() != other.size()) {
+            throw std::invalid_argument("cannot multiply PyParticleData of different sizes");
+        }
+        PyParticleData<T> output(this->size());
         this->binary_map(other, output, [](const T a, const S b){return a*b;});
         return output;
     }
