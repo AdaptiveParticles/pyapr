@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from typing import Union
 
 
-class MainWindow(QtGui.QWidget):
+class MainWindow(QtWidgets.QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
 
