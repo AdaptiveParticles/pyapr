@@ -44,7 +44,7 @@ auto _find_coordinates = [](LinearIterator& it, const uint64_t idx) -> py::tuple
 
     int level = it.level_min(), z=0, x=0, y=0;
 
-    while(it.particles_level_end(level) < idx) {
+    while(it.particles_level_end(level) <= idx) {
         level++;
     }
 
