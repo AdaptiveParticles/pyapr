@@ -248,7 +248,7 @@ def remove_small_objects(apr: APR,
     """
     _check_input(apr, labels, __allowed_label_types__)
     labels_copy = labels if inplace else labels.copy()
-    _internals.remove_small_objects(apr, labels_copy, min_volume)
+    _internals.remove_small_objects(apr, labels_copy, int(min_volume))
     return labels_copy
 
 
@@ -280,7 +280,7 @@ def remove_large_objects(apr: APR,
     """
     _check_input(apr, labels, __allowed_label_types__)
     labels_copy = labels if inplace else labels.copy()
-    _internals.remove_large_objects(apr, labels_copy, max_volume)
+    _internals.remove_large_objects(apr, labels_copy, int(max_volume))
     return labels_copy
 
 
@@ -312,7 +312,7 @@ def remove_small_holes(apr: APR,
     mask = (labels == background_label)
     cc_inverted = LongParticles()
     connected_component(apr, mask, cc_inverted)
-    _internals.remove_small_objects(apr, cc_inverted, min_volume=min_volume)
+    _internals.remove_small_objects(apr, cc_inverted, min_volume=int(min_volume))
     mask = (cc_inverted == 0)
 
     if labels.max() > 1:        # if non-binary input, recompute connected components
