@@ -345,7 +345,8 @@ def reconstruct_lazy(file_path: str,
         parts.init(apr_file, parts_name, t, channel_name)
         parts.open()
         _dtype = np.float32 if parts_type == 'float' else np.dtype(parts_type)
-        tree_parts = type(parts)()
+        tree_parts_type = get_particle_type(file_path, t=t, channel_name=channel_name, parts_name=tree_parts_name, tree=True)
+        tree_parts = type_to_lazy_particles(tree_parts_type) if tree_parts_type else type(parts)()
     else:
         _dtype = np.uint8
 
