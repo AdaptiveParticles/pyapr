@@ -3,3 +3,10 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
 
 [tool.setuptools_scm]
 write_to = "pyapr/_version.py"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "pyapr/tests",
+]
