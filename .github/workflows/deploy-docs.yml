@@ -115,7 +115,8 @@ jobs:
 
       - name: Run tests
         run: |
-          python3 -m unittest
+          pip install pytest pytest-qt
+          pytest -vv
 
       - name: Build documentation
         run: |
