@@ -25,8 +25,8 @@ def __check_stencil(stencil: np.ndarray):
 def __check_method(method: str, stencil: np.ndarray):
     if method == 'cuda':
         if not __cuda_build__:
-            warn(f'Method \'cuda\' requires pyapr to be built with CUDA support (see installation instructions), '
-                 f'using method \'pencil\' on CPU.', UserWarning)
+            warn(f'Method \'cuda\' requires pyapr to be built with CUDA support (see installation instructions). '
+                 f'Using method \'pencil\' on CPU.', UserWarning)
             method = 'pencil'
 
         if stencil.shape not in [(3, 3, 3), (5, 5, 5)]:
