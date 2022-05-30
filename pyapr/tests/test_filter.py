@@ -66,8 +66,11 @@ def test_rank_filters(parts_type, filter_size):
 
 
 @pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles])
-@pytest.mark.parametrize("filter_size", [(3, 3, 5), (1, 7, 9)])
+@pytest.mark.parametrize("filter_size", [3, (1, 7, 9), [3, 3, 5]])
 def test_std_filter(parts_type, filter_size):
     apr, parts = load_test_apr(3)
     parts = parts_type(parts)
     output = pyapr.filter.std(apr, parts, filter_size)
+
+    with pytest.raises(ValueError):
+        pyapr.filter.std(apr, parts, (1, 5))
