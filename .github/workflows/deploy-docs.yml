@@ -23,7 +23,7 @@ jobs:
             triplet: x64-linux
             extblosc: OFF
             openmp: ON
-            buildfolder: build/temp.linux-x86_64-3.7
+            buildfolder: build/temp.linux-x86_64-3.9
 
     env:
       # Indicates the CMake build directory where project files and binaries are being produced.
@@ -85,7 +85,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.7'
+          python-version: '3.9'
 
       - name: Check file existence
         id: check_files
