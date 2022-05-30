@@ -26,7 +26,7 @@ def find_label_centers(apr: APR,
     Returns
     -------
     coords: numpy.ndarray
-        Array containing the center coordinates.
+        Array of shape `(labels.max()+1, 3)` containing the center coordinates.
     """
     _check_input(apr, labels, __allowed_input_types__)
     max_label = labels.max()
@@ -36,4 +36,4 @@ def find_label_centers(apr: APR,
         _measure.find_label_centers_weighted(apr, labels, coords, weights)
     else:
         _measure.find_label_centers(apr, labels, coords)
-    return coords[np.any(coords > 0, axis=1), :]
+    return coords
