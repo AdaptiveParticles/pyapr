@@ -49,11 +49,17 @@ def test_read_write(tmp_path, ndim: int):
     pyapr.io.write('', apr, parts)
     pyapr.io.write_apr('', apr)
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         pyapr.io.write(fpath, pyapr.APR(), parts)
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         pyapr.io.write(fpath, apr, pyapr.FloatParticles())
+
+    with pytest.raises(ValueError):
+        pyapr.io.read('file-does-not-exist.apr')
+
+    with pytest.raises(ValueError):
+        pyapr.io.read_apr('file-does-not-exist.apr')
 
 
 
@@ -90,5 +96,8 @@ def test_read_write_particles(tmp_path, parts_type):
     ptype = pyapr.io.get_particle_type(fpath, parts_name=pname[0], tree=True)
     assert isinstance(pyapr.utils.type_to_particles(ptype), type(parts))
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         pyapr.io.write_particles(fpath, pyapr.FloatParticles())
+
+    with pytest.raises(ValueError):
+        pyapr.io.read_particles('file-does-not-exist.apr')
