@@ -39,7 +39,8 @@ def maximum_projection(apr: APR,
     out : numpy.ndarray
         The computed maximum intensity projection
     """
-    assert dim in (0, 1, 2), ValueError("dim must be 0, 1 or 2 corresponding to projection along y, x or z")
+    if dim not in (0, 1, 2):
+        raise ValueError(f'\'dim\' must be 0, 1 or 2 corresponding to projection along y, x or z. Got {dim}')
     _check_input(apr, parts)
     args = (apr, parts)
 
@@ -52,7 +53,7 @@ def maximum_projection(apr: APR,
         tmp = patch.level_delta
         patch.level_delta = 0
         if not patch.check_limits(apr):
-            return None
+            raise ValueError(f'Invalid patch {patch}')
         patch.level_delta = tmp
         args += (patch,)
 

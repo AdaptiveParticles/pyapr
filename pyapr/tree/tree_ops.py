@@ -35,13 +35,13 @@ def sample_from_tree(apr: APR,
     output: ByteParticles, ShortParticles, FloatParticles, LongParticles
         The resampled particle values.
     """
+    _check_input(apr, parts)
+    _check_input_tree(apr, tree_parts, (FloatParticles, type(parts)))
+    parts = parts if in_place else parts.copy()
+
     if num_levels <= 0:
         return parts
 
-    _check_input(apr, parts)
-    _check_input_tree(apr, tree_parts, (FloatParticles, type(parts)))
-
-    parts = parts if in_place else parts.copy()
     tree_parts = tree_parts if in_place else tree_parts.copy()
     _sample_from_tree(apr, parts, tree_parts, num_levels-1)
     return parts

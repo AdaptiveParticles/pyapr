@@ -90,7 +90,7 @@ def correlate(apr: APR,
     _check_input(apr, parts, __allowed_input_types__)
     stencil = __check_stencil(stencil)
     method = __check_method(method, stencil)
-    output = output or FloatParticles()
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
 
     if method == 'pencil':
         _convolve_pencil(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary)
@@ -157,7 +157,7 @@ def convolve(apr: APR,
     _check_input(apr, parts, __allowed_input_types__)
     stencil = np.ascontiguousarray(np.flip(__check_stencil(stencil)))
     method = __check_method(method, stencil)
-    output = output or FloatParticles()
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
 
     if method == 'pencil':
         _convolve_pencil(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary)

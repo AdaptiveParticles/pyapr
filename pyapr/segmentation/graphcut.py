@@ -90,8 +90,9 @@ def graphcut(apr: APR,
     _check_input(apr, parts, __allowed_input_types__)
     if output is None:
         output = ByteParticles()
-    assert isinstance(output, (ByteParticles, ShortParticles)), TypeError(f'output must be ByteParticles or '
-                                                                          f'ShortParticles, got {type(output)}.')
+    elif not isinstance(output, (ByteParticles, ShortParticles)):
+        raise TypeError(f'output must be ByteParticles or ShortParticles, got {type(output)}.')
+
     if z_block_size is not None and z_block_size > 0:
         graphcut_tiled(apr, parts, output, alpha, beta, avg_num_neighbors, z_block_size, z_ghost_size,
                        num_tree_smooth, num_part_smooth, push_depth, intensity_threshold, min_std,

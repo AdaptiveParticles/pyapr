@@ -12,9 +12,9 @@ ParticleData = Union[ShortParticles, FloatParticles]
 
 
 def _check_output(apr: APR, output: Optional[FloatParticles]):
-    assert isinstance(output, FloatParticles) and len(output) == apr.total_number_particles(), \
-        ValueError(f'Option \'resume\' enabled but \'output\' is not properly initialized. Expected'
-                   f'FloatParticles(size {apr.total_number_particles()}) but got {output}.')
+    if not isinstance(output, FloatParticles) or len(output) != apr.total_number_particles():
+        raise ValueError(f'Option \'resume\' enabled but \'output\' is not properly initialized. Expected '
+                         f'FloatParticles(size {apr.total_number_particles()}) but got {output}.')
 
 
 def richardson_lucy(apr: APR,
@@ -62,7 +62,7 @@ def richardson_lucy(apr: APR,
     psf = __check_stencil(psf)
     if resume:
         _check_output(apr, output)
-    output = output or FloatParticles()
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
     _internals.richardson_lucy(apr, parts, output, psf, num_iter, restrict_psf, normalize_psf, resume)
     return output
 
@@ -115,7 +115,7 @@ def richardson_lucy_tv(apr: APR,
     psf = __check_stencil(psf)
     if resume:
         _check_output(apr, output)
-    output = output or FloatParticles()
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
     _internals.richardson_lucy_tv(apr, parts, output, psf, num_iter, reg_param, restrict_psf, normalize_psf, resume)
     return output
 
@@ -163,13 +163,14 @@ def richardson_lucy_cuda(apr: APR,
     """
 
     _check_input(apr, parts, __allowed_input_types__)
+    psf = __check_stencil(psf)
+    if resume:
+        _check_output(apr, output)
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
+
     if __cuda_build__:
-        psf = __check_stencil(psf)
         if psf.shape not in [(3, 3, 3), (5, 5, 5)]:
             raise ValueError(f'psf must be of shape (3, 3, 3) or (5, 5, 5), got {psf.shape}')
-        if resume:
-            _check_output(apr, output)
-        output = output or FloatParticles()
         _internals.richardson_lucy_cuda(apr, parts, output, psf, num_iter, restrict_psf, normalize_psf, resume)
     else:
         warn(f'richardson_lucy_cuda called but pyapr was not built with CUDA support. Using CPU version.')

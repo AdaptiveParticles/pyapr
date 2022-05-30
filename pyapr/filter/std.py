@@ -32,9 +32,8 @@ def std(apr: APR,
     _check_input(apr, parts, __allowed_input_types__)
     if isinstance(size, int):
         size = (min(size, apr.org_dims(0)), min(size, apr.org_dims(1)), min(size, apr.org_dims(2)))
-    else:
-        size = tuple(size)
-        assert len(size) == 3, ValueError(f'argument size must be an integer or tuple/list of length 3, got {size}')
-    output = output or FloatParticles()
+    if len(size) != 3:
+        raise ValueError(f'size must be a tuple or list of length 3, got {size}')
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
     local_std(apr, parts, output, size)
     return output

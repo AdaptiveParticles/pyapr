@@ -37,8 +37,9 @@ def gradient(apr: APR,
         The gradient value at each particle location.
     """
     _check_input(apr, parts, __allowed_input_types__)
-    assert 0 <= dim <= 2, ValueError(f'argument \'dim\' must be an integer between 0 and 2, got {dim}.')
-    output = output or FloatParticles()
+    if dim not in (0, 1, 2):
+        raise ValueError(f'argument \'dim\' must be an integer between 0 and 2, got {dim}.')
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
     gradient_cfd(apr, parts, output, dim, delta)
     return output
 
@@ -72,8 +73,9 @@ def sobel(apr: APR,
         The gradient value at each particle location.
     """
     _check_input(apr, parts, __allowed_input_types__)
-    assert 0 <= dim <= 2, ValueError(f'argument \'dim\' must be an integer between 0 and 2, got {dim}.')
-    output = output or FloatParticles()
+    if dim not in (0, 1, 2):
+        raise ValueError(f'argument \'dim\' must be an integer between 0 and 2, got {dim}.')
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
     gradient_sobel(apr, parts, output, dim, delta)
     return output
 
@@ -104,8 +106,9 @@ def gradient_magnitude(apr: APR,
         The gradient magnitude at each particle location.
     """
     _check_input(apr, parts, __allowed_input_types__)
-    assert len(deltas) == 3, ValueError(f'argument \'deltas\' must be a tuple or list of length 3, got {deltas}.')
-    output = output or FloatParticles()
+    if not len(deltas) == 3:
+        raise ValueError(f'argument \'deltas\' must be a tuple or list of length 3, got {deltas}.')
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
     gradient_magnitude_cfd(apr, parts, output, deltas)
     return output
 
@@ -136,7 +139,8 @@ def sobel_magnitude(apr: APR,
         The Sobel gradient magnitude at each particle location.
     """
     _check_input(apr, parts, __allowed_input_types__)
-    assert len(deltas) == 3, ValueError(f'argument \'deltas\' must be a tuple or list of length 3, got {deltas}.')
-    output = output or FloatParticles()
+    if not len(deltas) == 3:
+        raise ValueError(f'argument \'deltas\' must be a tuple or list of length 3, got {deltas}.')
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
     gradient_magnitude_sobel(apr, parts, output, deltas)
     return output

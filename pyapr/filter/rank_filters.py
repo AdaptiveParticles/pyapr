@@ -10,7 +10,8 @@ __allowed_input_types__ = (ShortParticles, FloatParticles)
 
 
 def _check_size(size, allowed_sizes):
-    assert size in allowed_sizes, ValueError(f'Invalid size {size}. Allowed values are {allowed_sizes}')
+    if size not in allowed_sizes:
+        raise ValueError(f'Invalid size {size}. Allowed values are {allowed_sizes}')
 
 
 def median_filter(apr: APR,
@@ -107,4 +108,3 @@ def max_filter(apr: APR,
     output = ShortParticles() if isinstance(parts, ShortParticles) else FloatParticles()
     globals()[fname](apr, parts, output)
     return output
-

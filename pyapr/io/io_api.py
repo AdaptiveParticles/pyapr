@@ -51,6 +51,8 @@ def read(fpath: str,
     --------
     pyapr.io.read_apr, pyapr.io.read_particles, pyapr.io.get_particle_names
     """
+    if not os.path.isfile(fpath):
+        raise ValueError(f'Invalid path {fpath} - file does not exist')
 
     aprfile = APRFile()
     aprfile.open(fpath, 'READ')
@@ -167,7 +169,8 @@ def write_particles(fpath: str,
         print('Empty path given. Ignoring call to pyapr.io.write_particles')
         return
 
-    assert len(parts) > 0, ValueError(f'Input particle dataset {parts} is empty.')
+    if len(parts) == 0:
+        raise ValueError(f'Input particle dataset {parts} is empty.')
 
     aprfile = APRFile()
     aprfile.open(fpath, 'READWRITE' if append and os.path.isfile(fpath) else 'WRITE')
@@ -213,6 +216,8 @@ def read_particles(fpath: str,
     --------
     pyapr.io.read, pyapr.io.read_apr
     """
+    if not os.path.isfile(fpath):
+        raise ValueError(f'Invalid path {fpath} - file does not exist')
 
     aprfile = APRFile()
     aprfile.open(fpath, 'READ')
@@ -270,7 +275,8 @@ def write_apr(fpath: str,
         print('Empty path given. Ignoring call to pyapr.io.write_apr')
         return
 
-    assert apr.total_number_particles() > 0, ValueError(f'Input APR {apr} is not initialized.')
+    if apr.total_number_particles() == 0:
+        raise ValueError(f'Input APR {apr} is not initialized.')
 
     aprfile = APRFile()
     aprfile.set_write_linear_flag(write_linear)
@@ -306,6 +312,8 @@ def read_apr(fpath: str,
     --------
     pyapr.io.read, pyapr.io.read_particles
     """
+    if not os.path.isfile(fpath):
+        raise ValueError(f'Invalid path {fpath} - file does not exist')
 
     apr = apr or APR()
     aprfile = APRFile()
@@ -342,6 +350,8 @@ def get_particle_names(fpath: str,
     --------
     pyapr.io.read, pyapr.io.read_particles
     """
+    if not os.path.isfile(fpath):
+        raise ValueError(f'Invalid path {fpath} - file does not exist')
 
     aprfile = APRFile()
     aprfile.open(fpath, 'READ')
@@ -380,6 +390,8 @@ def get_particle_type(fpath: str,
     --------
     pyapr.utils.type_to_particles, pyapr.utils.type_to_lazy_particles
     """
+    if not os.path.isfile(fpath):
+        raise ValueError(f'Invalid path {fpath} - file does not exist')
 
     aprfile = APRFile()
     aprfile.open(fpath, 'READ')

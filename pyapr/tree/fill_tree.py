@@ -12,9 +12,8 @@ ParticleData = Union[ByteParticles, ShortParticles, FloatParticles, LongParticle
 def _check_output_type(parts: ParticleData, output: ParticleData) -> ParticleData:
     if output is None:
         return type(parts)()
-    elif not isinstance(output, FloatParticles):
-        assert isinstance(output, type(parts)), TypeError(f'\'output\' must be None, FloatParticles or '
-                                                          f'the same type as the input particles ({type(parts)})')
+    if not isinstance(output, (FloatParticles, type(parts))):
+        raise TypeError(f'\'output\' must be None, FloatParticles or the same type as the input particles ({type(parts)})')
     return output
 
 
