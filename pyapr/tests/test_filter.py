@@ -24,6 +24,9 @@ def test_convolution(parts_type, stencil_shape):
         res2 = op(apr, parts, stencil, method='cuda')
         assert np.allclose(np.array(res1, copy=False), np.array(res2, copy=False))
 
+        with pytest.raises(ValueError):
+            res = op(apr, parts, stencil, method='does-not-exist')
+
 
 @pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles])
 def test_gradient_filters(parts_type):
