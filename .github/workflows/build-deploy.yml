@@ -52,7 +52,7 @@ jobs:
       CIBW_BUILD_VERBOSITY: 1
       CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
       CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "pip install -U wheel delvewheel && python fix_windows_wheel.py {wheel} {dest_dir}"
-      CIBW_TEST_REQUIRES: "pytest pytest-qt pytest-xvfb pytest-skip-slow"
+      CIBW_TEST_REQUIRES: "pytest pytest-qt pytest-xvfb"
       CIBW_TEST_COMMAND: "python3 -m pytest -vv {project}/pyapr/tests"
       CIBW_TEST_SKIP: "*-win_amd64"  # skip tests on windows
       CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
@@ -195,8 +195,8 @@ jobs:
 
       - name: Run tests
         run: |
-          pip install pytest pytest-qt pytest-skip-slow
-          pytest -vv --slow
+          pip install pytest pytest-qt
+          pytest -vv
 
 
   deploy:
