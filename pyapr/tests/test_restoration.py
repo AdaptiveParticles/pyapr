@@ -10,6 +10,7 @@ PARTICLE_TYPES = [
 ]
 
 
+@pytest.mark.filterwarnings('ignore:CUDA')
 @pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
 @pytest.mark.parametrize("ndim", [1, 2, 3])
 def test_richardson_lucy(parts_type, ndim):
@@ -21,7 +22,7 @@ def test_richardson_lucy(parts_type, ndim):
 
     rl_out = pyapr.restoration.richardson_lucy(apr, parts, psf, num_iter=niter)
 
-    if pyapr.cuda_enabled() and ndim == 3:
+    if ndim == 3:
         rl_cuda = pyapr.restoration.richardson_lucy_cuda(apr, parts, psf, num_iter=niter)
         # should give the same result as richardson_lucy on cpu
         assert np.allclose(np.array(rl_out), np.array(rl_cuda))
