@@ -117,8 +117,8 @@ jobs:
 
       - name: Run tests
         run: |
-          pip install pytest pytest-cov pytest-qt pytest-xvfb
-          pytest -vv --cov-report xml --cov=pyapr
+          pip install pytest pytest-cov pytest-qt pytest-xvfb pytest-skip-slow
+          pytest -vv --slow --cov-report xml --cov=pyapr
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v2
