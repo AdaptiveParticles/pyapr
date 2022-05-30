@@ -12,16 +12,17 @@ def test_convolution(parts_type, stencil_shape):
     parts = parts_type(parts)
 
     stencil = np.arange(1, np.prod(stencil_shape)+1).reshape(stencil_shape)
+    stencil = stencil / np.sum(stencil)
 
     for op in (pyapr.filter.convolve, pyapr.filter.correlate):
         res1 = op(apr, parts, stencil, method='pencil')
 
         res2 = pyapr.FloatParticles(apr.total_number_particles())
         res2 = op(apr, parts, stencil, method='slice', output=res2)
-        assert res1 == res2
+        assert np.allclose(np.array(res1, copy=False), np.array(res2, copy=False))
 
         res2 = op(apr, parts, stencil, method='cuda')
-        assert res2 == res1
+        assert np.allclose(np.array(res1, copy=False), np.array(res2, copy=False))
 
 
 @pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles])
