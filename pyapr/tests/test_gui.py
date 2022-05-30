@@ -1,3 +1,4 @@
+import os
 import pytest
 from pytestqt import qtbot
 from pyqtgraph.Qt import QtCore
@@ -5,7 +6,7 @@ import pyapr
 from .helpers import load_test_apr
 
 
-@pytest.mark.slow
+@pytest.mark.skipif('DISPLAY' not in os.environ, reason='requires display')
 def test_viewer(qtbot):
     apr, parts = load_test_apr(3)
 
