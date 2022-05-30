@@ -44,11 +44,11 @@ def test_fill_tree(parts_type, ndim):
 
     for op in (pyapr.tree.fill_tree_mean, pyapr.tree.fill_tree_min, pyapr.tree.fill_tree_max):
         # uninitialized input
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError):
             tree_parts = op(pyapr.APR(), pyapr.ShortParticles())
 
         # unsupported output type
-        with pytest.raises(AssertionError):
+        with pytest.raises(TypeError):
             out = pyapr.ByteParticles() if not isinstance(parts, pyapr.ByteParticles) else pyapr.ShortParticles()
             tree_parts = op(apr, parts, output=out)
 
@@ -63,5 +63,3 @@ def test_sample_from_tree(parts_type):
     assert res == parts
 
     res = pyapr.tree.sample_from_tree(apr, parts, tree_parts, num_levels=2)
-
-
