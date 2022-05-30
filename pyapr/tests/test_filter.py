@@ -25,7 +25,12 @@ def test_convolution(parts_type, stencil_shape):
         assert np.allclose(np.array(res1, copy=False), np.array(res2, copy=False))
 
         with pytest.raises(ValueError):
+            # unsupported method
             res = op(apr, parts, stencil, method='does-not-exist')
+
+        with pytest.raises(TypeError):
+            # unsupported parts type
+            res = op(apr, (1, 2, 3), stencil)
 
 
 @pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles])
@@ -64,6 +69,10 @@ def test_rank_filters(parts_type, filter_size):
     assert min_output.min() == parts.min()
     assert max_output.max() == parts.max()
 
+    with pytest.raises(ValueError):
+        # unsupported filter size
+        res = pyapr.filter.median_filter(apr, parts, (1, 97, 13))
+
 
 @pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles])
 @pytest.mark.parametrize("filter_size", [3, (1, 7, 9), [3, 3, 5]])
@@ -73,4 +82,5 @@ def test_std_filter(parts_type, filter_size):
     output = pyapr.filter.std(apr, parts, filter_size)
 
     with pytest.raises(ValueError):
+        # invalid filter specification (must be int or length 3)
         pyapr.filter.std(apr, parts, (1, 5))
