@@ -1,9 +1,11 @@
+import pytest
 from pytestqt import qtbot
 from pyqtgraph.Qt import QtCore
 import pyapr
 from .helpers import load_test_apr
 
 
+@pytest.mark.slow
 def test_viewer(qtbot):
     apr, parts = load_test_apr(3)
 
