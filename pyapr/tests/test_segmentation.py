@@ -24,3 +24,7 @@ def test_graphcut(parts_type):
     assert cc2 == cc
 
     foreground, background = pyapr.segmentation.compute_terminal_costs(apr, parts)
+
+    with pytest.raises(TypeError):
+        # unsupported output type
+        mask = pyapr.segmentation.graphcut(apr, parts, output=pyapr.FloatParticles())

@@ -16,6 +16,7 @@ PROJECTION_METHODS = [
 ]
 
 
+@pytest.mark.filterwarnings('ignore:max projection')
 @pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
 @pytest.mark.parametrize("method", PROJECTION_METHODS)
 def test_maximum_projection(parts_type, method):
@@ -39,3 +40,15 @@ def test_maximum_projection(parts_type, method):
         res = pyapr.transform.maximum_projection(apr, parts, dim, patch=patch, method=method)
         recon = pyapr.reconstruction.reconstruct_constant(apr, parts, patch=patch)
         assert np.allclose(res, np.max(recon, axis=2-dim))
+
+    with pytest.raises(ValueError):
+        # invalid dim argument
+        res = pyapr.transform.maximum_projection(apr, parts, dim=3, method=method)
+
+    with pytest.raises(ValueError):
+        # invalid patch specification (z_begin > z_end)
+        patch = pyapr.ReconPatch()
+        patch.z_begin = 5; patch.z_end = 3
+        patch.level_delta = -1
+        res = pyapr.transform.maximum_projection(apr, parts, dim=0, patch=patch, method=method)
+

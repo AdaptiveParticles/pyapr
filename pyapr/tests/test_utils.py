@@ -33,3 +33,5 @@ def test_utils():
 
     with pytest.raises(ValueError):
         pyapr.utils.type_to_lazy_particles(np.float64)
+
+    cuda_build = pyapr.cuda_enabled()

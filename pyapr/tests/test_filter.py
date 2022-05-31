@@ -54,6 +54,22 @@ def test_gradient_filters(parts_type):
     gradmag = pyapr.filter.sobel_magnitude(apr, parts, deltas=(1.3, 1.5, 0.9))
     assert np.allclose(np.array(gradmag), gradmag_manual)
 
+    with pytest.raises(ValueError):
+        # invalid dim argument
+        pyapr.filter.gradient(apr, parts, dim=3)
+
+    with pytest.raises(ValueError):
+        # invalid dim argument
+        pyapr.filter.sobel(apr, parts, dim=3)
+
+    with pytest.raises(ValueError):
+        # invalid deltas argument (must be length 3)
+        pyapr.filter.gradient_magnitude(apr, parts, deltas=(1, 1))
+
+    with pytest.raises(ValueError):
+        # invalid deltas argument (must be length 3)
+        pyapr.filter.sobel_magnitude(apr, parts, deltas=(2, ))
+
 
 @pytest.mark.parametrize("parts_type", [pyapr.ShortParticles, pyapr.FloatParticles])
 @pytest.mark.parametrize("filter_size", [(3, 3, 3), (1, 5, 5)])

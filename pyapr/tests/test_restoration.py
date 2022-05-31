@@ -27,4 +27,8 @@ def test_richardson_lucy(parts_type, ndim):
         # should give the same result as richardson_lucy on cpu
         assert np.allclose(np.array(rl_out), np.array(rl_cuda))
 
-    rltv_out = pyapr.restoration.richardson_lucy_tv(apr, parts, psf, num_iter=niter)
+    rl_out = pyapr.restoration.richardson_lucy_tv(apr, parts, psf, num_iter=niter, resume=True, output=rl_out)
+
+    with pytest.raises(ValueError):
+        # resume with wrongly initialized output
+        pyapr.restoration.richardson_lucy(apr, parts, psf, num_iter=niter, resume=True, output=pyapr.FloatParticles(10))

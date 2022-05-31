@@ -63,3 +63,12 @@ def test_sample_from_tree(parts_type):
     assert res == parts
 
     res = pyapr.tree.sample_from_tree(apr, parts, tree_parts, num_levels=2)
+
+    with pytest.raises(TypeError):
+        # unsupported tree particles type
+        wrong_type = pyapr.ShortParticles if not isinstance(parts, pyapr.ShortParticles) else pyapr.LongParticles
+        res = pyapr.tree.sample_from_tree(apr, parts, wrong_type(tree_parts))
+
+    with pytest.raises(ValueError):
+        # tree_parts size mismatch
+        res = pyapr.tree.sample_from_tree(apr, parts, parts)
