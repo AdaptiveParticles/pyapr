@@ -10,7 +10,7 @@ PARTICLE_TYPES = [
 ]
 
 
-@pytest.mark.filterwarnings('ignore:CUDA')
+@pytest.mark.filterwarnings('ignore:richardson_lucy_cuda')
 @pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
 @pytest.mark.parametrize("ndim", [1, 2, 3])
 def test_richardson_lucy(parts_type, ndim):
