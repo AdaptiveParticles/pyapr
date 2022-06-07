@@ -71,6 +71,38 @@ def test_gradient_filters(parts_type):
         pyapr.filter.sobel_magnitude(apr, parts, deltas=(2, ))
 
 
+@pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles])
+@pytest.mark.parametrize("ndim", [1, 2, 3])
+def test_gradient_manual(parts_type, ndim):
+    apr, parts = load_test_apr(ndim)
+    parts = parts_type(parts)
+
+    # compute y gradient
+    grad = pyapr.filter.gradient(apr, parts, dim=0)
+
+    # compute gradient using correlate
+    stencil = np.array([-1, 0, 1]).reshape(1, 1, 3) / 2
+    grad_manual = pyapr.filter.correlate(apr, parts, stencil, rescale_stencil=True)
+
+    assert np.allclose(np.array(grad), np.array(grad_manual))
+
+
+@pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles])
+def test_sobel_manual(parts_type):
+    apr, parts = load_test_apr(3)
+    parts = parts_type(parts)
+
+    # compute sobel gradient
+    grad = pyapr.filter.sobel(apr, parts, dim=0)
+
+    # compute gradient using correlate
+    stencil = np.outer(np.outer([1, 2, 1], [1, 2, 1]), [-1, 0, 1]).reshape(3, 3, 3) / 32
+    methods = ['slice', 'pencil', 'cuda'] if pyapr.cuda_enabled() else ['slice', 'pencil']
+    for method in methods:
+        grad_manual = pyapr.filter.correlate(apr, parts, stencil, rescale_stencil=True, method=method)
+        assert np.allclose(np.array(grad), np.array(grad_manual))
+
+
 @pytest.mark.parametrize("parts_type", [pyapr.ShortParticles, pyapr.FloatParticles])
 @pytest.mark.parametrize("filter_size", [(3, 3, 3), (1, 5, 5)])
 def test_rank_filters(parts_type, filter_size):
