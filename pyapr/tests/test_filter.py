@@ -4,8 +4,16 @@ from .helpers import load_test_apr
 import numpy as np
 
 
+PARTICLE_TYPES = [
+    pyapr.ByteParticles,
+    pyapr.ShortParticles,
+    pyapr.FloatParticles,
+    pyapr.LongParticles
+]
+
+
 @pytest.mark.filterwarnings("ignore:Method \'cuda\'")
-@pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles, pyapr.LongParticles])
+@pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
 @pytest.mark.parametrize("stencil_shape", [(5, 5, 5), (1, 5, 7), (1, 1, 13)])
 def test_convolution(parts_type, stencil_shape):
     apr, parts = load_test_apr(3)
@@ -33,7 +41,7 @@ def test_convolution(parts_type, stencil_shape):
             res = op(apr, (1, 2, 3), stencil)
 
 
-@pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles])
+@pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
 def test_gradient_filters(parts_type):
     apr, parts = load_test_apr(3)
     parts = parts_type(parts)
@@ -71,7 +79,7 @@ def test_gradient_filters(parts_type):
         pyapr.filter.sobel_magnitude(apr, parts, deltas=(2, ))
 
 
-@pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles])
+@pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
 @pytest.mark.parametrize("ndim", [1, 2, 3])
 def test_gradient_manual(parts_type, ndim):
     apr, parts = load_test_apr(ndim)
@@ -87,7 +95,7 @@ def test_gradient_manual(parts_type, ndim):
     assert np.allclose(np.array(grad), np.array(grad_manual))
 
 
-@pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles])
+@pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
 def test_sobel_manual(parts_type):
     apr, parts = load_test_apr(3)
     parts = parts_type(parts)
@@ -103,7 +111,7 @@ def test_sobel_manual(parts_type):
         assert np.allclose(np.array(grad), np.array(grad_manual))
 
 
-@pytest.mark.parametrize("parts_type", [pyapr.ShortParticles, pyapr.FloatParticles])
+@pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
 @pytest.mark.parametrize("filter_size", [(3, 3, 3), (1, 5, 5)])
 def test_rank_filters(parts_type, filter_size):
     apr, parts = load_test_apr(3)
@@ -122,7 +130,7 @@ def test_rank_filters(parts_type, filter_size):
         res = pyapr.filter.median_filter(apr, parts, (1, 97, 13))
 
 
-@pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles])
+@pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
 @pytest.mark.parametrize("filter_size", [3, (1, 7, 9), [3, 3, 5]])
 def test_std_filter(parts_type, filter_size):
     apr, parts = load_test_apr(3)
