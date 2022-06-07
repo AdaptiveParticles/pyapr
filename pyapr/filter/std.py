@@ -1,11 +1,11 @@
-from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.filter import local_std
 from .._common import _check_input
 from typing import Union, Optional, Tuple, List
 
 
-__allowed_input_types__ = (ByteParticles, ShortParticles, FloatParticles)
-ParticleData = Union[ByteParticles, ShortParticles, FloatParticles]
+__allowed_input_types__ = (ByteParticles, ShortParticles, FloatParticles, LongParticles)
+ParticleData = Union[ByteParticles, ShortParticles, FloatParticles, LongParticles]
 
 
 def std(apr: APR,
