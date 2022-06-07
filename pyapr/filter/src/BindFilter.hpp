@@ -90,17 +90,6 @@ void convolve_cuda(APR& apr, ParticleData<inputType>& input_parts, ParticleData<
                    bool use_reflective_boundary, bool rescale_stencil) {
 
     auto stencil_buf = stencil.request();
-    int stencil_size;
-
-    if( stencil_buf.ndim == 3 ) {
-        stencil_size = stencil_buf.shape[0];
-        if( ((stencil_size != 3) && (stencil_size != 5)) || (stencil_buf.shape[1] != stencil_size) || (stencil_buf.shape[2] != stencil_size) ) {
-            throw std::invalid_argument("stencil must have shape (3, 3, 3) or (5, 5, 5)");
-        }
-    } else {
-        throw std::invalid_argument("stencil must have 3 dimensions");
-    }
-
     VectorData<stencilType> stencil_vec;
     int nlevels = use_stencil_downsample ? apr.level_max() - apr.level_min() : 1;
     get_ds_stencil_vec(stencil_buf, stencil_vec, nlevels, normalize_stencil, rescale_stencil);
@@ -109,7 +98,7 @@ void convolve_cuda(APR& apr, ParticleData<inputType>& input_parts, ParticleData<
     auto access = apr.gpuAPRHelper();
     auto tree_access = apr.gpuTreeHelper();
 
-    if(stencil_size == 3) {
+    if(stencil_buf.shape[0] == 3) {
         isotropic_convolve_333_direct(access, tree_access, input_parts.data, output_parts.data, stencil_vec,
                                       tree_data, use_reflective_boundary);
     } else {
@@ -196,8 +185,9 @@ void bindStdFilter(py::module &m) {
 
 void AddFilter(py::module &m) {
 
-//    bindConvolution<uint8_t, float>(m);
+    bindConvolution<uint8_t, float>(m);
     bindConvolution<uint16_t, float>(m);
+    bindConvolution<uint64_t, float>(m);
     bindConvolution<float, float>(m);
 
     bindGradient<uint8_t, float>(m);

@@ -1,4 +1,4 @@
-from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.filter import convolve as _convolve, convolve_pencil as _convolve_pencil
 from _pyaprwrapper import __cuda_build__
 try:
@@ -11,8 +11,8 @@ from warnings import warn
 from typing import Union, Optional
 
 
-__allowed_input_types__ = (ShortParticles, FloatParticles)
-ParticleData = Union[ShortParticles, FloatParticles]
+__allowed_input_types__ = (ByteParticles, ShortParticles, FloatParticles, LongParticles)
+ParticleData = Union[ByteParticles, ShortParticles, FloatParticles, LongParticles]
 
 
 def __check_stencil(stencil: np.ndarray):
