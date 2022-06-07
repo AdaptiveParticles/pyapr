@@ -113,7 +113,11 @@ void convolve_cuda(APR& apr, ParticleData<inputType>& input_parts, ParticleData<
 template<int size_z, int size_x, int size_y>
 void bindMedianFilter(py::module &m) {
     std::string name = "median_filter_" + std::to_string(size_z) + std::to_string(size_x) + std::to_string(size_y);
+    m.def(name.c_str(), &APRFilter::median_filter<size_y, size_x, size_z, uint8_t, uint8_t>, "median filter",
+          "apr"_a, "input_parts"_a, "output_parts"_a);
     m.def(name.c_str(), &APRFilter::median_filter<size_y, size_x, size_z, uint16_t, uint16_t>, "median filter",
+          "apr"_a, "input_parts"_a, "output_parts"_a);
+    m.def(name.c_str(), &APRFilter::median_filter<size_y, size_x, size_z, uint64_t, uint64_t>, "median filter",
           "apr"_a, "input_parts"_a, "output_parts"_a);
     m.def(name.c_str(), &APRFilter::median_filter<size_y, size_x, size_z, float, float>, "median filter",
           "apr"_a, "input_parts"_a, "output_parts"_a);
@@ -122,7 +126,11 @@ void bindMedianFilter(py::module &m) {
 template<int size_z, int size_x, int size_y>
 void bindMinFilter(py::module &m) {
     std::string name = "min_filter_" + std::to_string(size_z) + std::to_string(size_x) + std::to_string(size_y);
+    m.def(name.c_str(), &APRFilter::min_filter<size_y, size_x, size_z, uint8_t, uint8_t>, "min filter",
+          "apr"_a, "input_parts"_a, "output_parts"_a);
     m.def(name.c_str(), &APRFilter::min_filter<size_y, size_x, size_z, uint16_t, uint16_t>, "min filter",
+          "apr"_a, "input_parts"_a, "output_parts"_a);
+    m.def(name.c_str(), &APRFilter::min_filter<size_y, size_x, size_z, uint64_t, uint64_t>, "min filter",
           "apr"_a, "input_parts"_a, "output_parts"_a);
     m.def(name.c_str(), &APRFilter::min_filter<size_y, size_x, size_z, float, float>, "min filter",
           "apr"_a, "input_parts"_a, "output_parts"_a);
@@ -131,7 +139,11 @@ void bindMinFilter(py::module &m) {
 template<int size_z, int size_x, int size_y>
 void bindMaxFilter(py::module &m) {
     std::string name = "max_filter_" + std::to_string(size_z) + std::to_string(size_x) + std::to_string(size_y);
+    m.def(name.c_str(), &APRFilter::max_filter<size_y, size_x, size_z, uint8_t, uint8_t>, "max filter",
+          "apr"_a, "input_parts"_a, "output_parts"_a);
     m.def(name.c_str(), &APRFilter::max_filter<size_y, size_x, size_z, uint16_t, uint16_t>, "max filter",
+          "apr"_a, "input_parts"_a, "output_parts"_a);
+    m.def(name.c_str(), &APRFilter::max_filter<size_y, size_x, size_z, uint64_t, uint64_t>, "max filter",
           "apr"_a, "input_parts"_a, "output_parts"_a);
     m.def(name.c_str(), &APRFilter::max_filter<size_y, size_x, size_z, float, float>, "max filter",
           "apr"_a, "input_parts"_a, "output_parts"_a);
@@ -183,6 +195,7 @@ void bindStdFilter(py::module &m) {
           "apr"_a, "input_parts"_a, "output_parts"_a, "size"_a);
 }
 
+
 void AddFilter(py::module &m) {
 
     bindConvolution<uint8_t, float>(m);
@@ -192,10 +205,12 @@ void AddFilter(py::module &m) {
 
     bindGradient<uint8_t, float>(m);
     bindGradient<uint16_t, float>(m);
+    bindGradient<uint64_t, float>(m);
     bindGradient<float, float>(m);
 
     bindStdFilter<uint8_t, float>(m);
     bindStdFilter<uint16_t, float>(m);
+    bindStdFilter<uint64_t, float>(m);
     bindStdFilter<float, float>(m);
 
     auto m3 = m.def_submodule("rank_filters");
@@ -205,22 +220,33 @@ void AddFilter(py::module &m) {
     bindMedianFilter<7, 7, 7>(m3);
     bindMedianFilter<9, 9, 9>(m3);
     bindMedianFilter<11, 11, 11>(m3);
-
     bindMedianFilter<1, 3, 3>(m3);
     bindMedianFilter<1, 5, 5>(m3);
     bindMedianFilter<1, 7, 7>(m3);
     bindMedianFilter<1, 9, 9>(m3);
     bindMedianFilter<1, 11, 11>(m3);
 
-    bindMinFilter<1, 3, 3>(m3);
-    bindMinFilter<1, 5, 5>(m3);
     bindMinFilter<3, 3, 3>(m3);
     bindMinFilter<5, 5, 5>(m3);
+    bindMinFilter<7, 7, 7>(m3);
+    bindMinFilter<9, 9, 9>(m3);
+    bindMinFilter<11, 11, 11>(m3);
+    bindMinFilter<1, 3, 3>(m3);
+    bindMinFilter<1, 5, 5>(m3);
+    bindMinFilter<1, 7, 7>(m3);
+    bindMinFilter<1, 9, 9>(m3);
+    bindMinFilter<1, 11, 11>(m3);
 
-    bindMaxFilter<1, 3, 3>(m3);
-    bindMaxFilter<1, 5, 5>(m3);
     bindMaxFilter<3, 3, 3>(m3);
     bindMaxFilter<5, 5, 5>(m3);
+    bindMaxFilter<7, 7, 7>(m3);
+    bindMaxFilter<9, 9, 9>(m3);
+    bindMaxFilter<11, 11, 11>(m3);
+    bindMaxFilter<1, 3, 3>(m3);
+    bindMaxFilter<1, 5, 5>(m3);
+    bindMaxFilter<1, 7, 7>(m3);
+    bindMaxFilter<1, 9, 9>(m3);
+    bindMaxFilter<1, 11, 11>(m3);
 
 }
 
