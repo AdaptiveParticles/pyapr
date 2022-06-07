@@ -5,7 +5,7 @@ import numpy as np
 
 
 @pytest.mark.filterwarnings("ignore:Method \'cuda\'")
-@pytest.mark.parametrize("parts_type", [pyapr.ShortParticles, pyapr.FloatParticles])
+@pytest.mark.parametrize("parts_type", [pyapr.ByteParticles, pyapr.ShortParticles, pyapr.FloatParticles, pyapr.LongParticles])
 @pytest.mark.parametrize("stencil_shape", [(5, 5, 5), (1, 5, 7), (1, 1, 13)])
 def test_convolution(parts_type, stencil_shape):
     apr, parts = load_test_apr(3)
