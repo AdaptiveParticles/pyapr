@@ -204,7 +204,7 @@ void segment_apr(APR& apr, PyParticleData<inputType>& input_parts, PyParticleDat
 
                                 const float diff = (neigh_val - val) / particle_distance;
                                 const float sigma = constant_neighbor_scale ? 1.0f : (grad_std[ct_id] + grad_std[neigh_id]) / 2.0f;
-                                const float cost_apr = beta * expf(-diff * diff / (gamma * sigma * sigma));
+                                const float cost_apr = beta * expf(-diff * diff / (gamma * sigma * sigma + 1e-6f));
 
                                 g->add_edge(ct_id, neigh_id, cost_apr, cost_apr);
 
@@ -454,7 +454,7 @@ void segment_apr_block(APR& apr, const PyParticleData<inputType>& input_parts, P
 
                                 const float diff = (neigh_val - val) / particle_distance;
                                 const float sigma = constant_neighbor_scale ? 1.0f : (grad_std[ct_id] + grad_std[neigh_id]) / 2.0f;
-                                const float cost_apr = beta * expf(-diff * diff / (gamma * sigma * sigma));
+                                const float cost_apr = beta * expf(-diff * diff / (gamma * sigma * sigma + 1e-6f));
 
                                 g->add_edge(ct_id - offset_ghost[level], neighbour_iterator - offset_ghost[neigh_level], cost_apr, cost_apr);
                             }
