@@ -1,7 +1,9 @@
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles
 from _pyaprwrapper.segmentation.graphcut import graphcut as _graphcut, graphcut_tiled, get_terminal_energies
+from ..filter import gradient_magnitude
 from .._common import _check_input
 from typing import Union, Optional, Tuple
+import numpy as np
 
 __allowed_input_types__ = (ShortParticles, FloatParticles)
 
@@ -10,6 +12,8 @@ def graphcut(apr: APR,
              parts: Union[ShortParticles, FloatParticles],
              alpha: float = 1.0,
              beta: float = 1.0,
+             gamma: float = 1.0,
+             z_anisotropy: float = 1.0,
              intensity_threshold: float = 0.0,
              min_std: float = 0.0,
              std_window_size: int = 7,
@@ -39,9 +43,14 @@ def graphcut(apr: APR,
     parts: ShortParticles or FloatParticles
         Input particle values.
     alpha: float
-        Scaling factor for terminal edge costs.
+        Scaling factor for terminal edge costs. (default: 1.0)
     beta: float
-        Scaling factor for neighbor edge costs.
+        Scaling factor for neighbor edge costs. (default: 1.0)
+    gamma: float
+        Edge costs between neighboring particles are set as `exp(-dI^2 / (gamma * sigma^2)`, where dI is the intensity
+        difference and sigma the local standard deviation of the gradient magnitude. (default: 1.0)
+    z_anisotropy: float
+        Gradients and differences in the z-dimension are scaled by this value. (default: 1.0)
     intensity_threshold: float
         Lower threshold on absolute intensity. Particles with intensity below this threshold are considered background.
         (default: 0)
@@ -96,10 +105,11 @@ def graphcut(apr: APR,
     if z_block_size is not None and z_block_size > 0:
         graphcut_tiled(apr, parts, output, alpha, beta, avg_num_neighbors, z_block_size, z_ghost_size,
                        num_tree_smooth, num_part_smooth, push_depth, intensity_threshold, min_std,
-                       std_window_size, max_factor, num_levels)
+                       std_window_size, max_factor, num_levels, gamma, z_anisotropy)
     else:
         _graphcut(apr, parts, output, alpha, beta, avg_num_neighbors, num_tree_smooth, num_part_smooth,
-                  push_depth, intensity_threshold, min_std, std_window_size, max_factor, num_levels)
+                  push_depth, intensity_threshold, min_std, std_window_size, max_factor, num_levels,
+                  gamma, z_anisotropy)
     return output
 
 
