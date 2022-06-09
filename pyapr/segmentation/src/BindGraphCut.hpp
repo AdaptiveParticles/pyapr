@@ -290,11 +290,11 @@ void segment_apr_tiled(APR& apr, const PyParticleData<inputType>& input_parts, P
     for (int block = 0; block < number_z_blocks; ++block) {
         timer.start_timer("segment block " + std::to_string(block+1));
         std::cout << "Block " << block + 1 << " / " << number_z_blocks << std::endl;
-        int z_0 = block * z_block_size;
-        int z_f = (block == (number_z_blocks - 1)) ? z_num : (block + 1) * z_block_size;
+        const int z_0 = block * z_block_size;
+        const int z_f = (block == (number_z_blocks - 1)) ? z_num : (block + 1) * z_block_size;
 
-        int z_ghost_l = std::min(z_0, z_ghost_size);
-        int z_ghost_r = std::min(z_num - z_f, z_ghost_size);
+        const int z_ghost_l = std::min(z_0, z_ghost_size);
+        const int z_ghost_r = std::min(z_num - z_f, z_ghost_size);
 
         ImagePatch patch;
         initPatchGlobal(patch, z_0 - z_ghost_l, z_f + z_ghost_r, 0, x_num, 0, y_num);
@@ -318,22 +318,15 @@ uint64_t number_particles_in_block(APR& apr, const int z_begin, const int z_end)
 
     for(int level = it.level_min(); level <= it.level_max(); ++level) {
 
-        const float level_size = apr.level_size(level);
-        const int z_begin_l = std::floor((float)z_begin / level_size);
-        const int z_end_l = std::ceil((float)z_end / level_size);
+        const int level_size = apr.level_size(level);
+        const int z_begin_l = z_begin / level_size;
+        const int z_end_l = (z_end + level_size - 1) / level_size;
 
-        const int z_num = it.z_num(level);
         const int x_num = it.x_num(level);
 
-        uint64_t first = it.begin(level, z_begin_l, 0);
-
-        uint64_t last;
-        if(z_end_l < z_num) {
-            last = it.begin(level, z_end_l+1, 0);
-        } else {
-            it.begin(level, z_num-1, x_num-1);
-            last = it.end();
-        }
+        const uint64_t first = it.begin(level, z_begin_l, 0);
+        it.begin(level, z_end_l-1, x_num-1);
+        const uint64_t last = it.end();
         count += (last-first);
     }
     return count;
@@ -346,23 +339,17 @@ void compute_offset_per_level(APR& apr, std::vector<uint64_t>& offsets, const in
     uint64_t cumsum = 0;
     for(int level = it.level_min(); level <= it.level_max(); ++level) {
 
-        const float level_size = apr.level_size(level);
-        const int z_begin_l = std::floor((float)z_begin / level_size);
-        const int z_end_l = std::ceil((float)z_end / level_size);
+        const int level_size = apr.level_size(level);
+        const int z_begin_l = z_begin / level_size;
+        const int z_end_l = (z_end + level_size - 1) / level_size;
 
-        const int z_num = it.z_num(level);
         const int x_num = it.x_num(level);
 
-        uint64_t first = it.begin(level, z_begin_l, 0);
+        const uint64_t first = it.begin(level, z_begin_l, 0);
         offsets[level] = first - cumsum;
 
-        uint64_t last;
-        if(z_end_l < z_num) {
-            last = it.begin(level, z_end_l+1, 0);
-        } else {
-            it.begin(level, z_num-1, x_num-1);
-            last = it.end();
-        }
+        it.begin(level, z_end_l-1, x_num-1);
+        const uint64_t last = it.end();
         cumsum += (last-first);
     }
 }
@@ -384,9 +371,9 @@ void segment_apr_block(APR& apr, const PyParticleData<inputType>& input_parts, P
     std::vector<int> z_begin(apr.level_max() + 1, 0);
     std::vector<int> z_end(apr.level_max() + 1, 0);
     for(int level = apr.level_max(); level > apr.level_min(); --level) {
-        const float level_size = apr.level_size(level);
-        z_begin[level] = std::floor(patch.z_begin_global / level_size);
-        z_end[level] = std::ceil(patch.z_end_global / level_size);
+        const int level_size = apr.level_size(level);
+        z_begin[level] = patch.z_begin_global / level_size;
+        z_end[level] = (patch.z_end_global + level_size - 1) / level_size;
     }
 
     // Initialize Graph object
@@ -489,16 +476,15 @@ void segment_apr_block(APR& apr, const PyParticleData<inputType>& input_parts, P
 
     for(int level = apr.level_max(); level > apr.level_min(); --level) {
 
-        const float level_size = apr.level_size(level);
+        const int level_size = apr.level_size(level);
 
-        const int z_ghost_l = std::floor(patch.z_ghost_l / level_size);
-        const int z_ghost_r = std::floor(patch.z_ghost_r / level_size);
+        const int z_ghost_l = patch.z_ghost_l / level_size;
+        const int z_ghost_r = patch.z_ghost_r / level_size;
 
-        const int z_begin_l = std::floor((patch.z_begin_global + patch.z_ghost_l) / level_size) - z_ghost_l;
-        const int z_end_l = std::ceil((patch.z_end_global - patch.z_ghost_r) / level_size) + z_ghost_r;
+        const int z_begin_l = (patch.z_begin_global + patch.z_ghost_l) / level_size - z_ghost_l;
+        const int z_end_l = (patch.z_end_global - patch.z_ghost_r + level_size - 1) / level_size + z_ghost_r;
 
         const uint64_t offset_in = offset_ghost[level];
-//        const uint64_t offset_out = offset_interior[level];
 
 #ifdef PYAPR_HAVE_OPENMP
 #pragma omp parallel for schedule(dynamic) firstprivate(it)
