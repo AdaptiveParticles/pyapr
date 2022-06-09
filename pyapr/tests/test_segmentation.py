@@ -10,16 +10,19 @@ PARTICLE_TYPES = [
 
 
 @pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
-def test_graphcut(parts_type):
+@pytest.mark.parametrize("constant_neighbor_scale", [True, False])
+def test_graphcut(parts_type, constant_neighbor_scale):
     apr, parts = load_test_apr_obj()
     parts = parts_type(parts)
 
-    mask = pyapr.segmentation.graphcut(apr, parts, intensity_threshold=101)
+    mask = pyapr.segmentation.graphcut(apr, parts, intensity_threshold=101, beta=3.0,
+                                       constant_neighbor_scale=constant_neighbor_scale)
     cc = pyapr.measure.connected_component(apr, mask, output=pyapr.ByteParticles())
     assert cc.max() == 2
 
     # blocked version should give the same result as it takes the entire image into account for each tile
-    mask = pyapr.segmentation.graphcut(apr, parts, intensity_threshold=101, z_block_size=16, z_ghost_size=16)
+    mask = pyapr.segmentation.graphcut(apr, parts, intensity_threshold=101, beta=3.0, z_block_size=16, z_ghost_size=32,
+                                       constant_neighbor_scale=constant_neighbor_scale)
     cc2 = pyapr.measure.connected_component(apr, mask, output=pyapr.ByteParticles())
     if not np.all(np.array(cc2) == np.array(cc)):
         a = np.array(cc2)
