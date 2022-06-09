@@ -13,6 +13,7 @@ def graphcut(apr: APR,
              alpha: float = 1.0,
              beta: float = 1.0,
              gamma: float = 1.0,
+             constant_neighbor_scale: bool = False,
              z_anisotropy: float = 1.0,
              intensity_threshold: float = 0.0,
              min_std: float = 0.0,
@@ -47,8 +48,11 @@ def graphcut(apr: APR,
     beta: float
         Scaling factor for neighbor edge costs. (default: 1.0)
     gamma: float
-        Edge costs between neighboring particles are set as `exp(-dI^2 / (gamma * sigma^2)`, where dI is the intensity
-        difference and sigma the local standard deviation of the gradient magnitude. (default: 1.0)
+        Edge costs between neighboring particles are set as `exp(-dI^2 / (gamma * sigma^2))`, where dI is the intensity
+        difference and sigma is 1 if `constant_neighbor_scale` is True, otherwise the local standard deviation of the
+        gradient magnitude. (default: 1.0)
+    constant_neighbor_scale: bool
+        If True, neighbor edge costs are scaled by a constant value (see `gamma`). (default: False)
     z_anisotropy: float
         Gradients and differences in the z-dimension are scaled by this value. (default: 1.0)
     intensity_threshold: float
@@ -105,11 +109,11 @@ def graphcut(apr: APR,
     if z_block_size is not None and z_block_size > 0:
         graphcut_tiled(apr, parts, output, alpha, beta, avg_num_neighbors, z_block_size, z_ghost_size,
                        num_tree_smooth, num_part_smooth, push_depth, intensity_threshold, min_std,
-                       std_window_size, max_factor, num_levels, gamma, z_anisotropy)
+                       std_window_size, max_factor, num_levels, gamma, z_anisotropy, constant_neighbor_scale)
     else:
         _graphcut(apr, parts, output, alpha, beta, avg_num_neighbors, num_tree_smooth, num_part_smooth,
                   push_depth, intensity_threshold, min_std, std_window_size, max_factor, num_levels,
-                  gamma, z_anisotropy)
+                  gamma, z_anisotropy, constant_neighbor_scale)
     return output
 
 

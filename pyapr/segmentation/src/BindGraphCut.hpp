@@ -97,7 +97,7 @@ void segment_apr(APR& apr, PyParticleData<inputType>& input_parts, PyParticleDat
                  float alpha, float beta, float avg_num_neighbours, int num_tree_smooth = 1,
                  int num_part_smooth = 1, int push_depth = 0, float intensity_threshold=0.0f,
                  float min_var = 0.0f, int std_window_size=7, float max_factor=3.0f, int num_levels=3,
-                 float gamma=1.0f, float z_anisotropy=1.0f) {
+                 float gamma=1.0f, float z_anisotropy=1.0f, bool constant_neighbor_scale=false) {
 
     APRTimer timer(true);
 
@@ -114,15 +114,18 @@ void segment_apr(APR& apr, PyParticleData<inputType>& input_parts, PyParticleDat
     APRNumerics::local_std(apr, input_parts, local_scale, window_size);
     timer.stop_timer();
 
-    timer.start_timer("compute gradient magnitude");
-    ParticleData<float> gradmag;
-    APRNumerics::gradient_magnitude_cfd(apr, input_parts, gradmag, {1.f, 1.f, z_anisotropy});
-    timer.stop_timer();
-
-    timer.start_timer("compute local std of gradient magnitude");
     ParticleData<float> grad_std;
-    APRNumerics::local_std(apr, gradmag, grad_std, window_size);
-    timer.stop_timer();
+
+    if(!constant_neighbor_scale) {
+        timer.start_timer("compute gradient magnitude");
+        ParticleData<float> gradmag;
+        APRNumerics::gradient_magnitude_cfd(apr, input_parts, gradmag, {1.f, 1.f, z_anisotropy});
+        timer.stop_timer();
+
+        timer.start_timer("compute local std of gradient magnitude");
+        APRNumerics::local_std(apr, gradmag, grad_std, window_size);
+        timer.stop_timer();
+    }
 
     // Initialize Graph object
     typedef Graph<float,float,float> GraphType;
@@ -200,8 +203,8 @@ void segment_apr(APR& apr, PyParticleData<inputType>& input_parts, PyParticleDat
                                 }
 
                                 const float diff = (neigh_val - val) / particle_distance;
-                                const float sigma = (grad_std[ct_id] + grad_std[neigh_id]) / 2.0f;
-                                const float cost_apr = beta * expf(-diff*diff / (gamma * sigma * sigma));
+                                const float sigma = constant_neighbor_scale ? 1.0f : (grad_std[ct_id] + grad_std[neigh_id]) / 2.0f;
+                                const float cost_apr = beta * expf(-diff * diff / (gamma * sigma * sigma));
 
                                 g->add_edge(ct_id, neigh_id, cost_apr, cost_apr);
 
@@ -243,7 +246,7 @@ void segment_apr_tiled(APR& apr, const PyParticleData<inputType>& input_parts, P
                        float alpha, float beta, float avg_num_neighbours, int z_block_size, int z_ghost_size,
                        int num_tree_smooth=1, int num_part_smooth=1, int push_depth=0, float intensity_threshold=0.0f,
                        float min_var = 0.0f, int std_window_size=7, float max_factor=3.0, int num_levels=3,
-                       float gamma=1.0f, float z_anisotropy=1.0f) {
+                       float gamma=1.0f, float z_anisotropy=1.0f, bool constant_neighbor_scale=false) {
 
     APRTimer total_timer(true);
     total_timer.start_timer("Total time");
@@ -263,15 +266,18 @@ void segment_apr_tiled(APR& apr, const PyParticleData<inputType>& input_parts, P
     APRNumerics::local_std(apr, input_parts, local_scale, window_size);
     timer.stop_timer();
 
-    timer.start_timer("compute gradient magnitude");
-    ParticleData<float> gradmag;
-    APRNumerics::gradient_magnitude_cfd(apr, input_parts, gradmag, {1.f, 1.f, z_anisotropy});
-    timer.stop_timer();
-
-    timer.start_timer("compute local std of gradient magnitude");
     ParticleData<float> grad_std;
-    APRNumerics::local_std(apr, gradmag, grad_std, window_size);
-    timer.stop_timer();
+
+    if(!constant_neighbor_scale) {
+        timer.start_timer("compute gradient magnitude");
+        ParticleData<float> gradmag;
+        APRNumerics::gradient_magnitude_cfd(apr, input_parts, gradmag, {1.f, 1.f, z_anisotropy});
+        timer.stop_timer();
+
+        timer.start_timer("compute local std of gradient magnitude");
+        APRNumerics::local_std(apr, gradmag, grad_std, window_size);
+        timer.stop_timer();
+    }
 
     mask_parts.init(apr.total_number_particles()); // initialize output particles
 
@@ -299,7 +305,7 @@ void segment_apr_tiled(APR& apr, const PyParticleData<inputType>& input_parts, P
 
         segment_apr_block(apr, input_parts, mask_parts, alpha, beta, avg_num_neighbours,
                           patch, loc_min, local_scale, intensity_threshold, min_var, max_factor,
-                          num_levels, gamma, z_anisotropy, grad_std);
+                          num_levels, gamma, z_anisotropy, grad_std, constant_neighbor_scale);
         timer.stop_timer();
     }
     total_timer.stop_timer();
@@ -366,7 +372,7 @@ template<typename inputType, typename maskType>
 void segment_apr_block(APR& apr, const PyParticleData<inputType>& input_parts, PyParticleData<maskType>& mask_parts,
                        const float alpha, const float beta, float avg_num_neighbours, const ImagePatch& patch, const ParticleData<float>& loc_min,
                        const ParticleData<float>& local_scale, const float intensity_threshold, const float min_var, const float max_factor,
-                       const int num_levels, float gamma, float z_anisotropy, ParticleData<float>& grad_std) {
+                       const int num_levels, float gamma, float z_anisotropy, ParticleData<float>& grad_std, bool constant_neighbor_scale) {
 
     APRTimer timer(true);
 
@@ -460,8 +466,8 @@ void segment_apr_block(APR& apr, const PyParticleData<inputType>& input_parts, P
                                 }
 
                                 const float diff = (neigh_val - val) / particle_distance;
-                                const float sigma = (grad_std[ct_id] + grad_std[neigh_id]) / 2.0f;
-                                const float cost_apr = beta * expf(-diff*diff / (gamma * sigma * sigma));
+                                const float sigma = constant_neighbor_scale ? 1.0f : (grad_std[ct_id] + grad_std[neigh_id]) / 2.0f;
+                                const float cost_apr = beta * expf(-diff * diff / (gamma * sigma * sigma));
 
                                 g->add_edge(ct_id - offset_ghost[level], neighbour_iterator - offset_ghost[neigh_level], cost_apr, cost_apr);
                             }
@@ -519,13 +525,13 @@ void bindGraphcut(py::module& m) {
           "apr"_a, "input_parts"_a, "mask_parts"_a, "alpha"_a=1, "beta"_a=1, "avg_num_neighbours"_a=3.3,
           "num_tree_smooth"_a=1, "num_part_smooth"_a=1, "push_depth"_a=0, "intensity_threshold"_a=0.0f,
           "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2, "gamma"_a=1.0f,
-          "z_anisotropy"_a=1.0f);
+          "z_anisotropy"_a=1.0f, "constant_neighbor_scale"_a=false);
 
     m.def("graphcut", &segment_apr<inputType, uint16_t>, "compute graphcut segmentation of an APR",
           "apr"_a, "input_parts"_a, "mask_parts"_a, "alpha"_a=1, "beta"_a=1, "avg_num_neighbours"_a=3.3,
           "num_tree_smooth"_a=1, "num_part_smooth"_a=1, "push_depth"_a=0, "intensity_threshold"_a=0.0f,
           "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2, "gamma"_a=1.0f,
-          "z_anisotropy"_a=1.0f);
+          "z_anisotropy"_a=1.0f, "constant_neighbor_scale"_a=false);
 }
 
 
@@ -535,13 +541,13 @@ void bindGraphcutTiled(py::module& m) {
           "apr"_a, "input_parts"_a, "mask_parts"_a, "alpha"_a=1, "beta"_a=1, "avg_num_neighbours"_a=3.3,
           "z_block_size"_a=256, "z_ghost_size"_a=16, "num_tree_smooth"_a=1, "num_part_smooth"_a=1, "push_depth"_a=0,
           "intensity_threshold"_a=0.0f, "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2,
-          "gamma"_a=1.0f, "z_anisotropy"_a=1.0f);
+          "gamma"_a=1.0f, "z_anisotropy"_a=1.0f, "constant_neighbor_scale"_a=false);
 
     m.def("graphcut_tiled", &segment_apr_tiled<inputType, uint16_t>, "compute graphcut segmentation of an APR",
           "apr"_a, "input_parts"_a, "mask_parts"_a, "alpha"_a=1, "beta"_a=1, "avg_num_neighbours"_a=3.3,
           "z_block_size"_a=256, "z_ghost_size"_a=16, "num_tree_smooth"_a=1, "num_part_smooth"_a=1, "push_depth"_a=0,
           "intensity_threshold"_a=0.0f, "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2,
-          "gamma"_a=1.0f, "z_anisotropy"_a=1.0f);
+          "gamma"_a=1.0f, "z_anisotropy"_a=1.0f, "constant_neighbor_scale"_a=false);
 }
 
 
