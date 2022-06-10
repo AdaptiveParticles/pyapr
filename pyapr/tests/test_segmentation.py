@@ -15,25 +15,20 @@ def test_graphcut(parts_type, constant_neighbor_scale):
     apr, parts = load_test_apr_obj()
     parts = parts_type(parts)
 
-    mask = pyapr.segmentation.graphcut(apr, parts, intensity_threshold=101, beta=3.0,
-                                       constant_neighbor_scale=constant_neighbor_scale)
-    cc = pyapr.measure.connected_component(apr, mask, output=pyapr.ByteParticles())
-    assert cc.max() == 2
+    # this image is trivially segmented by thresholding
+    gt_mask = parts > 100
 
-    # blocked version should give the same result as it takes the entire image into account for each tile
+    # test graphcut
+    mask = pyapr.segmentation.graphcut(apr, parts, intensity_threshold=101, beta=3.0, push_depth=1,
+                                       constant_neighbor_scale=constant_neighbor_scale)
+    assert mask == gt_mask
+
+    # test blocked version
     mask = pyapr.segmentation.graphcut(apr, parts, intensity_threshold=101, beta=3.0, z_block_size=16, z_ghost_size=32,
-                                       constant_neighbor_scale=constant_neighbor_scale)
-    cc2 = pyapr.measure.connected_component(apr, mask, output=pyapr.ByteParticles())
-    if not np.all(np.array(cc2) == np.array(cc)):
-        a = np.array(cc2)
-        b = np.array(cc)
-        diff = a != b
-        with np.printoptions(threshold=200):
-            print(np.sum(diff))
-            print(a[diff])
-            print(b[diff])
-        assert 0
+                                       push_depth=1, constant_neighbor_scale=constant_neighbor_scale)
+    assert mask == gt_mask
 
+    # run compute_terminal_costs
     foreground, background = pyapr.segmentation.compute_terminal_costs(apr, parts)
 
     with pytest.raises(TypeError):
