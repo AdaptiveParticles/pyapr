@@ -18,7 +18,7 @@ class MainWindowImage(QtWidgets.QWidget):
 
         self.setMouseTracking(True)
 
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.setLayout(self.layout)
         self.layout.setSpacing(0)
 
@@ -51,7 +51,7 @@ class MainWindowImage(QtWidgets.QWidget):
 
         # add a drop box for LUT selection
 
-        self.comboBox = QtGui.QComboBox(self)
+        self.comboBox = QtWidgets.QComboBox(self)
         self.comboBox.move(20, 20)
         self.comboBox.addItem('viridis')
         self.comboBox.addItem('plasma')
