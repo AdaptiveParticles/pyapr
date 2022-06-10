@@ -11,7 +11,8 @@ PARTICLE_TYPES = [
 
 @pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
 @pytest.mark.parametrize("constant_neighbor_scale", [True, False])
-def test_graphcut(parts_type, constant_neighbor_scale):
+@pytest.mark.parametrize("z_block_size", [None, 16])
+def test_graphcut(parts_type, constant_neighbor_scale, z_block_size):
     apr, parts = load_test_apr_obj()
     parts = parts_type(parts)
 
@@ -19,13 +20,8 @@ def test_graphcut(parts_type, constant_neighbor_scale):
     gt_mask = parts > 100
 
     # test graphcut
-    mask = pyapr.segmentation.graphcut(apr, parts, intensity_threshold=101, beta=3.0, push_depth=1,
-                                       constant_neighbor_scale=constant_neighbor_scale)
-    assert mask == gt_mask
-
-    # test blocked version
-    mask = pyapr.segmentation.graphcut(apr, parts, intensity_threshold=101, beta=3.0, z_block_size=16, z_ghost_size=32,
-                                       push_depth=1, constant_neighbor_scale=constant_neighbor_scale)
+    mask = pyapr.segmentation.graphcut(apr, parts, intensity_threshold=101, beta=3.0, z_block_size=z_block_size,
+                                       z_ghost_size=32, push_depth=1, constant_neighbor_scale=constant_neighbor_scale)
     assert mask == gt_mask
 
     # run compute_terminal_costs
