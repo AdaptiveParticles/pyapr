@@ -2,6 +2,7 @@ import pytest
 import pyapr
 from .helpers import load_test_apr_obj
 import numpy as np
+import platform
 
 PARTICLE_TYPES = [
     pyapr.ShortParticles,
@@ -9,6 +10,7 @@ PARTICLE_TYPES = [
 ]
 
 
+@pytest.mark.skipif(platform.system() == 'Darwin', reason='see issue #63')
 @pytest.mark.parametrize("parts_type", PARTICLE_TYPES)
 @pytest.mark.parametrize("constant_neighbor_scale", [True, False])
 @pytest.mark.parametrize("z_block_size", [None, 16])
