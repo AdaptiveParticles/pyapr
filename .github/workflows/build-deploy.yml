@@ -56,8 +56,8 @@ jobs:
       CIBW_TEST_COMMAND: "python3 -m pytest -vv {project}/pyapr/tests"
       CIBW_TEST_SKIP: "*-win_amd64"  # windows tests are run separately
       CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
-      CIBW_ENVIRONMENT_MACOS: CPPFLAGS="-I/usr/local/opt/llvm/include" LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib" CXX="/usr/local/opt/llvm/bin/clang++" CC="/usr/local/opt/llvm/bin/clang"
-
+#      CIBW_ENVIRONMENT_MACOS: CPPFLAGS="-I/usr/local/opt/llvm/include" LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib" CXX="/usr/local/opt/llvm/bin/clang++" CC="/usr/local/opt/llvm/bin/clang"
+      CIBW_ENVIRONMENT_MACOS: CC="/usr/local/bin/gcc-11" CXX="/usr/local/bin/g++-11"
 
     steps:
       - uses: actions/checkout@v2
@@ -140,7 +140,7 @@ jobs:
       - name: Install OpenMP dependencies with brew for OSX
         if: contains(matrix.os,'macos')
         run: |
-          brew install llvm
+          brew install gcc@11
           brew install libomp
           brew install c-blosc
           brew install hdf5
