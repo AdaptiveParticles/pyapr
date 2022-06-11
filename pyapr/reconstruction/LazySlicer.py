@@ -5,6 +5,7 @@ from .reconstruct import reconstruct_constant_lazy, reconstruct_level_lazy, reco
 import numpy as np
 from numbers import Integral
 from typing import Optional
+import os
 
 
 class LazySlicer:
@@ -33,6 +34,9 @@ class LazySlicer:
                  tree_parts_name: Optional[str] = None,
                  t: int = 0,
                  channel_name: str = 't'):
+
+        if not os.path.isfile(file_path):
+            raise ValueError(f'Invalid path {file_path} - file does not exist')
 
         self.mode = mode
 

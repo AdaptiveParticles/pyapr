@@ -96,7 +96,8 @@ template<typename inputType, typename maskType>
 void segment_apr(APR& apr, PyParticleData<inputType>& input_parts, PyParticleData<maskType>& mask_parts,
                  float alpha, float beta, float avg_num_neighbours, int num_tree_smooth = 1,
                  int num_part_smooth = 1, int push_depth = 0, float intensity_threshold=0.0f,
-                 float min_var = 0.0f, int std_window_size=7, float max_factor=3.0, int num_levels=3) {
+                 float min_var = 0.0f, int std_window_size=7, float max_factor=3.0f, int num_levels=3,
+                 float gamma=1.0f, float z_anisotropy=1.0f, bool constant_neighbor_scale=false) {
 
     APRTimer timer(true);
 
@@ -112,6 +113,19 @@ void segment_apr(APR& apr, PyParticleData<inputType>& input_parts, PyParticleDat
                                     std::min((int)apr.org_dims(2), std_window_size)};
     APRNumerics::local_std(apr, input_parts, local_scale, window_size);
     timer.stop_timer();
+
+    ParticleData<float> grad_std;
+
+    if(!constant_neighbor_scale) {
+        timer.start_timer("compute gradient magnitude");
+        ParticleData<float> gradmag;
+        APRNumerics::gradient_magnitude_cfd(apr, input_parts, gradmag, {1.f, 1.f, z_anisotropy});
+        timer.stop_timer();
+
+        timer.start_timer("compute local std of gradient magnitude");
+        APRNumerics::local_std(apr, gradmag, grad_std, window_size);
+        timer.stop_timer();
+    }
 
     // Initialize Graph object
     typedef Graph<float,float,float> GraphType;
@@ -133,7 +147,7 @@ void segment_apr(APR& apr, PyParticleData<inputType>& input_parts, PyParticleDat
 
     for(int level = it.level_min(); level <= it.level_max(); ++level) {
 
-        const float base_dist = std::pow(2, apr.level_max()-level);
+        const float base_dist = it.level_size(level);
 
         for(int z = 0; z < apr.z_num(level); ++z) {
             for(int x = 0; x < apr.x_num(level); ++x) {
@@ -180,15 +194,17 @@ void segment_apr(APR& apr, PyParticleData<inputType>& input_parts, PyParticleDat
                                     continue;
                                 }
 
-                                float particle_distance = base_dist;    //distance if neighbour is same level
+                                // particle distance
+                                float particle_distance = direction == 4 ? base_dist * z_anisotropy : base_dist;
                                 if(neigh_level > level) {
                                     particle_distance *= 0.75f;         // neighbour particle cell is half the size of current cell
                                 } else if(neigh_level < level) {
                                     particle_distance *= 1.5f;          // neighbour particle cell is twice the size of current cell
                                 }
 
-                                float diff = (neigh_val - val) / particle_distance;
-                                float cost_apr = beta * exp(-diff*diff);
+                                const float diff = (neigh_val - val) / particle_distance;
+                                const float sigma = constant_neighbor_scale ? 1.0f : (grad_std[ct_id] + grad_std[neigh_id]) / 2.0f;
+                                const float cost_apr = beta * expf(-diff * diff / (gamma * sigma * sigma + 1e-6f));
 
                                 g->add_edge(ct_id, neigh_id, cost_apr, cost_apr);
 
@@ -229,7 +245,8 @@ template<typename inputType, typename maskType>
 void segment_apr_tiled(APR& apr, const PyParticleData<inputType>& input_parts, PyParticleData<maskType>& mask_parts,
                        float alpha, float beta, float avg_num_neighbours, int z_block_size, int z_ghost_size,
                        int num_tree_smooth=1, int num_part_smooth=1, int push_depth=0, float intensity_threshold=0.0f,
-                       float min_var = 0.0f, int std_window_size=7, float max_factor=3.0, int num_levels=3) {
+                       float min_var = 0.0f, int std_window_size=7, float max_factor=3.0, int num_levels=3,
+                       float gamma=1.0f, float z_anisotropy=1.0f, bool constant_neighbor_scale=false) {
 
     APRTimer total_timer(true);
     total_timer.start_timer("Total time");
@@ -249,6 +266,19 @@ void segment_apr_tiled(APR& apr, const PyParticleData<inputType>& input_parts, P
     APRNumerics::local_std(apr, input_parts, local_scale, window_size);
     timer.stop_timer();
 
+    ParticleData<float> grad_std;
+
+    if(!constant_neighbor_scale) {
+        timer.start_timer("compute gradient magnitude");
+        ParticleData<float> gradmag;
+        APRNumerics::gradient_magnitude_cfd(apr, input_parts, gradmag, {1.f, 1.f, z_anisotropy});
+        timer.stop_timer();
+
+        timer.start_timer("compute local std of gradient magnitude");
+        APRNumerics::local_std(apr, gradmag, grad_std, window_size);
+        timer.stop_timer();
+    }
+
     mask_parts.init(apr.total_number_particles()); // initialize output particles
 
     const int y_num = apr.org_dims(0);
@@ -260,11 +290,11 @@ void segment_apr_tiled(APR& apr, const PyParticleData<inputType>& input_parts, P
     for (int block = 0; block < number_z_blocks; ++block) {
         timer.start_timer("segment block " + std::to_string(block+1));
         std::cout << "Block " << block + 1 << " / " << number_z_blocks << std::endl;
-        int z_0 = block * z_block_size;
-        int z_f = (block == (number_z_blocks - 1)) ? z_num : (block + 1) * z_block_size;
+        const int z_0 = block * z_block_size;
+        const int z_f = (block == (number_z_blocks - 1)) ? z_num : (block + 1) * z_block_size;
 
-        int z_ghost_l = std::min(z_0, z_ghost_size);
-        int z_ghost_r = std::min(z_num - z_f, z_ghost_size);
+        const int z_ghost_l = std::min(z_0, z_ghost_size);
+        const int z_ghost_r = std::min(z_num - z_f, z_ghost_size);
 
         ImagePatch patch;
         initPatchGlobal(patch, z_0 - z_ghost_l, z_f + z_ghost_r, 0, x_num, 0, y_num);
@@ -274,7 +304,8 @@ void segment_apr_tiled(APR& apr, const PyParticleData<inputType>& input_parts, P
         patch.z_offset = z_0 - z_ghost_l;
 
         segment_apr_block(apr, input_parts, mask_parts, alpha, beta, avg_num_neighbours,
-                          patch, loc_min, local_scale, intensity_threshold, min_var, max_factor, num_levels);
+                          patch, loc_min, local_scale, intensity_threshold, min_var, max_factor,
+                          num_levels, gamma, z_anisotropy, grad_std, constant_neighbor_scale);
         timer.stop_timer();
     }
     total_timer.stop_timer();
@@ -287,22 +318,15 @@ uint64_t number_particles_in_block(APR& apr, const int z_begin, const int z_end)
 
     for(int level = it.level_min(); level <= it.level_max(); ++level) {
 
-        const float level_size = apr.level_size(level);
-        const int z_begin_l = std::floor((float)z_begin / level_size);
-        const int z_end_l = std::ceil((float)z_end / level_size);
+        const int level_size = apr.level_size(level);
+        const int z_begin_l = z_begin / level_size;
+        const int z_end_l = (z_end + level_size - 1) / level_size;
 
-        const int z_num = it.z_num(level);
         const int x_num = it.x_num(level);
 
-        uint64_t first = it.begin(level, z_begin_l, 0);
-
-        uint64_t last;
-        if(z_end_l < z_num) {
-            last = it.begin(level, z_end_l+1, 0);
-        } else {
-            it.begin(level, z_num-1, x_num-1);
-            last = it.end();
-        }
+        const uint64_t first = it.begin(level, z_begin_l, 0);
+        it.begin(level, z_end_l-1, x_num-1);
+        const uint64_t last = it.end();
         count += (last-first);
     }
     return count;
@@ -315,23 +339,17 @@ void compute_offset_per_level(APR& apr, std::vector<uint64_t>& offsets, const in
     uint64_t cumsum = 0;
     for(int level = it.level_min(); level <= it.level_max(); ++level) {
 
-        const float level_size = apr.level_size(level);
-        const int z_begin_l = std::floor((float)z_begin / level_size);
-        const int z_end_l = std::ceil((float)z_end / level_size);
+        const int level_size = apr.level_size(level);
+        const int z_begin_l = z_begin / level_size;
+        const int z_end_l = (z_end + level_size - 1) / level_size;
 
-        const int z_num = it.z_num(level);
         const int x_num = it.x_num(level);
 
-        uint64_t first = it.begin(level, z_begin_l, 0);
+        const uint64_t first = it.begin(level, z_begin_l, 0);
         offsets[level] = first - cumsum;
 
-        uint64_t last;
-        if(z_end_l < z_num) {
-            last = it.begin(level, z_end_l+1, 0);
-        } else {
-            it.begin(level, z_num-1, x_num-1);
-            last = it.end();
-        }
+        it.begin(level, z_end_l-1, x_num-1);
+        const uint64_t last = it.end();
         cumsum += (last-first);
     }
 }
@@ -341,7 +359,7 @@ template<typename inputType, typename maskType>
 void segment_apr_block(APR& apr, const PyParticleData<inputType>& input_parts, PyParticleData<maskType>& mask_parts,
                        const float alpha, const float beta, float avg_num_neighbours, const ImagePatch& patch, const ParticleData<float>& loc_min,
                        const ParticleData<float>& local_scale, const float intensity_threshold, const float min_var, const float max_factor,
-                       const int num_levels) {
+                       const int num_levels, float gamma, float z_anisotropy, ParticleData<float>& grad_std, bool constant_neighbor_scale) {
 
     APRTimer timer(true);
 
@@ -353,9 +371,9 @@ void segment_apr_block(APR& apr, const PyParticleData<inputType>& input_parts, P
     std::vector<int> z_begin(apr.level_max() + 1, 0);
     std::vector<int> z_end(apr.level_max() + 1, 0);
     for(int level = apr.level_max(); level > apr.level_min(); --level) {
-        const float level_size = apr.level_size(level);
-        z_begin[level] = std::floor(patch.z_begin_global / level_size);
-        z_end[level] = std::ceil(patch.z_end_global / level_size);
+        const int level_size = apr.level_size(level);
+        z_begin[level] = patch.z_begin_global / level_size;
+        z_end[level] = (patch.z_end_global + level_size - 1) / level_size;
     }
 
     // Initialize Graph object
@@ -375,6 +393,9 @@ void segment_apr_block(APR& apr, const PyParticleData<inputType>& input_parts, P
     const int level_threshold = std::min(std::max(it.level_max()-num_levels, it.level_min()), it.level_max());
 
     for(int level = apr.level_min(); level <= apr.level_max(); ++level) {
+
+        const float base_dist = apr.level_size(level);
+
         for(int z = z_begin[level]; z < z_end[level]; ++z) {
             for(int x = 0; x < it.x_num(level); ++x) {
                 for(it.begin(level, z, x); it < it.end(); ++it) {
@@ -424,7 +445,7 @@ void segment_apr_block(APR& apr, const PyParticleData<inputType>& input_parts, P
                                     continue;
                                 }
 
-                                float particle_distance = apr.level_size(level);
+                                float particle_distance = direction == 4 ? base_dist * z_anisotropy : base_dist;
                                 if(neigh_level > level) {
                                     particle_distance *= 0.75f;   // neighbour particle cell is half the size of current cell
                                 } else if(neigh_level < level) {
@@ -432,7 +453,8 @@ void segment_apr_block(APR& apr, const PyParticleData<inputType>& input_parts, P
                                 }
 
                                 const float diff = (neigh_val - val) / particle_distance;
-                                const float cost_apr = beta * exp(-diff*diff);
+                                const float sigma = constant_neighbor_scale ? 1.0f : (grad_std[ct_id] + grad_std[neigh_id]) / 2.0f;
+                                const float cost_apr = beta * expf(-diff * diff / (gamma * sigma * sigma + 1e-6f));
 
                                 g->add_edge(ct_id - offset_ghost[level], neighbour_iterator - offset_ghost[neigh_level], cost_apr, cost_apr);
                             }
@@ -454,16 +476,15 @@ void segment_apr_block(APR& apr, const PyParticleData<inputType>& input_parts, P
 
     for(int level = apr.level_max(); level > apr.level_min(); --level) {
 
-        const float level_size = apr.level_size(level);
+        const int level_size = apr.level_size(level);
 
-        const int z_ghost_l = std::floor(patch.z_ghost_l / level_size);
-        const int z_ghost_r = std::floor(patch.z_ghost_r / level_size);
+        const int z_ghost_l = patch.z_ghost_l / level_size;
+        const int z_ghost_r = patch.z_ghost_r / level_size;
 
-        const int z_begin_l = std::floor((patch.z_begin_global + patch.z_ghost_l) / level_size) - z_ghost_l;
-        const int z_end_l = std::ceil((patch.z_end_global - patch.z_ghost_r) / level_size) + z_ghost_r;
+        const int z_begin_l = (patch.z_begin_global + patch.z_ghost_l) / level_size - z_ghost_l;
+        const int z_end_l = (patch.z_end_global - patch.z_ghost_r + level_size - 1) / level_size + z_ghost_r;
 
         const uint64_t offset_in = offset_ghost[level];
-//        const uint64_t offset_out = offset_interior[level];
 
 #ifdef PYAPR_HAVE_OPENMP
 #pragma omp parallel for schedule(dynamic) firstprivate(it)
@@ -489,12 +510,14 @@ void bindGraphcut(py::module& m) {
     m.def("graphcut", &segment_apr<inputType, uint8_t>, "compute graphcut segmentation of an APR",
           "apr"_a, "input_parts"_a, "mask_parts"_a, "alpha"_a=1, "beta"_a=1, "avg_num_neighbours"_a=3.3,
           "num_tree_smooth"_a=1, "num_part_smooth"_a=1, "push_depth"_a=0, "intensity_threshold"_a=0.0f,
-          "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2);
+          "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2, "gamma"_a=1.0f,
+          "z_anisotropy"_a=1.0f, "constant_neighbor_scale"_a=false);
 
     m.def("graphcut", &segment_apr<inputType, uint16_t>, "compute graphcut segmentation of an APR",
           "apr"_a, "input_parts"_a, "mask_parts"_a, "alpha"_a=1, "beta"_a=1, "avg_num_neighbours"_a=3.3,
           "num_tree_smooth"_a=1, "num_part_smooth"_a=1, "push_depth"_a=0, "intensity_threshold"_a=0.0f,
-          "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2);
+          "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2, "gamma"_a=1.0f,
+          "z_anisotropy"_a=1.0f, "constant_neighbor_scale"_a=false);
 }
 
 
@@ -503,12 +526,14 @@ void bindGraphcutTiled(py::module& m) {
     m.def("graphcut_tiled", &segment_apr_tiled<inputType, uint8_t>, "compute graphcut segmentation of an APR",
           "apr"_a, "input_parts"_a, "mask_parts"_a, "alpha"_a=1, "beta"_a=1, "avg_num_neighbours"_a=3.3,
           "z_block_size"_a=256, "z_ghost_size"_a=16, "num_tree_smooth"_a=1, "num_part_smooth"_a=1, "push_depth"_a=0,
-          "intensity_threshold"_a=0.0f, "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2);
+          "intensity_threshold"_a=0.0f, "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2,
+          "gamma"_a=1.0f, "z_anisotropy"_a=1.0f, "constant_neighbor_scale"_a=false);
 
     m.def("graphcut_tiled", &segment_apr_tiled<inputType, uint16_t>, "compute graphcut segmentation of an APR",
           "apr"_a, "input_parts"_a, "mask_parts"_a, "alpha"_a=1, "beta"_a=1, "avg_num_neighbours"_a=3.3,
           "z_block_size"_a=256, "z_ghost_size"_a=16, "num_tree_smooth"_a=1, "num_part_smooth"_a=1, "push_depth"_a=0,
-          "intensity_threshold"_a=0.0f, "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2);
+          "intensity_threshold"_a=0.0f, "min_var"_a=0.0f, "std_window_size"_a=7, "max_factor"_a=3.0, "num_levels"_a=2,
+          "gamma"_a=1.0f, "z_anisotropy"_a=1.0f, "constant_neighbor_scale"_a=false);
 }
 
 

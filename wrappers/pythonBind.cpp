@@ -63,6 +63,7 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     AddPyPixelData<uint8_t>(data_containers, "Byte");
     AddPyPixelData<uint16_t>(data_containers, "Short");
     AddPyPixelData<float>(data_containers, "Float");
+    AddPyPixelData<uint64_t>(data_containers, "Long");
 
     // wrap PyParticleData class for different data types
     AddPyParticleData<uint8_t>(data_containers, "Byte");

@@ -95,7 +95,7 @@ class CustomSlider:
         self.label.setText(text_str)
 
 
-class MainWindowImage(Qt.QtGui.QWidget):
+class MainWindowImage(Qt.QtWidgets.QWidget):
     def __init__(self, slider_decimals=0):
         super(MainWindowImage, self).__init__()
 

@@ -52,9 +52,11 @@ jobs:
       CIBW_BUILD_VERBOSITY: 1
       CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
       CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "pip install -U wheel delvewheel && python fix_windows_wheel.py {wheel} {dest_dir}"
-      CIBW_TEST_COMMAND: "python3 -m unittest discover -s {project}"
-      CIBW_TEST_SKIP: "*-win_amd64"  # skip tests on windows
+      CIBW_TEST_REQUIRES: "pytest pytest-qt pytest-xvfb"
+      CIBW_TEST_COMMAND: "python3 -m pytest -vv {project}/pyapr/tests"
+      CIBW_TEST_SKIP: "*-win_amd64"  # windows tests are run separately
       CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
+      CIBW_ENVIRONMENT_MACOS: CPPFLAGS="-I/usr/local/opt/llvm/include" LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib" CXX="/usr/local/opt/llvm/bin/clang++" CC="/usr/local/opt/llvm/bin/clang"
 
     steps:
       - uses: actions/checkout@v2
@@ -128,7 +130,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: '3.7'
+          python-version: '3.9'
 
       - name: Install cibuildwheel
         run: |
@@ -137,6 +139,7 @@ jobs:
       - name: Install OpenMP dependencies with brew for OSX
         if: contains(matrix.os,'macos')
         run: |
+          brew install llvm
           brew install libomp
           brew install c-blosc
           brew install hdf5
@@ -153,16 +156,14 @@ jobs:
           retention-days: 30
 
   windows-tests:
-    name: windows py${{ matrix.python-version }} tests
-    runs-on: windows-latest
+    name: ${{ matrix.os }} py${{ matrix.python-version }} tests
+    runs-on: ${{ matrix.os }}
     needs: build-wheels
     strategy:
       fail-fast: false
       matrix:
+        os: [ windows-latest ]
         python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
-        include:
-          - os: windows-latest
-            triplet: x64-windows
 
     steps:
       - name: Checkout
@@ -178,7 +179,7 @@ jobs:
       - name: Download wheels from artifacts
         uses: actions/download-artifact@v2
         with:
-          name: windows-latest-wheels
+          name: ${{ matrix.os }}-wheels
           path: wheelhouse
 
       - name: Set version string
@@ -194,7 +195,8 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m unittest discover -s ${{ github.workspace }}
+          pip install pytest pytest-qt
+          pytest -vv
 
 
   deploy:
@@ -212,7 +214,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.7'
+          python-version: '3.9'
 
       - name: Install dependencies
         run: |

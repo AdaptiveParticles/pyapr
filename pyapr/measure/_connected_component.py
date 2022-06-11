@@ -33,8 +33,8 @@ def connected_component(apr: APR,
     if output is None:
         output = LongParticles()
 
-    assert isinstance(output, __allowed_types__), \
-        TypeError(f'output (if provided) must be of type {__allowed_types__}, received {type(output)}.')
+    if not isinstance(output, __allowed_types__):
+        raise TypeError(f'output (if provided) must be of type {__allowed_types__}, received {type(output)}.')
 
     _connected_component(apr, mask, output)
     return output

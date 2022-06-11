@@ -1,6 +1,7 @@
-from _pyaprwrapper.data_containers import APR, ReconPatch, ShortParticles, FloatParticles, LongParticles
+from _pyaprwrapper.data_containers import APR, ReconPatch, ByteParticles, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.tree import fill_tree_mean, fill_tree_max
 from ..utils import particles_to_type
+from .._common import _check_input
 from . import reconstruct_constant, reconstruct_level, reconstruct_smooth
 import numpy as np
 from numbers import Integral
@@ -22,10 +23,11 @@ class APRSlicer:
     """
     def __init__(self,
                  apr: APR,
-                 parts: Union[ShortParticles, LongParticles, FloatParticles],
+                 parts: Union[ByteParticles, ShortParticles, LongParticles, FloatParticles],
                  mode: str = 'constant',
                  level_delta: int = 0,
                  tree_mode: str = 'mean'):
+        _check_input(apr, parts)
         self.apr = apr
         self.parts = parts
         self.mode = mode
@@ -66,7 +68,10 @@ class APRSlicer:
         return 3
 
     def new_empty_slice(self):
-        return np.zeros((self.patch.z_end-self.patch.z_begin, self.patch.x_end-self.patch.x_begin, self.patch.y_end-self.patch.y_begin), dtype=self.dtype)
+        return np.zeros((self.patch.z_end-self.patch.z_begin,
+                         self.patch.x_end-self.patch.x_begin,
+                         self.patch.y_end-self.patch.y_begin),
+                        dtype=self.dtype)
 
     def update_dims(self):
         self.dims = [int(np.ceil(self.apr.org_dims(x) * pow(2, self.patch.level_delta))) for x in range(3)]

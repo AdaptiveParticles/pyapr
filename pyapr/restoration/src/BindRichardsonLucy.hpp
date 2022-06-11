@@ -83,8 +83,8 @@ namespace PyAPRRL {
         auto access = apr.gpuAPRHelper();
         auto tree_access = apr.gpuTreeHelper();
 
-        richardson_lucy(access, tree_access, input_parts.data, output_parts.data, stencil_pd, niter,
-                        use_stencil_downsample, normalize_stencil, resume);
+        APRNumericsGPU::richardson_lucy(access, tree_access, input_parts.data, output_parts.data, stencil_pd, niter,
+                                        use_stencil_downsample, normalize_stencil, resume);
     }
 #endif
 }

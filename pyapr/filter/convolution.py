@@ -1,4 +1,4 @@
-from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.filter import convolve as _convolve, convolve_pencil as _convolve_pencil
 from _pyaprwrapper import __cuda_build__
 try:
@@ -11,8 +11,8 @@ from warnings import warn
 from typing import Union, Optional
 
 
-__allowed_input_types__ = (ShortParticles, FloatParticles)
-ParticleData = Union[ShortParticles, FloatParticles]
+__allowed_input_types__ = (ByteParticles, ShortParticles, FloatParticles, LongParticles)
+ParticleData = Union[ByteParticles, ShortParticles, FloatParticles, LongParticles]
 
 
 def __check_stencil(stencil: np.ndarray):
@@ -25,8 +25,8 @@ def __check_stencil(stencil: np.ndarray):
 def __check_method(method: str, stencil: np.ndarray):
     if method == 'cuda':
         if not __cuda_build__:
-            warn(f'Method \'cuda\' requires pyapr to be built with CUDA support (see installation instructions), '
-                 f'using method \'pencil\' on CPU.', UserWarning)
+            warn(f'Method \'cuda\' requires pyapr to be built with CUDA support (see installation instructions). '
+                 f'Using method \'pencil\' on CPU.', UserWarning)
             method = 'pencil'
 
         if stencil.shape not in [(3, 3, 3), (5, 5, 5)]:
@@ -41,6 +41,7 @@ def correlate(apr: APR,
               stencil: np.ndarray,
               output: Optional[FloatParticles] = None,
               restrict_stencil: bool = True,
+              rescale_stencil: bool = False,
               normalize_stencil: bool = True,
               reflect_boundary: bool = True,
               method: str = 'pencil') -> FloatParticles:
@@ -66,6 +67,10 @@ def correlate(apr: APR,
     restrict_stencil: bool
         If True, the stencil is adapted to coarser resolution levels such that the correlation is consistent with
         applying ``stencil`` to the reconstructed pixel image. (default: True)
+    rescale_stencil: bool
+        If True, the stencil is adapted to coarser resolution levels by rescaling the weights according to
+        the distance between particles. Useful for, e.g., finite difference calculations. If both `rescale_stencil`
+        and `restrict_stencil` are True, rescaling is used. (default: False)
     normalize_stencil: bool
         If True, the stencil is normalized to sum to 1 (if ``restrict_stencil`` is True, the stencil is normalized
         at each resolution level. (default: True)
@@ -90,14 +95,14 @@ def correlate(apr: APR,
     _check_input(apr, parts, __allowed_input_types__)
     stencil = __check_stencil(stencil)
     method = __check_method(method, stencil)
-    output = output or FloatParticles()
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
 
     if method == 'pencil':
-        _convolve_pencil(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary)
+        _convolve_pencil(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary, rescale_stencil)
     elif method == 'slice':
-        _convolve(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary)
+        _convolve(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary, rescale_stencil)
     elif method == 'cuda':
-        _convolve_cuda(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary)
+        _convolve_cuda(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary, rescale_stencil)
     else:
         raise ValueError(f'method {method} not recognized. Allowed values are \'pencil\', \'slice\' and \'cuda\'.')
     return output
@@ -108,6 +113,7 @@ def convolve(apr: APR,
              stencil: np.ndarray,
              output: Optional[FloatParticles] = None,
              restrict_stencil: bool = True,
+             rescale_stencil: bool = False,
              normalize_stencil: bool = True,
              reflect_boundary: bool = True,
              method: str = 'pencil') -> FloatParticles:
@@ -133,6 +139,10 @@ def convolve(apr: APR,
     restrict_stencil: bool
         If True, the stencil is adapted to coarser resolution levels such that the convolution is consistent with
         applying ``stencil`` to the reconstructed pixel image. (default: True)
+    rescale_stencil: bool
+        If True, the stencil is adapted to coarser resolution levels by rescaling the weights according to
+        the distance between particles. Useful for, e.g., finite difference calculations. If both `rescale_stencil`
+        and `restrict_stencil` are True, rescaling is used. (default: False)
     normalize_stencil: bool
         If True, the stencil is normalized to sum to 1 (if ``restrict_stencil`` is True, the stencil is normalized
         at each resolution level. (default: True)
@@ -157,14 +167,14 @@ def convolve(apr: APR,
     _check_input(apr, parts, __allowed_input_types__)
     stencil = np.ascontiguousarray(np.flip(__check_stencil(stencil)))
     method = __check_method(method, stencil)
-    output = output or FloatParticles()
+    output = output if isinstance(output, FloatParticles) else FloatParticles()
 
     if method == 'pencil':
-        _convolve_pencil(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary)
+        _convolve_pencil(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary, rescale_stencil)
     elif method == 'slice':
-        _convolve(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary)
+        _convolve(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary, rescale_stencil)
     elif method == 'cuda':
-        _convolve_cuda(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary)
+        _convolve_cuda(apr, parts, output, stencil, restrict_stencil, normalize_stencil, reflect_boundary, rescale_stencil)
     else:
         raise ValueError(f'method {method} not recognized. Allowed values are \'pencil\', \'slice\' and \'cuda\'.')
     return output

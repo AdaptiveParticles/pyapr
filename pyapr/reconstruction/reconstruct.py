@@ -15,6 +15,7 @@ from ..utils import type_to_lazy_particles, particles_to_type
 from .._common import _check_input
 import numpy as np
 from typing import Optional, Union
+import os
 
 
 ParticleData = Union[ByteParticles, ShortParticles, FloatParticles, LongParticles]
@@ -63,7 +64,7 @@ def reconstruct_constant(apr: APR,
 
     if patch is not None:
         if not patch.check_limits(apr):
-            return None
+            raise ValueError(f'Invalid patch {patch} for input APR of shape {apr.shape()}')
 
         if out_arr is None or out_arr.size != patch.size():
             out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
@@ -115,7 +116,7 @@ def reconstruct_smooth(apr: APR,
 
     if patch is not None:
         if not patch.check_limits(apr):
-            return None
+            raise ValueError(f'Invalid patch {patch} for input APR of shape {apr.shape()}')
 
         if out_arr is None or out_arr.size != patch.size():
             out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
@@ -158,7 +159,7 @@ def reconstruct_level(apr: APR,
     assert apr.total_number_particles() > 0, ValueError(f'APR not initialized!')
     if patch is not None:
         if not patch.check_limits(apr):
-            return None
+            raise ValueError(f'Invalid patch {patch} for input APR of shape {apr.shape()}')
 
         if out_arr is None or out_arr.size != patch.size():
             out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),
@@ -328,6 +329,8 @@ def reconstruct_lazy(file_path: str,
     out_arr: numpy.ndarray
         The reconstructed pixel values.
     """
+    if not os.path.isfile(file_path):
+        raise ValueError(f'Invalid path {file_path} - file does not exist')
 
     apr_file = APRFile()
     apr_file.open(file_path, 'READ')
@@ -345,7 +348,8 @@ def reconstruct_lazy(file_path: str,
         parts.init(apr_file, parts_name, t, channel_name)
         parts.open()
         _dtype = np.float32 if parts_type == 'float' else np.dtype(parts_type)
-        tree_parts = type(parts)()
+        tree_parts_type = get_particle_type(file_path, t=t, channel_name=channel_name, parts_name=tree_parts_name, tree=True)
+        tree_parts = type_to_lazy_particles(tree_parts_type) if tree_parts_type else type(parts)()
     else:
         _dtype = np.uint8
 
@@ -365,7 +369,7 @@ def reconstruct_lazy(file_path: str,
             tree_parts.open()
 
     if not patch.check_limits(access):
-        return None
+        raise ValueError(f'Invalid patch {patch}')
 
     if out_arr is None or out_arr.size != patch.size():
         out_arr = np.zeros(shape=(patch.z_end-patch.z_begin, patch.x_end-patch.x_begin, patch.y_end-patch.y_begin),

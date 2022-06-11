@@ -12,13 +12,13 @@ from typing import Union
 from warnings import warn
 
 
-class MainWindowImage(QtGui.QWidget):
+class MainWindowImage(QtWidgets.QWidget):
     def __init__(self):
         super(MainWindowImage, self).__init__()
 
         self.setMouseTracking(True)
 
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.setLayout(self.layout)
         self.layout.setSpacing(0)
 
@@ -51,7 +51,7 @@ class MainWindowImage(QtGui.QWidget):
 
         # add a drop box for LUT selection
 
-        self.comboBox = QtGui.QComboBox(self)
+        self.comboBox = QtWidgets.QComboBox(self)
         self.comboBox.move(20, 20)
         self.comboBox.addItem('viridis')
         self.comboBox.addItem('plasma')
