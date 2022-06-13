@@ -32,7 +32,7 @@ def read(fpath: str,
         APR file path, e.g. `/home/data/test.apr`
     apr: APR, optional
         APR object to read the file into. If None, a new object is generated. (default: None)
-    parts: ParticleData, optional
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles, optional
         ParticleData object to read particles into. If provided, the type must match the data in the file.
         If None, a new object of the correct datatype is generated. (default: None)
     t: int
@@ -88,7 +88,7 @@ def write(fpath: str,
         APR file path, e.g. `/home/data/test.apr`
     apr: APR
         APR object to write.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         ParticleData object to write.
     t: int
         Time point under which the data is written. (default: 0)
@@ -103,7 +103,7 @@ def write(fpath: str,
         If `True`, the APR tree structure (all parent nodes of APR particles) is written to file. Results in slightly
         larger files (roughly 14.3% additional particles in 3D), but typically saves time when reading a file and
         subsequently using the tree. (default: `True`)
-    tree_parts: ParticleData, optional
+    tree_parts: ByteParticles, ShortParticles, LongParticles or FloatParticles, optional
         Values of tree particles (computed via e.g. `pyapr.tree.fill_tree_mean`). If provided, and
         `write_tree=True`, the values are written to file. This allows, e.g. lazy reconstruction at coarse resolutions
         using `pyapr.reconstruction.LazySlicer`. (default: None)
@@ -145,7 +145,7 @@ def write_particles(fpath: str,
     ----------
     fpath: str
         APR file path, e.g. `/home/data/test.apr`
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         ParticleData object to write.
     t: int
         Time point under which the data is written. (default: 0)
@@ -195,7 +195,7 @@ def read_particles(fpath: str,
     apr: APR, optional
         Corresponding APR object, allowing an alternative (equivalent) read method to be used. Currently does not
         affect the result. (default: None)
-    parts: ParticleData, optional
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles, optional
         ParticleData object to read particles into. If provided, the type must match the data in the file.
         If None, a new object of the correct datatype is generated. (default: None)
     t: int
@@ -209,7 +209,7 @@ def read_particles(fpath: str,
 
     Return
     ------
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         The particle values.
 
     See also
