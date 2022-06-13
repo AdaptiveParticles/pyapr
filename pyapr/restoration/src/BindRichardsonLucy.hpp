@@ -100,7 +100,7 @@ void bindRichardsonLucy(py::module& m) {
 
 void AddRichardsonLucy(py::module &m) {
 
-//    bindRichardsonLucy<uint8_t>(m);
+    bindRichardsonLucy<uint8_t>(m);
     bindRichardsonLucy<uint16_t>(m);
     bindRichardsonLucy<float>(m);
 }
