@@ -17,7 +17,7 @@ def find_objects(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    labels: ShortParticles or LongParticles
+    labels: ByteParticles, ShortParticles or LongParticles
         Input (object) labels.
 
     Returns

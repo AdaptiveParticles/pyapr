@@ -21,7 +21,7 @@ def connected_component(apr: APR,
     mask: ByteParticles, ShortParticles or LongParticles
         Input (binary) particle mask.
     output: ByteParticles, ShortParticles or LongParticles, optional
-        (optional) Particle object for the output labels. If not provided, a LongParticles (uint64) object is generated
+        Particle object for the output labels. If not provided, a LongParticles (uint64) object is generated
         and returned. (default: None)
 
     Returns
