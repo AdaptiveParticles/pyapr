@@ -19,15 +19,20 @@ def std(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values.
     size: int, tuple, list
         Size of the box in which standard deviations are computed. If a single integer is provided,
         considers a box of size ``min(size, apr.shape[dim])`` in each dimension. To use different sizes,
         give a list or tuple of length 3, specifying the size in dimensions (y, x, z)
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written. If not provided, a new object
+        Particle object to which the resulting values are written. If not provided, a new object
         is generated. (default: None)
+
+    Returns
+    -------
+    output: FloatParticles
+        The local standard deviation values
     """
     _check_input(apr, parts, __allowed_input_types__)
     if isinstance(size, int):
