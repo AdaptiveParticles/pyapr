@@ -86,9 +86,9 @@ def write(fpath: str,
     ----------
     fpath: str
         APR file path, e.g. `/home/data/test.apr`
-    apr: APR, optional
+    apr: APR
         APR object to write.
-    parts: ParticleData, optional
+    parts: ParticleData
         ParticleData object to write.
     t: int
         Time point under which the data is written. (default: 0)
@@ -104,9 +104,9 @@ def write(fpath: str,
         larger files (roughly 14.3% additional particles in 3D), but typically saves time when reading a file and
         subsequently using the tree. (default: `True`)
     tree_parts: ParticleData, optional
-        Values of tree particles (computed via e.g. `pyapr.numerics.fill_tree_mean`). If provided, and
+        Values of tree particles (computed via e.g. `pyapr.tree.fill_tree_mean`). If provided, and
         `write_tree=True`, the values are written to file. This allows, e.g. lazy reconstruction at coarse resolutions
-        using `pyapr.LazySlicer`. (default: None)
+        using `pyapr.reconstruction.LazySlicer`. (default: None)
 
     See also
     --------
@@ -145,7 +145,7 @@ def write_particles(fpath: str,
     ----------
     fpath: str
         APR file path, e.g. `/home/data/test.apr`
-    parts: ParticleData, optional
+    parts: ParticleData
         ParticleData object to write.
     t: int
         Time point under which the data is written. (default: 0)
@@ -249,7 +249,7 @@ def write_apr(fpath: str,
     ----------
     fpath: str
         APR file path, e.g. `/home/data/test.apr`
-    apr: APR, optional
+    apr: APR
         APR object to write.
     t: int
         Time point under which the data is written. (default: 0)
