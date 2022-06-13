@@ -60,7 +60,7 @@ def correlate(apr: APR,
         Input particle values
     stencil: np.ndarray
         Stencil or kernel to correlate with the image. Should be 3-dimensional and of type float32, otherwise
-        it is expanded, e.g. shape (3, 3) -> (1, 3, 3), and cast.
+        it is converted and expanded, e.g. shape (3, 3) -> (1, 3, 3).
     output: FloatParticles, optional
         Particle object to which the resulting values are written. If not provided, a new object
         is generated (default: None)
@@ -69,8 +69,8 @@ def correlate(apr: APR,
         applying ``stencil`` to the reconstructed pixel image. (default: True)
     rescale_stencil: bool
         If True, the stencil is adapted to coarser resolution levels by rescaling the weights according to
-        the distance between particles. Useful for, e.g., finite difference calculations. If both `rescale_stencil`
-        and `restrict_stencil` are True, rescaling is used. (default: False)
+        the distance between particles. Useful for, e.g., finite difference calculations. If both ``rescale_stencil``
+        and ``restrict_stencil`` are True, rescaling is used. (default: False)
     normalize_stencil: bool
         If True, the stencil is normalized to sum to 1 (if ``restrict_stencil`` is True, the stencil is normalized
         at each resolution level. (default: True)
@@ -132,7 +132,7 @@ def convolve(apr: APR,
         Input particle values
     stencil: np.ndarray
         Stencil or kernel to convolve with the image. Should be 3-dimensional and of type float32, otherwise
-        it is expanded, e.g. shape (3, 3) -> (1, 3, 3), and cast.
+        it is converted and expanded, e.g. shape (3, 3) -> (1, 3, 3).
     output: FloatParticles, optional
         Particle object to which the resulting values are written. If not provided, a new object
         is generated (default: None)
@@ -141,8 +141,8 @@ def convolve(apr: APR,
         applying ``stencil`` to the reconstructed pixel image. (default: True)
     rescale_stencil: bool
         If True, the stencil is adapted to coarser resolution levels by rescaling the weights according to
-        the distance between particles. Useful for, e.g., finite difference calculations. If both `rescale_stencil`
-        and `restrict_stencil` are True, rescaling is used. (default: False)
+        the distance between particles. Useful for, e.g., finite difference calculations. If both ``rescale_stencil``
+        and ``restrict_stencil`` are True, rescaling is used. (default: False)
     normalize_stencil: bool
         If True, the stencil is normalized to sum to 1 (if ``restrict_stencil`` is True, the stencil is normalized
         at each resolution level. (default: True)
