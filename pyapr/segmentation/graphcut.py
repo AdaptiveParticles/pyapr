@@ -78,14 +78,14 @@ def graphcut(apr: APR,
     push_depth: int
         The local minimum estimate is coarsened by `push_depth` levels. (default: 1)
     z_block_size: int, optional
-        (optional) If provided, the operation is applied tile-wise to overlapping blocks in the z dimension to reduce
-        memory requirements. The amount of overlap is controlled by ``z_ghost_size``. (default: None)
+        If provided, the operation is applied block-wise in the z dimension to reduce memory requirements.
+        The amount of overlap is controlled by ``z_ghost_size``. (default: None)
     z_ghost_size: int
         If ``z_block_size`` is provided, the blocks are padded with ``z_ghost_size`` slices in both directions
         to reduce boundary artifacts between blocks.
-    output: ByteParticles, ShortParticles, optional
-        (optional) Particle object to which the resulting mask is written. If None, a new ByteParticles object
-        is generated.
+    output: ByteParticles or ShortParticles, optional
+        Particle object to which the resulting mask is written. If None, a new ByteParticles object
+        is generated. (default: None)
 
     Returns
     -------
