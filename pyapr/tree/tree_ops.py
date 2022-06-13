@@ -22,13 +22,13 @@ def sample_from_tree(apr: APR,
     parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input APR particle values.
     tree_parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
-        Input APR tree values. Must either be of type FloatParticles or the same type as `parts`.
+        Input APR tree values. Must either be of type FloatParticles or the same type as ``parts``.
     num_levels: int
-        Sample values from level `apr.level_max()-num_levels`. If `num_levels=1`, each particle takes the value
-        of its parent node in the APR tree. If `num_levels>1`, the `num_levels-1` finest tree levels are coarsened
-        prior to re-sampling particle values. Thus, `num_levels` sets the maximum resolution of the sampling. (Default: 1)
+        Sample values from level ``apr.level_max()-num_levels``. If ``num_levels=1``, each particle takes the value
+        of its parent node in the APR tree. If ``num_levels>1``, the ``num_levels-1`` finest tree levels are coarsened
+        prior to re-sampling particle values. Thus, ``num_levels`` sets the maximum resolution of the sampling. (Default: 1)
     in_place: bool
-        If True, both `parts` and `tree_parts` are modified in-place. (Default: False)
+        If True, both ``parts`` and ``tree_parts`` are modified in-place. (Default: False)
 
     Returns
     -------

@@ -15,8 +15,8 @@ def type_to_particles(typespec: Union[str, type]) -> ParticleData:
     Parameters
     ----------
     typespec: str or type
-        String specifying the data type. Valid types are `uint8`, `uint16`, `uint64`, `float` or corresponding numpy
-        types.
+        String specifying the data type. Valid types are ``uint8``, ``uint16``, ``uint64``, ``float`` or corresponding
+        numpy types.
 
     Returns
     -------
@@ -43,8 +43,8 @@ def type_to_lazy_particles(typespec: Union[str, type]) -> LazyData:
     Parameters
     ----------
     typespec: str or type
-        String specifying the data type. Valid types are `uint8`, `uint16`, `uint64`, `float` or corresponding numpy
-        types.
+        String specifying the data type. Valid types are ``uint8``, ``uint16``, ``uint64``, ``float`` or corresponding
+        numpy types.
 
     Returns
     -------

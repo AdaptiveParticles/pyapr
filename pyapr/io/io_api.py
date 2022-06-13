@@ -29,7 +29,7 @@ def read(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     apr: APR, optional
         APR object to read the file into. If None, a new object is generated. (default: None)
     parts: ByteParticles, ShortParticles, LongParticles or FloatParticles, optional
@@ -38,9 +38,9 @@ def read(fpath: str,
     t: int
         Time point to read. (default: 0)
     channel_name: str
-        Channel to read. (default: `t`)
+        Channel to read. (default: 't')
     parts_name: str
-        Name of the particle field to read. (default: `particles`)
+        Name of the particle field to read. (default: 'particles')
 
     Return
     ------
@@ -85,7 +85,7 @@ def write(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     apr: APR
         APR object to write.
     parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
@@ -93,9 +93,9 @@ def write(fpath: str,
     t: int
         Time point under which the data is written. (default: 0)
     channel_name: str
-        Channel under which the data is written. (default: `t`)
+        Channel under which the data is written. (default: 't')
     parts_name: str
-        Name of the particle field to write. (default: `particles`)
+        Name of the particle field to write. (default: 'particles')
     write_linear: bool
         If `True`, writes linear APR structure, otherwise the sparse (random access) structure is written. The
         linear structure is used in most processing methods, but requires more memory. (default: `True`)
@@ -105,7 +105,7 @@ def write(fpath: str,
         subsequently using the tree. (default: `True`)
     tree_parts: ByteParticles, ShortParticles, LongParticles or FloatParticles, optional
         Values of tree particles (computed via e.g. `pyapr.tree.fill_tree_mean`). If provided, and
-        `write_tree=True`, the values are written to file. This allows, e.g. lazy reconstruction at coarse resolutions
+        ``write_tree=True``, the values are written to file. This allows, e.g. lazy reconstruction at coarse resolutions
         using `pyapr.reconstruction.LazySlicer`. (default: None)
 
     See also
@@ -144,15 +144,15 @@ def write_particles(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         ParticleData object to write.
     t: int
         Time point under which the data is written. (default: 0)
     channel_name: str
-        Channel under which the data is written. (default: `t`)
+        Channel under which the data is written. (default: 't')
     parts_name: str
-        Name of the particle field to write. (default: `particles`)
+        Name of the particle field to write. (default: 'particles')
     tree: bool
         If `True`, writes the particles under the tree structure. The provided particles should then correspond
         to the APR tree. Otherwise the data is written under the standard APR structure (default: `False`)
@@ -191,7 +191,7 @@ def read_particles(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     apr: APR, optional
         Corresponding APR object, allowing an alternative (equivalent) read method to be used. Currently does not
         affect the result. (default: None)
@@ -201,9 +201,9 @@ def read_particles(fpath: str,
     t: int
         Time point under which the data is written. (default: 0)
     channel_name: str
-        Channel under which the data is written. (default: `t`)
+        Channel under which the data is written. (default: 't')
     parts_name: str
-        Name of the particle field to write. (default: `particles`)
+        Name of the particle field to write. (default: 'particles')
     tree: bool
         If `True`, reads the particles under the tree structure in the file. (default: `False`)
 
@@ -248,13 +248,13 @@ def write_apr(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     apr: APR
         APR object to write.
     t: int
         Time point under which the data is written. (default: 0)
     channel_name: str
-        Channel under which the data is written. (default: `t`)
+        Channel under which the data is written. (default: 't')
     write_linear: bool
         If `True`, writes linear APR structure, otherwise the sparse (random access) structure is written. The
         linear structure is used in most processing methods, but requires more memory. (default: `True`)
@@ -295,13 +295,13 @@ def read_apr(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     apr: APR, optional
         APR object to read the file into. If None, a new object is generated. (default: None)
     t: int
         Time point to read. (default: 0)
     channel_name: str
-        Channel to read. (default: `t`)
+        Channel to read. (default: 't')
 
     Return
     ------
@@ -333,11 +333,11 @@ def get_particle_names(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     t: int
         Time point to read. (default: 0)
     channel_name: str
-        Channel to read. (default: `t`)
+        Channel to read. (default: 't')
     tree: bool
         If `True`, checks the tree structure under the given channel and time point. (default: False)
 
@@ -371,13 +371,13 @@ def get_particle_type(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     t: int
         Time point to read. (default: 0)
     channel_name: str
-        Channel to read. (default: `t`)
+        Channel to read. (default: 't')
     parts_name: str
-        Name of the particle field whose type is to be determined.
+        Name of the particle field whose type is to be determined. (default: 'particles')
     tree: bool
         If `True`, checks the tree structure under the given channel and time point. (default: False)
 

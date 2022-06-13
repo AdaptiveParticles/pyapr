@@ -102,7 +102,7 @@ def richardson_lucy_tv(apr: APR,
         Resume iterations from a previous estimate? If True, the previous estimate must be provided
         via the ``output`` argument. (default: False)
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written, or the initial estimate if
+        Particle object to which the resulting values are written, or the initial estimate if
         ``resume`` is enabled. If not provided, a new object is generated (default: None)
 
     Returns
@@ -153,7 +153,7 @@ def richardson_lucy_cuda(apr: APR,
         Resume iterations from a previous estimate? If True, the previous estimate must be provided
         via the ``output`` argument. (default: False)
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written, or the initial estimate if
+        Particle object to which the resulting values are written, or the initial estimate if
         ``resume`` is enabled. If not provided, a new object is generated (default: None)
 
     Returns

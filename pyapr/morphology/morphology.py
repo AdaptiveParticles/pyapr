@@ -15,7 +15,7 @@ def dilation(apr: APR,
              inplace: bool = False) -> ParticleData:
     """
     Apply morphological dilation (binary or grayscale) to an APR image. Only considers face-side neighbors
-    (6-connectivity in 3D). If `radius > 1` the operation is repeated `radius` times.
+    (6-connectivity in 3D). If ``radius > 1`` the operation is repeated ``radius`` times.
 
     Parameters
     ----------
@@ -26,14 +26,14 @@ def dilation(apr: APR,
     binary: bool
         If `True`, apply binary dilation. Otherwise, grayscale dilation is used. (default: False)
     radius: int
-        Radius of the operation (the 6-connective operation is iterated `radius` times). (default: 1)
+        Radius of the operation (the 6-connective operation is iterated ``radius`` times). (default: 1)
     inplace: bool
-        If `True`, the operation modifies the input `parts`. Otherwise, a copy of the input is used. (default: False)
+        If `True`, the operation modifies the input ``parts``. Otherwise, a copy of the input is used. (default: False)
 
     Returns
     -------
     parts_copy: ByteParticles, ShortParticles, LongParticles or FloatParticles
-        Output particle values of the same type as the input `parts`.
+        Output particle values of the same type as the input ``parts``.
     """
     _check_input(apr, parts)
     parts_copy = parts if inplace else parts.copy()
@@ -51,7 +51,7 @@ def erosion(apr: APR,
             inplace: bool = False) -> ParticleData:
     """
     Apply morphological erosion (binary or grayscale) to an APR image. Only considers face-side neighbors
-    (6-connectivity in 3D). If `radius > 1` the operation is repeated `radius` times.
+    (6-connectivity in 3D). If ``radius > 1`` the operation is repeated ``radius`` times.
 
     Parameters
     ----------
@@ -62,14 +62,14 @@ def erosion(apr: APR,
     binary: bool
         If `True`, apply binary erosion. Otherwise, grayscale erosion is used. (default: False)
     radius: int
-        Radius of the operation (the 6-connective operation is iterated `radius` times). (default: 1)
+        Radius of the operation (the 6-connective operation is iterated ``radius`` times). (default: 1)
     inplace: bool
-        If `True`, the operation modifies the input `parts`. Otherwise, a copy of the input is used. (default: False)
+        If `True`, the operation modifies the input ``parts``. Otherwise, a copy of the input is used. (default: False)
 
     Returns
     -------
     parts_copy: ByteParticles, ShortParticles, LongParticles or FloatParticles
-        Output particle values of the same type as the input `parts`.
+        Output particle values of the same type as the input ``parts``.
     """
     _check_input(apr, parts)
     parts_copy = parts if inplace else parts.copy()
@@ -87,7 +87,7 @@ def opening(apr: APR,
             inplace: bool = False) -> ParticleData:
     """
     Apply morphological opening (erosion followed by dilation) to an APR image. Only considers face-side neighbors
-    (6-connectivity in 3D). If `radius > 1` the erosion and dilation are repeated `radius` times.
+    (6-connectivity in 3D). If ``radius > 1`` the erosion and dilation are repeated ``radius`` times.
 
     Parameters
     ----------
@@ -96,16 +96,16 @@ def opening(apr: APR,
     parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Input particle values.
     binary: bool
-        If `True`, binary erosion and dilation is used. Otherwise `min` and `max` operators are used. (default: False)
+        If `True`, binary erosion and dilation is used. Otherwise ``min`` and ``max`` operators are used. (default: False)
     radius: int
-        Radius of the erosion and dilation operations. The 6-connective operations are iterated `radius` times. (default: 1)
+        Radius of the erosion and dilation operations. The 6-connective operations are iterated ``radius`` times. (default: 1)
     inplace: bool
-        If `True`, the operation modifies the input `parts`. Otherwise, a copy of the input is used. (default: False)
+        If `True`, the operation modifies the input ``parts``. Otherwise, a copy of the input is used. (default: False)
 
     Returns
     -------
     parts_copy: ByteParticles, ShortParticles, LongParticles or FloatParticles
-        Output particle values of the same type as the input `parts`.
+        Output particle values of the same type as the input ``parts``.
     """
     _check_input(apr, parts)
     parts_copy = parts if inplace else parts.copy()
@@ -125,7 +125,7 @@ def closing(apr: APR,
             inplace: bool = False) -> ParticleData:
     """
     Apply morphological closing (dilation followed by erosion) to an APR image. Only considers face-side neighbors
-    (6-connectivity in 3D). If `radius > 1` the erosion and dilation are repeated `radius` times.
+    (6-connectivity in 3D). If ``radius > 1`` the erosion and dilation are repeated ``radius`` times.
 
     Parameters
     ----------
@@ -134,16 +134,16 @@ def closing(apr: APR,
     parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Input particle values.
     binary: bool
-        If `True`, binary erosion and dilation is used. Otherwise `min` and `max` operators are used. (default: False)
+        If `True`, binary erosion and dilation is used. Otherwise ``min`` and ``max`` operators are used. (default: False)
     radius: int
-        Radius of the erosion and dilation operations. The 6-connective operations are iterated `radius` times. (default: 1)
+        Radius of the erosion and dilation operations. The 6-connective operations are iterated ``radius`` times. (default: 1)
     inplace: bool
-        If `True`, the operation modifies the input `parts`. Otherwise, a copy of the input is used. (default: False)
+        If `True`, the operation modifies the input ``parts``. Otherwise, a copy of the input is used. (default: False)
 
     Returns
     -------
     parts_copy: ByteParticles, ShortParticles, LongParticles or FloatParticles
-        Output particle values of the same type as the input `parts`.
+        Output particle values of the same type as the input ``parts``.
     """
     _check_input(apr, parts)
     parts_copy = parts if inplace else parts.copy()
@@ -177,7 +177,7 @@ def tophat(apr: APR,
     Returns
     -------
     out: ByteParticles, ShortParticles, LongParticles or FloatParticles
-        Output particle values of the same type as the input `parts`.
+        Output particle values of the same type as the input ``parts``.
 
     See also
     --------
@@ -209,7 +209,7 @@ def bottomhat(apr: APR,
     Returns
     -------
     out: ByteParticles, ShortParticles, LongParticles or FloatParticles
-        Output particle values of the same type as the input `parts`.
+        Output particle values of the same type as the input ``parts``.
 
     See also
     --------
@@ -227,7 +227,7 @@ def remove_small_objects(apr: APR,
     """
     Remove objects smaller than a threshold from an input label mask. Assumes that the background value is 0.
 
-    Note: internally allocates a vector of size `labels.max()+1`. If ``labels`` contains large values, consider
+    Note: internally allocates a vector of size ``labels.max()+1``. If ``labels`` contains large values, consider
     relabeling consecutively from 0.
 
     Parameters
@@ -237,9 +237,9 @@ def remove_small_objects(apr: APR,
     labels: ByteParticles, ShortParticles or LongParticles
         Input particle label mask.
     min_volume: int
-        Remove objects smaller in volume than `min_volume` voxels.
+        Remove objects smaller in volume than ``min_volume`` voxels.
     inplace: bool
-        If True, the input `labels` are modified in-place. Otherwise, a copy is used. (default: False)
+        If True, the input ``labels`` are modified in-place. Otherwise, a copy is used. (default: False)
 
     Returns
     -------
@@ -259,7 +259,7 @@ def remove_large_objects(apr: APR,
     """
     Remove objects larger than a threshold from an input label mask. Assumes that the background value is 0.
 
-    Note: internally allocates a vector of size `labels.max()+1`. If ``labels`` contains large values, consider
+    Note: internally allocates a vector of size ``labels.max()+1``. If ``labels`` contains large values, consider
     relabeling consecutively from 0.
 
     Parameters
@@ -269,7 +269,7 @@ def remove_large_objects(apr: APR,
     labels: ByteParticles, ShortParticles or LongParticles
         Input particle label mask.
     max_volume: int
-        Remove objects larger in volume than `min_volume` voxels.
+        Remove objects larger in volume than ``min_volume`` voxels.
     inplace: bool
         If True, the input `labels` are modified in-place. Otherwise, a copy is used. (default: False)
 
@@ -298,7 +298,7 @@ def remove_small_holes(apr: APR,
     labels: ByteParticles, ShortParticles or LongParticles
         Input particle mask.
     min_volume: int
-        Remove holes smaller in volume than `min_volume` voxels.
+        Remove holes smaller in volume than ``min_volume`` voxels.
     background_label: int
         Value of the background label (default: 0)
 
@@ -347,7 +347,7 @@ def remove_edge_objects(apr: APR,
     y_edges: bool
         If True, checks edges in the y dimension. (default: True)
     inplace: bool
-        If True, the input `labels` are modified in-place. Otherwise, a copy is used. (default: False)
+        If True, the input ``labels`` are modified in-place. Otherwise, a copy is used. (default: False)
 
     Returns
     -------
