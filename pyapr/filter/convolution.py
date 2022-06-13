@@ -56,13 +56,13 @@ def correlate(apr: APR,
     ----------
     apr: APR
         Input APR object
-    parts: ShortParticles, FloatParticles
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values
     stencil: np.ndarray
         Stencil or kernel to correlate with the image. Should be 3-dimensional and of type float32, otherwise
         it is expanded, e.g. shape (3, 3) -> (1, 3, 3), and cast.
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written. If not provided, a new object
+        Particle object to which the resulting values are written. If not provided, a new object
         is generated (default: None)
     restrict_stencil: bool
         If True, the stencil is adapted to coarser resolution levels such that the correlation is consistent with
@@ -128,13 +128,13 @@ def convolve(apr: APR,
     ----------
     apr: APR
         Input APR object
-    parts: ShortParticles, FloatParticles
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values
     stencil: np.ndarray
         Stencil or kernel to convolve with the image. Should be 3-dimensional and of type float32, otherwise
         it is expanded, e.g. shape (3, 3) -> (1, 3, 3), and cast.
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written. If not provided, a new object
+        Particle object to which the resulting values are written. If not provided, a new object
         is generated (default: None)
     restrict_stencil: bool
         If True, the stencil is adapted to coarser resolution levels such that the convolution is consistent with
