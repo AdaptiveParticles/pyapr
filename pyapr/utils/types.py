@@ -20,7 +20,7 @@ def type_to_particles(typespec: Union[str, type]) -> ParticleData:
 
     Returns
     -------
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         ParticleData of the specified type (if valid).
     """
 
@@ -48,7 +48,7 @@ def type_to_lazy_particles(typespec: Union[str, type]) -> LazyData:
 
     Returns
     -------
-    parts: LazyData
+    parts: LazyDataByte, LazyDataShort, LazyDataLong or LazyDataFloat
         LazyData of the specified type (if valid).
     """
 
@@ -70,8 +70,8 @@ def particles_to_type(parts: Union[ParticleData, LazyData]) -> type:
 
     Parameters
     ----------
-    parts: ParticleData or LazyData
-        ParticleData or LazyData object.
+    parts: ByteParticles, ShortParticles, LongParticles, FloatParticles, LazyDataByte, LazyDataShort, LazyDataLong or LazyDataFloat
+        Particle data object.
 
     Returns
     -------
