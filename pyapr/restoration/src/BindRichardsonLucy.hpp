@@ -64,21 +64,9 @@ namespace PyAPRRL {
                               bool resume) {
 
         auto stencil_buf = stencil.request();
-        int stencil_size;
-
-        if( stencil_buf.ndim == 3 ) {
-            stencil_size = stencil_buf.shape[0];
-            if( ((stencil_size != 3) && (stencil_size != 5)) || (stencil_buf.shape[1] != stencil_size) || (stencil_buf.shape[2] != stencil_size) ) {
-                throw std::invalid_argument("stencil must have shape (3, 3, 3) or (5, 5, 5)");
-            }
-        } else {
-            throw std::invalid_argument("stencil must have 3 dimensions");
-        }
-
-        // copy stencil to VectorData
         auto* stencil_ptr = static_cast<stencilType*>(stencil_buf.ptr);
         PixelData<stencilType> stencil_pd;
-        stencil_pd.init_from_mesh(stencil_size, stencil_size, stencil_size, stencil_ptr);
+        stencil_pd.init_from_mesh(stencil_buf.shape[0], stencil_buf.shape[1], stencil_buf.shape[2], stencil_ptr);
 
         auto access = apr.gpuAPRHelper();
         auto tree_access = apr.gpuTreeHelper();
