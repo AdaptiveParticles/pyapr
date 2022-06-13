@@ -20,7 +20,7 @@ def maximum_projection(apr: APR,
     ----------
     apr: APR
         Input APR data structure
-    parts: FloatParticles or ShortParticles
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle intensities
     dim: int
         Dimension along which to compute the projection:
@@ -28,7 +28,7 @@ def maximum_projection(apr: APR,
         `dim=1`: project along X to produce a ZY plane
         `dim=2`: project along Z to produce an XY plane
     patch: ReconPatch, optional
-        (optional) If provided, projects only within the image region specified by `patch`. Otherwise projects
+        If provided, projects only within the image region specified by `patch`. Otherwise projects
         through the entire volume. (default: None)
     method: str
         Specify the projection algorithm (results are identical, but performance may differ). Supported arguments
