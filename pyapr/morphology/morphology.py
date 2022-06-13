@@ -21,7 +21,7 @@ def dilation(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Input particle values.
     binary: bool
         If `True`, apply binary dilation. Otherwise, grayscale dilation is used. (default: False)
@@ -32,7 +32,7 @@ def dilation(apr: APR,
 
     Returns
     -------
-    parts_copy: ParticleData
+    parts_copy: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Output particle values of the same type as the input `parts`.
     """
     _check_input(apr, parts)
@@ -57,7 +57,7 @@ def erosion(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Input particle values.
     binary: bool
         If `True`, apply binary erosion. Otherwise, grayscale erosion is used. (default: False)
@@ -68,7 +68,7 @@ def erosion(apr: APR,
 
     Returns
     -------
-    parts_copy: ParticleData
+    parts_copy: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Output particle values of the same type as the input `parts`.
     """
     _check_input(apr, parts)
@@ -93,7 +93,7 @@ def opening(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Input particle values.
     binary: bool
         If `True`, binary erosion and dilation is used. Otherwise `min` and `max` operators are used. (default: False)
@@ -104,7 +104,7 @@ def opening(apr: APR,
 
     Returns
     -------
-    parts_copy: ParticleData
+    parts_copy: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Output particle values of the same type as the input `parts`.
     """
     _check_input(apr, parts)
@@ -131,7 +131,7 @@ def closing(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Input particle values.
     binary: bool
         If `True`, binary erosion and dilation is used. Otherwise `min` and `max` operators are used. (default: False)
@@ -142,7 +142,7 @@ def closing(apr: APR,
 
     Returns
     -------
-    parts_copy: ParticleData
+    parts_copy: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Output particle values of the same type as the input `parts`.
     """
     _check_input(apr, parts)
@@ -167,7 +167,7 @@ def tophat(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Input particle values.
     binary: bool
         Use binary opening? (default: False)
@@ -176,7 +176,7 @@ def tophat(apr: APR,
 
     Returns
     -------
-    out: ParticleData
+    out: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Output particle values of the same type as the input `parts`.
 
     See also
@@ -199,7 +199,7 @@ def bottomhat(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Input particle values.
     binary: bool
         Use binary closing? (default: False)
@@ -208,7 +208,7 @@ def bottomhat(apr: APR,
 
     Returns
     -------
-    out: ParticleData
+    out: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Output particle values of the same type as the input `parts`.
 
     See also
@@ -234,7 +234,7 @@ def remove_small_objects(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    labels: ByteParticles, ShortParticles, LongParticles
+    labels: ByteParticles, ShortParticles or LongParticles
         Input particle label mask.
     min_volume: int
         Remove objects smaller in volume than `min_volume` voxels.
@@ -243,7 +243,7 @@ def remove_small_objects(apr: APR,
 
     Returns
     -------
-    labels_copy: ByteParticles, ShortParticles, LongParticles
+    labels_copy: ByteParticles, ShortParticles or LongParticles
         The mask with small objects removed.
     """
     _check_input(apr, labels, __allowed_label_types__)
@@ -266,7 +266,7 @@ def remove_large_objects(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    labels: ByteParticles, ShortParticles, LongParticles
+    labels: ByteParticles, ShortParticles or LongParticles
         Input particle label mask.
     max_volume: int
         Remove objects larger in volume than `min_volume` voxels.
@@ -275,7 +275,7 @@ def remove_large_objects(apr: APR,
 
     Returns
     -------
-    labels_copy: ByteParticles, ShortParticles, LongParticles
+    labels_copy: ByteParticles, ShortParticles or LongParticles
         The mask with large objects removed.
     """
     _check_input(apr, labels, __allowed_label_types__)
@@ -295,7 +295,7 @@ def remove_small_holes(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    labels: ByteParticles, ShortParticles, LongParticles
+    labels: ByteParticles, ShortParticles or LongParticles
         Input particle mask.
     min_volume: int
         Remove holes smaller in volume than `min_volume` voxels.
@@ -304,7 +304,7 @@ def remove_small_holes(apr: APR,
 
     Returns
     -------
-    out: ByteParticles, ShortParticles, LongParticles
+    out: ByteParticles, ShortParticles or LongParticles
         The mask with holes removed. If the input mask was binary, a binary mask is returned. Otherwise, connected
         components are recomputed.
     """
@@ -336,7 +336,7 @@ def remove_edge_objects(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    labels: ByteParticles, ShortParticles, LongParticles
+    labels: ByteParticles, ShortParticles or LongParticles
         Input particle label mask.
     background_label: int
         Value of the background label (default: 0)
@@ -351,7 +351,7 @@ def remove_edge_objects(apr: APR,
 
     Returns
     -------
-    labels_copy: ByteParticles, ShortParticles, LongParticles
+    labels_copy: ByteParticles, ShortParticles or LongParticles
         The mask with objects on edges set to ``background_label``.
     """
     _check_input(apr, labels, __allowed_label_types__)
@@ -371,15 +371,15 @@ def find_perimeter(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Input particle values.
-    output: ParticleData, optional
-        (optional) Output ParticleData object of the same type as ``parts``. If not provided, or types do not match,
+    output: ByteParticles, ShortParticles, LongParticles or FloatParticles, optional
+        Output ParticleData object of the same type as ``parts``. If not provided, or types do not match,
         a new object is generated.
 
     Returns
     -------
-    output: ParticleData
+    output: ByteParticles, ShortParticles, LongParticles or FloatParticles
         Particle set with "interior" values set to 0.
     """
     _check_input(apr, parts)
