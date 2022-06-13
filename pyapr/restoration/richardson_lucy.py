@@ -1,4 +1,4 @@
-from _pyaprwrapper.data_containers import APR, ShortParticles, FloatParticles
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles
 import _pyaprwrapper.restoration as _internals
 from _pyaprwrapper import __cuda_build__
 from ..filter.convolution import __check_stencil
@@ -7,8 +7,8 @@ import numpy as np
 from warnings import warn
 from typing import Union, Optional
 
-__allowed_input_types__ = (ShortParticles, FloatParticles)
-ParticleData = Union[ShortParticles, FloatParticles]
+__allowed_input_types__ = (ByteParticles, ShortParticles, FloatParticles)
+ParticleData = Union[ByteParticles, ShortParticles, FloatParticles]
 
 
 def _check_output(apr: APR, output: Optional[FloatParticles]):
@@ -32,7 +32,7 @@ def richardson_lucy(apr: APR,
     ----------
     apr: APR
         Input APR object.
-    parts: ShortParticles, FloatParticles
+    parts: ByteParticles, ShortParticles or FloatParticles
         Input particle values.
     psf: np.ndarray
         Point spread function. Should be 3-dimensional and of type float32, otherwise
@@ -49,7 +49,7 @@ def richardson_lucy(apr: APR,
         Resume iterations from a previous estimate? If True, the previous estimate must be provided
         via the ``output`` argument. (default: False)
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written, or the initial estimate if
+        Particle object to which the resulting values are written, or the initial estimate if
         ``resume`` is enabled. If not provided, a new object is generated (default: None)
 
     Returns
@@ -83,7 +83,7 @@ def richardson_lucy_tv(apr: APR,
     ----------
     apr: APR
         Input APR object.
-    parts: ShortParticles, FloatParticles
+    parts: ByteParticles, ShortParticles or FloatParticles
         Input particle values.
     psf: np.ndarray
         Point spread function. Should be 3-dimensional and of type float32, otherwise
@@ -136,7 +136,7 @@ def richardson_lucy_cuda(apr: APR,
     ----------
     apr: APR
         Input APR object.
-    parts: ShortParticles, FloatParticles
+    parts: ByteParticles, ShortParticles or FloatParticles
         Input particle values.
     psf: np.ndarray
         Point spread function. Should be 3-dimensional and of type float32, otherwise
