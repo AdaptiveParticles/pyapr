@@ -27,15 +27,15 @@ def fill_tree_mean(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input APR particle values.
-    output: ParticleData, optional
-        (optional) Particle data object for the output values. If provided, the type must either be FloatParticles
+    output: ByteParticles, ShortParticles, FloatParticles or LongParticles, optional
+        Particle data object for the output values. If provided, the type must either be FloatParticles
         or the same type as ``parts``. If None, generates a new object of the same type as ``parts``. (default: None)
 
     Returns
     -------
-    output: ParticleData
+    output: ByteParticles, ShortParticles, FloatParticles or LongParticles
         The computed tree values.
     """
     _check_input(apr, parts)
@@ -54,15 +54,15 @@ def fill_tree_max(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input APR particle values.
-    output: ParticleData, optional
-        (optional) Particle data object for the output values. If provided, the type must either be FloatParticles
+    output: ByteParticles, ShortParticles, FloatParticles or LongParticles, optional
+        Particle data object for the output values. If provided, the type must either be FloatParticles
         or the same type as ``parts``. If None, generates a new object of the same type as ``parts``. (default: None)
 
     Returns
     -------
-    output: ParticleData
+    output: ByteParticles, ShortParticles, FloatParticles or LongParticles
         The computed tree values.
     """
     _check_input(apr, parts)
@@ -81,15 +81,15 @@ def fill_tree_min(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input APR particle values.
-    output: ParticleData, optional
-        (optional) Particle data object for the output values. If provided, the type must either be FloatParticles
+    output: ByteParticles, ShortParticles, FloatParticles or LongParticles, optional
+        Particle data object for the output values. If provided, the type must either be FloatParticles
         or the same type as ``parts``. If None, generates a new object of the same type as ``parts``. (default: None)
 
     Returns
     -------
-    output: ParticleData
+    output: ByteParticles, ShortParticles, FloatParticles or LongParticles
         The computed tree values.
     """
     _check_input(apr, parts)
