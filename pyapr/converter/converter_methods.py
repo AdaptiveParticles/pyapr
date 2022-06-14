@@ -1,6 +1,6 @@
 from _pyaprwrapper.data_containers import APR, APRParameters
 from ..utils import InteractiveIO, type_to_particles
-from _pyaprwrapper.converter import FloatConverter, ShortConverter
+from _pyaprwrapper.converter import FloatConverter, ShortConverter, ByteConverter
 import numpy as np
 from typing import Union, Optional
 
@@ -9,7 +9,7 @@ __allowed_image_types__ = [np.uint8, np.uint16, np.float32]
 
 
 def get_apr(image: np.ndarray,
-            converter: Optional[Union[FloatConverter, ShortConverter]] = None,
+            converter: Optional[Union[ByteConverter, ShortConverter, FloatConverter]] = None,
             params: Optional[APRParameters] = None,
             verbose: bool = False):
     """
@@ -19,10 +19,10 @@ def get_apr(image: np.ndarray,
     ----------
     image: numpy.ndarray
         Input pixel image as an array of 1-3 dimensions.
-    converter: FloatConverter or ShortConverter (optional)
+    converter: ByteConverter, ShortConverter or FloatConverter, optional
         Converter object used to compute the APR. By default, FloatConverter is used to avoid rounding errors in
         internal steps.
-    params: APRParameters (optional)
+    params: APRParameters, optional
         If provided, sets parameters of the converter. If not, the parameters of the converter object is used, with
         'auto_parameters' set to True.
     verbose: bool
@@ -32,7 +32,7 @@ def get_apr(image: np.ndarray,
     -------
     apr: APR
         Generated APR object containing the adaptively sampled structure.
-    parts: ByteParticles, ShortParticles, FloatParticles
+    parts: ByteParticles, ShortParticles or FloatParticles
         Sampled particle values (average downsampled from pixel values). The data type matches that of the input image
         (uint8, uint16 or float).
     """
@@ -72,7 +72,7 @@ def get_apr(image: np.ndarray,
 
 
 def get_apr_interactive(image: np.ndarray,
-                        converter: Optional[Union[FloatConverter, ShortConverter]] = None,
+                        converter: Optional[Union[ByteConverter, ShortConverter, FloatConverter]] = None,
                         params: Optional[APRParameters] = None,
                         verbose: bool = False,
                         slider_decimals: int = 1):
@@ -84,10 +84,10 @@ def get_apr_interactive(image: np.ndarray,
     ----------
     image: numpy.ndarray
         Input (pixel) image as an array of 1-3 dimensions.
-    converter: FloatConverter or ShortConverter (optional)
+    converter: ByteConverter, ShortConverter or FloatConverter, optional
         Converter object used to compute the APR. By default, FloatConverter is used to avoid rounding errors in
         internal steps.
-    params: APRParameters (optional)
+    params: APRParameters, optional
         If provided, sets parameters of the converter. Otherwise default parameters are used.
     verbose: bool
         Set the verbose mode of the converter (default: False).
@@ -98,7 +98,7 @@ def get_apr_interactive(image: np.ndarray,
     -------
     apr: APR
         Generated APR object containing the adaptively sampled structure.
-    parts: ByteParticles, ShortParticles, FloatParticles
+    parts: ByteParticles, ShortParticles or FloatParticles
         Sampled particle values (average downsampled from pixel values). The data type matches that of the input image
         (uint8, uint16 or float).
     """
@@ -144,7 +144,7 @@ def get_apr_interactive(image: np.ndarray,
 
 
 def find_parameters_interactive(image: np.ndarray,
-                                converter: Optional[Union[FloatConverter, ShortConverter]] = None,
+                                converter: Optional[Union[ByteConverter, ShortConverter, FloatConverter]] = None,
                                 params: Optional[APRParameters] = None,
                                 verbose: bool = False,
                                 slider_decimals: int = 1):
@@ -155,10 +155,10 @@ def find_parameters_interactive(image: np.ndarray,
     ----------
     image: numpy.ndarray
         Input (pixel) image as an array of 1-3 dimensions.
-    converter: FloatConverter or ShortConverter (optional)
+    converter: ByteConverter, ShortConverter or FloatConverter, optional
         Converter object used to compute the APR. By default, FloatConverter is used to avoid rounding errors in
         internal steps.
-    params: APRParameters (optional)
+    params: APRParameters, optional
         If provided, sets parameters of the converter. Otherwise default parameters are used.
     verbose: bool
         Set the verbose mode of the converter (default: False).
@@ -168,7 +168,7 @@ def find_parameters_interactive(image: np.ndarray,
     Returns
     -------
     params: APRParameters
-        The parameters with the selected values.
+        The parameters with the selected threshold values.
     """
 
     if not image.flags['C_CONTIGUOUS']:

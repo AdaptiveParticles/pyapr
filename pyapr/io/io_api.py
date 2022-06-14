@@ -29,18 +29,18 @@ def read(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     apr: APR, optional
         APR object to read the file into. If None, a new object is generated. (default: None)
-    parts: ParticleData, optional
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles, optional
         ParticleData object to read particles into. If provided, the type must match the data in the file.
         If None, a new object of the correct datatype is generated. (default: None)
     t: int
         Time point to read. (default: 0)
     channel_name: str
-        Channel to read. (default: `t`)
+        Channel to read. (default: 't')
     parts_name: str
-        Name of the particle field to read. (default: `particles`)
+        Name of the particle field to read. (default: 'particles')
 
     Return
     ------
@@ -85,17 +85,17 @@ def write(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
-    apr: APR, optional
+        APR file path, e.g. '/home/data/test.apr'
+    apr: APR
         APR object to write.
-    parts: ParticleData, optional
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         ParticleData object to write.
     t: int
         Time point under which the data is written. (default: 0)
     channel_name: str
-        Channel under which the data is written. (default: `t`)
+        Channel under which the data is written. (default: 't')
     parts_name: str
-        Name of the particle field to write. (default: `particles`)
+        Name of the particle field to write. (default: 'particles')
     write_linear: bool
         If `True`, writes linear APR structure, otherwise the sparse (random access) structure is written. The
         linear structure is used in most processing methods, but requires more memory. (default: `True`)
@@ -103,10 +103,10 @@ def write(fpath: str,
         If `True`, the APR tree structure (all parent nodes of APR particles) is written to file. Results in slightly
         larger files (roughly 14.3% additional particles in 3D), but typically saves time when reading a file and
         subsequently using the tree. (default: `True`)
-    tree_parts: ParticleData, optional
-        Values of tree particles (computed via e.g. `pyapr.numerics.fill_tree_mean`). If provided, and
-        `write_tree=True`, the values are written to file. This allows, e.g. lazy reconstruction at coarse resolutions
-        using `pyapr.LazySlicer`. (default: None)
+    tree_parts: ByteParticles, ShortParticles, LongParticles or FloatParticles, optional
+        Values of tree particles (computed via e.g. `pyapr.tree.fill_tree_mean`). If provided, and
+        ``write_tree=True``, the values are written to file. This allows, e.g. lazy reconstruction at coarse resolutions
+        using `pyapr.reconstruction.LazySlicer`. (default: None)
 
     See also
     --------
@@ -144,15 +144,15 @@ def write_particles(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
-    parts: ParticleData, optional
+        APR file path, e.g. '/home/data/test.apr'
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         ParticleData object to write.
     t: int
         Time point under which the data is written. (default: 0)
     channel_name: str
-        Channel under which the data is written. (default: `t`)
+        Channel under which the data is written. (default: 't')
     parts_name: str
-        Name of the particle field to write. (default: `particles`)
+        Name of the particle field to write. (default: 'particles')
     tree: bool
         If `True`, writes the particles under the tree structure. The provided particles should then correspond
         to the APR tree. Otherwise the data is written under the standard APR structure (default: `False`)
@@ -191,25 +191,25 @@ def read_particles(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     apr: APR, optional
         Corresponding APR object, allowing an alternative (equivalent) read method to be used. Currently does not
         affect the result. (default: None)
-    parts: ParticleData, optional
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles, optional
         ParticleData object to read particles into. If provided, the type must match the data in the file.
         If None, a new object of the correct datatype is generated. (default: None)
     t: int
         Time point under which the data is written. (default: 0)
     channel_name: str
-        Channel under which the data is written. (default: `t`)
+        Channel under which the data is written. (default: 't')
     parts_name: str
-        Name of the particle field to write. (default: `particles`)
+        Name of the particle field to write. (default: 'particles')
     tree: bool
         If `True`, reads the particles under the tree structure in the file. (default: `False`)
 
     Return
     ------
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, LongParticles or FloatParticles
         The particle values.
 
     See also
@@ -248,13 +248,13 @@ def write_apr(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
-    apr: APR, optional
+        APR file path, e.g. '/home/data/test.apr'
+    apr: APR
         APR object to write.
     t: int
         Time point under which the data is written. (default: 0)
     channel_name: str
-        Channel under which the data is written. (default: `t`)
+        Channel under which the data is written. (default: 't')
     write_linear: bool
         If `True`, writes linear APR structure, otherwise the sparse (random access) structure is written. The
         linear structure is used in most processing methods, but requires more memory. (default: `True`)
@@ -295,13 +295,13 @@ def read_apr(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     apr: APR, optional
         APR object to read the file into. If None, a new object is generated. (default: None)
     t: int
         Time point to read. (default: 0)
     channel_name: str
-        Channel to read. (default: `t`)
+        Channel to read. (default: 't')
 
     Return
     ------
@@ -333,11 +333,11 @@ def get_particle_names(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     t: int
         Time point to read. (default: 0)
     channel_name: str
-        Channel to read. (default: `t`)
+        Channel to read. (default: 't')
     tree: bool
         If `True`, checks the tree structure under the given channel and time point. (default: False)
 
@@ -371,13 +371,13 @@ def get_particle_type(fpath: str,
     Parameters
     ----------
     fpath: str
-        APR file path, e.g. `/home/data/test.apr`
+        APR file path, e.g. '/home/data/test.apr'
     t: int
         Time point to read. (default: 0)
     channel_name: str
-        Channel to read. (default: `t`)
+        Channel to read. (default: 't')
     parts_name: str
-        Name of the particle field whose type is to be determined.
+        Name of the particle field whose type is to be determined. (default: 'particles')
     tree: bool
         If `True`, checks the tree structure under the given channel and time point. (default: False)
 
@@ -398,68 +398,3 @@ def get_particle_type(fpath: str,
     dtype = aprfile.get_particle_type(parts_name, apr_or_tree=(not tree), t=t, channel_name=channel_name)
     aprfile.close()
     return dtype
-
-
-# TODO: update these
-def write_multichannel(fpath, apr, parts_list, t=0, channel_name='t', channel_names_parts=None):
-
-    warn('\'pyapr.io.write_multichannel\' is deprecated and will be removed in a future release. '
-         'Use \'pyapr.io.write_apr\' and \'pyapr.io.write_particles\' instead.', DeprecationWarning)
-
-    if not fpath:
-        print('Empty path given. Ignoring call to pyapr.io.write')
-        return
-
-    if isinstance(parts_list, (tuple, list)):
-        for p in parts_list:
-            if not isinstance(p, (ShortParticles, FloatParticles)):
-                raise AssertionError(
-                    'argument \'parts_list\' to pyapr.io.write_multichannel must be a \
-                    tuple or list of pyapr.XParticles objects'
-                )
-    else:
-        raise AssertionError(
-            'argument \'parts_list\' to pyapr.io.write_multichannel must be a tuple or list of pyapr.XParticles objects'
-        )
-
-    if channel_names_parts is None:
-        channel_names_parts = ['particles' + str(i) for i in range(len(parts_list))]
-
-    # Initialize APRFile for I/O
-    aprfile = APRFile()
-
-    # Write APR and particles to file
-    aprfile.open(fpath, 'WRITE')
-    aprfile.write_apr(apr, t=t, channel_name=channel_name)
-    for i in range(len(parts_list)):
-        aprfile.write_particles(channel_names_parts[i], parts_list[i], t=t)
-    aprfile.close()
-
-
-def read_multichannel(fpath, apr, parts_list, t=0, channel_name='t', channel_names_parts=None):
-
-    warn('\'pyapr.io.read_multichannel\' is deprecated and will be removed in a future release. '
-         'Use \'pyapr.io.read_apr\' and \'pyapr.io.read_particles\' instead.', DeprecationWarning)
-
-    if isinstance(parts_list, (tuple, list)):
-        for p in parts_list:
-            if not isinstance(p, (ShortParticles, FloatParticles)):
-                raise AssertionError(
-                    'argument \'parts_list\' to pyapr.io.read_multichannel must be a \
-                    tuple or list of pyapr.XParticles objects')
-    else:
-        raise AssertionError(
-            'argument \'parts_list\' to pyapr.io.read_multichannel must be a tuple or list of pyapr.XParticles objects')
-
-    if channel_names_parts is None:
-        channel_names_parts = ['particles' + str(i) for i in range(len(parts_list))]
-
-    # Initialize APRFile for I/O
-    aprfile = APRFile()
-
-    # Write APR and particles to file
-    aprfile.open(fpath, 'READ')
-    aprfile.read_apr(apr, t=t, channel_name=channel_name)
-    for i in range(len(parts_list)):
-        aprfile.read_particles(apr, channel_names_parts[i], parts_list[i], t=t)
-    aprfile.close()

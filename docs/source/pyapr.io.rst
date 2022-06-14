@@ -12,8 +12,6 @@ io
    pyapr.io.get_particle_names
    pyapr.io.get_particle_type
    pyapr.io.APRFile
-   pyapr.io.read_multichannel
-   pyapr.io.write_multichannel
 
 .. automodule:: pyapr.io
    :members:

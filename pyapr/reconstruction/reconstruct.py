@@ -42,17 +42,17 @@ def reconstruct_constant(apr: APR,
     Parameters
     ----------
     apr : APR
-        input APR data structure
-    parts : ParticleData
-        input particle intensities
-    tree_parts: ParticleData, optional
-        (optional) interior tree particle values used to construct at a lower resolution (if patch.level_delta < 0).
+        Input APR data structure
+    parts : ByteParticles, ShortParticles, FloatParticles or LongParticles
+        Input particle intensities
+    tree_parts: ByteParticles, ShortParticles, FloatParticles or LongParticles, optional
+        Interior tree particle values used to construct at a lower resolution (if ``patch.level_delta < 0``).
         If None, they are computed by average downsampling as necessary. (default: None)
     patch: ReconPatch, optional
-        (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
-        at original pixel resolution. (default: None)
+        Specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
+        at the original pixel resolution. (default: None)
     out_arr: numpy.ndarray, optional
-        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or patch limits),
+        Preallocated array for the result. If the size is not correct (according to ``apr`` dimensions or ``patch`` limits),
         memory for the output is reallocated. (default: None)
     Returns
     -------
@@ -94,17 +94,17 @@ def reconstruct_smooth(apr: APR,
     Parameters
     ----------
     apr : APR
-        input APR data structure
-    parts : ParticleData
-        input particle intensities
-    tree_parts: ParticleData, optional
-        (optional) interior tree particle values used to construct at a lower resolution (if patch.level_delta < 0).
+        Input APR data structure
+    parts : ByteParticles, ShortParticles, FloatParticles or LongParticles
+        Input particle intensities
+    tree_parts: ByteParticles, ShortParticles, FloatParticles or LongParticles, optional
+        Interior tree particle values used to construct at a lower resolution (if ``patch.level_delta < 0``).
         If None, they are computed by average downsampling as necessary. (default: None)
     patch: ReconPatch, optional
-        (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
+        Specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
         at original pixel resolution. (default: None)
     out_arr: numpy.ndarray, optional
-        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or patch limits),
+        Preallocated array for the result. If the size is not correct (according to ``apr`` dimensions or ``patch`` limits),
         memory for the output is reallocated. (default: None)
     Returns
     -------
@@ -144,12 +144,12 @@ def reconstruct_level(apr: APR,
     Parameters
     ----------
     apr : APR
-        input APR data structure
+        Input APR data structure
     patch: ReconPatch, optional
-        (optional) specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
+        Specify the image region and resolution of the reconstruction. If None, reconstruct the full image volume
         at original pixel resolution. (default: None)
     out_arr: numpy.ndarray, optional
-        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or patch limits),
+        Preallocated array for the result. If the size is not correct (according to ``apr`` dimensions or ``patch`` limits),
         memory for the output is reallocated. (default: None)
     Returns
     -------
@@ -190,15 +190,15 @@ def reconstruct_constant_lazy(apr_it: LazyIterator,
         Lazy iterator for APR structure, must be initialized and have the file open.
     tree_it: LazyIterator
         Lazy iterator for tree structure, must be initialized and have the file open.
-    parts : LazyData
+    parts : LazyDataByte, LazyDataShort, LazyDataFloat or LazyDataLong
         LazyData object for APR particle values, must be initialized and have the file open.
-    tree_parts : LazyData
+    tree_parts : LazyDataByte, LazyDataShort, LazyDataFloat or LazyDataLong
         LazyData object for tree particle values, must be initialized and have the file open.
     patch: ReconPatch
         Specify the image region and resolution of the reconstruction.
     out_arr: numpy.ndarray, optional
-        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or
-        patch limits), memory for the output is reallocated. (default: None)
+        Preallocated array for the result. If the size is not correct (according to ``apr`` dimensions or ``patch``
+        limits), memory for the output is reallocated. (default: None)
 
     Returns
     -------
@@ -233,8 +233,8 @@ def reconstruct_level_lazy(apr_it: LazyIterator,
     patch: ReconPatch
         Specify the image region and resolution of the reconstruction.
     out_arr: numpy.ndarray, optional
-        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or
-        patch limits), memory for the output is reallocated. (default: None)
+        Preallocated array for the result. If the size is not correct (according to ``apr`` dimensions or ``patch``
+        limits), memory for the output is reallocated. (default: None)
 
     Returns
     -------
@@ -265,15 +265,15 @@ def reconstruct_smooth_lazy(apr_it: LazyIterator,
         Lazy iterator for APR structure, must be initialized and have the file open.
     tree_it: LazyIterator
         Lazy iterator for tree structure, must be initialized and have the file open.
-    parts : LazyData
+    parts : LazyDataByte, LazyDataShort, LazyDataFloat or LazyDataLong
         LazyData object for APR particle values, must be initialized and have the file open.
-    tree_parts : LazyData
+    tree_parts : LazyDataByte, LazyDataShort, LazyDataFloat or LazyDataLong
         LazyData object for tree particle values, must be initialized and have the file open.
     patch: ReconPatch
         Specify the image region and resolution of the reconstruction.
     out_arr: numpy.ndarray, optional
-        (optional) preallocated array for the result. If the size is not correct (according to APR dimensions or
-        patch limits), memory for the output is reallocated. (default: None)
+        Preallocated array for the result. If the size is not correct (according to ``apr`` dimensions or ``patch``
+        limits), memory for the output is reallocated. (default: None)
 
     Returns
     -------
@@ -307,7 +307,7 @@ def reconstruct_lazy(file_path: str,
     file_path: str
         APR file path, e.g. '/home/data/test.apr'.
     patch: ReconPatch, optional
-        (optional) Specify the image region and resolution of the reconstruction. If `None`, the entire volume is
+        Specify the image region and resolution of the reconstruction. If `None`, the entire volume is
         reconstructed at the original pixel resolution. (default: None)
     mode: str
         Reconstruction mode to use. Allowed values are 'constant', 'smooth', or 'level'. (default: 'constant')
@@ -321,8 +321,8 @@ def reconstruct_lazy(file_path: str,
         Name of the tree particle value field to read. Only used if `patch.level_delta < 0` for modes 'constant'
         and 'smooth'. (default: 'particles')
     out_arr: numpy.ndarray, optional
-        (optional) Pre-allocated array for the result. If the size is not correct (according to APR dimensions or
-        patch limits), memory for the output is reallocated. (default: None)
+        Preallocated array for the result. If the size is not correct (according to ``apr`` dimensions or ``patch``
+        limits), memory for the output is reallocated. (default: None)
 
     Returns
     -------

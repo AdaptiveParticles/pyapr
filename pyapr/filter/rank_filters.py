@@ -29,16 +29,16 @@ def median_filter(apr: APR,
     ----------
     apr: APR
         APR data structure.
-    parts: ShortParticles or FloatParticles
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values.
     size: (int, int, int)
         Size of the neighborhood in (z, x, y) dimensions.
-        Allowed sizes are (x, x, x) and (1, x, x) for x in [3, 5, 7, 9, 11].
+        Allowed sizes are (x, x, x) and (1, x, x) for x in [3, 5, 7, 9, 11]. Default: (5, 5, 5)
 
     Returns
     -------
-    output: ShortParticles or FloatParticles
-        Median filtered particle values of the same type as the input.
+    output: ByteParticles, ShortParticles, FloatParticles or LongParticles
+        Median filtered particle values of the same type as the input particles.
     """
     _check_input(apr, parts, __allowed_input_types__)
     _check_size(size, __allowed_sizes_median__)
@@ -61,16 +61,16 @@ def min_filter(apr: APR,
     ----------
     apr: APR
         APR data structure.
-    parts: ShortParticles or FloatParticles
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values.
     size: (int, int, int)
         Size of the neighborhood in (z, x, y) dimensions.
-        Allowed values are (x, x, x) and (1, x, x) for x in [3, 5].
+        Allowed values are (x, x, x) and (1, x, x) for x in [3, 5, 7, 9, 11]. Default: (5, 5, 5)
 
     Returns
     -------
-    output: ShortParticles or FloatParticles
-        Minimum filtered particle values of the same type as the input.
+    output: ByteParticles, ShortParticles, FloatParticles or LongParticles
+        Minimum filtered particle values of the same type as the input particles.
     """
     _check_input(apr, parts, __allowed_input_types__)
     _check_size(size, __allowed_sizes_min__)
@@ -93,16 +93,16 @@ def max_filter(apr: APR,
     ----------
     apr: APR
         APR data structure.
-    parts: ShortParticles or FloatParticles
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values
     size: (int, int, int)
         Size of the neighborhood in (z, x, y) dimensions.
-        Allowed values are (x, x, x) and (1, x, x) for x in [3, 5].
+        Allowed values are (x, x, x) and (1, x, x) for x in [3, 5, 7, 9, 11]. Default: (5, 5, 5)
 
     Returns
     -------
-    output: ShortParticles or FloatParticles
-        Maximum filtered particle values of the same type as the input.
+    output: ByteParticles, ShortParticles, FloatParticles or LongParticles
+        Maximum filtered particle values of the same type as the input particles.
     """
     _check_input(apr, parts, __allowed_input_types__)
     _check_size(size, __allowed_sizes_max__)

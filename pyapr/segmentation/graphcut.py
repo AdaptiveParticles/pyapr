@@ -48,11 +48,11 @@ def graphcut(apr: APR,
     beta: float
         Scaling factor for neighbor edge costs. (default: 1.0)
     gamma: float
-        Edge costs between neighboring particles are set as `exp(-dI^2 / (gamma * sigma^2))`, where dI is the intensity
-        difference and sigma is 1 if `constant_neighbor_scale` is True, otherwise the local standard deviation of the
+        Edge costs between neighboring particles are set as ``exp(-dI^2 / (gamma * sigma^2))``, where dI is the intensity
+        difference and sigma is 1 if ``constant_neighbor_scale`` is True, otherwise the local standard deviation of the
         gradient magnitude. (default: 1.0)
     constant_neighbor_scale: bool
-        If True, neighbor edge costs are scaled by a constant value (see `gamma`). (default: False)
+        If True, neighbor edge costs are scaled by a constant value (see ``gamma``). (default: False)
     z_anisotropy: float
         Gradients and differences in the z-dimension are scaled by this value. (default: 1.0)
     intensity_threshold: float
@@ -76,16 +76,16 @@ def graphcut(apr: APR,
     num_part_smooth: int
         Number of smoothing iterations to perform on the APR particles to compute the local minimum estimate. (default: 3)
     push_depth: int
-        The local minimum estimate is coarsened by `push_depth` levels. (default: 1)
+        The local minimum estimate is coarsened by ``push_depth`` levels. (default: 1)
     z_block_size: int, optional
-        (optional) If provided, the operation is applied tile-wise to overlapping blocks in the z dimension to reduce
-        memory requirements. The amount of overlap is controlled by ``z_ghost_size``. (default: None)
+        If provided, the operation is applied block-wise in the z dimension to reduce memory requirements.
+        The amount of overlap is controlled by ``z_ghost_size``. (default: None)
     z_ghost_size: int
         If ``z_block_size`` is provided, the blocks are padded with ``z_ghost_size`` slices in both directions
         to reduce boundary artifacts between blocks.
-    output: ByteParticles, ShortParticles, optional
-        (optional) Particle object to which the resulting mask is written. If None, a new ByteParticles object
-        is generated.
+    output: ByteParticles or ShortParticles, optional
+        Particle object to which the resulting mask is written. If None, a new ByteParticles object
+        is generated. (default: None)
 
     Returns
     -------
@@ -158,7 +158,7 @@ def compute_terminal_costs(apr: APR,
     num_part_smooth: int
         Number of smoothing iterations to perform on the APR particles to compute the local minimum estimate. (default: 3)
     push_depth: int
-        The local minimum estimate is coarsened by `push_depth` levels. (default: 1)
+        The local minimum estimate is coarsened by ``push_depth`` levels. (default: 1)
 
     Returns
     -------

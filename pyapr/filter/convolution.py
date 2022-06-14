@@ -56,21 +56,21 @@ def correlate(apr: APR,
     ----------
     apr: APR
         Input APR object
-    parts: ShortParticles, FloatParticles
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values
     stencil: np.ndarray
         Stencil or kernel to correlate with the image. Should be 3-dimensional and of type float32, otherwise
-        it is expanded, e.g. shape (3, 3) -> (1, 3, 3), and cast.
+        it is converted and expanded, e.g. shape (3, 3) -> (1, 3, 3).
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written. If not provided, a new object
+        Particle object to which the resulting values are written. If not provided, a new object
         is generated (default: None)
     restrict_stencil: bool
         If True, the stencil is adapted to coarser resolution levels such that the correlation is consistent with
         applying ``stencil`` to the reconstructed pixel image. (default: True)
     rescale_stencil: bool
         If True, the stencil is adapted to coarser resolution levels by rescaling the weights according to
-        the distance between particles. Useful for, e.g., finite difference calculations. If both `rescale_stencil`
-        and `restrict_stencil` are True, rescaling is used. (default: False)
+        the distance between particles. Useful for, e.g., finite difference calculations. If both ``rescale_stencil``
+        and ``restrict_stencil`` are True, rescaling is used. (default: False)
     normalize_stencil: bool
         If True, the stencil is normalized to sum to 1 (if ``restrict_stencil`` is True, the stencil is normalized
         at each resolution level. (default: True)
@@ -79,9 +79,9 @@ def correlate(apr: APR,
     method: str
         Method used to apply the operation:
 
-            - 'pencil': construct isotropic neighborhoods of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])
-            - 'slice': construct isotropic neighborhoods of shape (stencil.shape[0], apr.shape[1], apr.shape[2])
-            - 'cuda': compute the correlation using the GPU. Requires the package to be built with CUDA support,
+            - ``'pencil'``: construct isotropic neighborhoods of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])
+            - ``'slice'``: construct isotropic neighborhoods of shape (stencil.shape[0], apr.shape[1], apr.shape[2])
+            - ``'cuda'``: compute the correlation using the GPU. Requires the package to be built with CUDA support,
               and ``stencil`` to have shape (3, 3, 3) or (5, 5, 5).
 
         The methods may differ in performance, depending on the input data, but produce the same result. (default: 'pencil')
@@ -128,21 +128,21 @@ def convolve(apr: APR,
     ----------
     apr: APR
         Input APR object
-    parts: ShortParticles, FloatParticles
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values
     stencil: np.ndarray
         Stencil or kernel to convolve with the image. Should be 3-dimensional and of type float32, otherwise
-        it is expanded, e.g. shape (3, 3) -> (1, 3, 3), and cast.
+        it is converted and expanded, e.g. shape (3, 3) -> (1, 3, 3).
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written. If not provided, a new object
+        Particle object to which the resulting values are written. If not provided, a new object
         is generated (default: None)
     restrict_stencil: bool
         If True, the stencil is adapted to coarser resolution levels such that the convolution is consistent with
         applying ``stencil`` to the reconstructed pixel image. (default: True)
     rescale_stencil: bool
         If True, the stencil is adapted to coarser resolution levels by rescaling the weights according to
-        the distance between particles. Useful for, e.g., finite difference calculations. If both `rescale_stencil`
-        and `restrict_stencil` are True, rescaling is used. (default: False)
+        the distance between particles. Useful for, e.g., finite difference calculations. If both ``rescale_stencil``
+        and ``restrict_stencil`` are True, rescaling is used. (default: False)
     normalize_stencil: bool
         If True, the stencil is normalized to sum to 1 (if ``restrict_stencil`` is True, the stencil is normalized
         at each resolution level. (default: True)
@@ -151,9 +151,9 @@ def convolve(apr: APR,
     method: str
         Method used to apply the operation:
 
-            - 'pencil': construct isotropic neighborhoods of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])
-            - 'slice': construct isotropic neighborhoods of shape (stencil.shape[0], apr.shape[1], apr.shape[2])
-            - 'cuda': compute the convolution using the GPU. Requires the package to be built with CUDA support,
+            - ``'pencil'``: construct isotropic neighborhoods of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])
+            - ``'slice'``: construct isotropic neighborhoods of shape (stencil.shape[0], apr.shape[1], apr.shape[2])
+            - ``'cuda'``: compute the convolution using the GPU. Requires the package to be built with CUDA support,
               and ``stencil`` to have shape (3, 3, 3) or (5, 5, 5).
 
         The methods may differ in performance, depending on the input data, but produce the same result. (default: 'pencil')

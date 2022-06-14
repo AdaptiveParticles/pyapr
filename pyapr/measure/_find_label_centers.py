@@ -21,7 +21,7 @@ def find_label_centers(apr: APR,
     labels: ByteParticles, ShortParticles or LongParticles
         Input (object) labels.
     weights: ShortParticles or FloatParticles, optional
-        (optional) Weight for each particle. Normalization is applied internally. (default: None)
+        Weight for each particle. Normalization is applied internally. (default: None)
 
     Returns
     -------

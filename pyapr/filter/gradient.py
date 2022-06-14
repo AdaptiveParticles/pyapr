@@ -21,14 +21,14 @@ def gradient(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values.
     dim: int
         Dimension (axis) along which the gradient is computed (0 -> y, 1 -> x, 2 -> z). (default: 0)
     delta: float
         Voxel size in the dimension of interest, used to scale the gradients. (default: 1.0)
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written. If not provided, a new object
+        Particle object to which the resulting values are written. If not provided, a new object
         is generated. (default: None)
 
     Returns
@@ -57,14 +57,14 @@ def sobel(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values.
     dim: int
         Dimension (axis) along which the gradient is computed (0 -> y, 1 -> x, 2 -> z). (default: 0)
     delta: float
         Voxel size in the dimension of interest, used to scale the gradients. (default: 1.0)
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written. If not provided, a new object
+        Particle object to which the resulting values are written. If not provided, a new object
         is generated. (default: None)
 
     Returns
@@ -92,12 +92,12 @@ def gradient_magnitude(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values.
     deltas: tuple or list of length 3
         Voxel size in dimensions (y, x, z) used to scale the gradients. (default: (1.0, 1.0, 1.0))
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written. If not provided, a new object
+        Particle object to which the resulting values are written. If not provided, a new object
         is generated. (default: None)
 
     Returns
@@ -125,12 +125,12 @@ def sobel_magnitude(apr: APR,
     ----------
     apr: APR
         Input APR data structure.
-    parts: ParticleData
+    parts: ByteParticles, ShortParticles, FloatParticles or LongParticles
         Input particle values.
     deltas: tuple or list of length 3
         Voxel size in dimensions (y, x, z) used to scale the gradients. (default: (1.0, 1.0, 1.0))
     output: FloatParticles, optional
-        (optional) Particle object to which the resulting values are written. If not provided, a new object
+        Particle object to which the resulting values are written. If not provided, a new object
         is generated. (default: None)
 
     Returns

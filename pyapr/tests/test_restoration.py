@@ -5,6 +5,7 @@ from .helpers import load_test_apr
 import numpy as np
 
 PARTICLE_TYPES = [
+    pyapr.ByteParticles,
     pyapr.ShortParticles,
     pyapr.FloatParticles
 ]
