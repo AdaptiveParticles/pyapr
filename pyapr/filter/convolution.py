@@ -22,7 +22,7 @@ def __check_stencil(stencil: np.ndarray):
     return stencil.astype(np.float32)
 
 
-def __check_method(method: str, stencil: np.ndarray):
+def __check_method(method: str, stencil: np.ndarray, rescale_stencil: bool):
     if method == 'cuda':
         if not __cuda_build__:
             warn(f'Method \'cuda\' requires pyapr to be built with CUDA support (see installation instructions). '
@@ -33,6 +33,9 @@ def __check_method(method: str, stencil: np.ndarray):
             warn(f'Method \'cuda\' currently only supports stencils of shape (3, 3, 3) and (5, 5, 5), '
                  f'but got {stencil.shape}. Using method \'pencil\' on CPU.', UserWarning)
             method = 'pencil'
+        if rescale_stencil and stencil.shape == (5, 5, 5):
+            warn(f'Method \'cuda\' with option \'rescale_stencil\' currently only supports stencils of shape (3, 3, 3). '
+                 f'Using method \'pencil\' on CPU.')
     return method
 
 
@@ -79,8 +82,8 @@ def correlate(apr: APR,
     method: str
         Method used to apply the operation:
 
-            - ``'pencil'``: construct isotropic neighborhoods of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])
-            - ``'slice'``: construct isotropic neighborhoods of shape (stencil.shape[0], apr.shape[1], apr.shape[2])
+            - ``'pencil'``: construct isotropic neighborhoods in a buffer of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])
+            - ``'slice'``: construct isotropic neighborhoods in a buffer of shape (stencil.shape[0], apr.shape[1], apr.shape[2])
             - ``'cuda'``: compute the correlation using the GPU. Requires the package to be built with CUDA support,
               and ``stencil`` to have shape (3, 3, 3) or (5, 5, 5).
 
@@ -94,7 +97,7 @@ def correlate(apr: APR,
 
     _check_input(apr, parts, __allowed_input_types__)
     stencil = __check_stencil(stencil)
-    method = __check_method(method, stencil)
+    method = __check_method(method, stencil, rescale_stencil)
     output = output if isinstance(output, FloatParticles) else FloatParticles()
 
     if method == 'pencil':
@@ -151,8 +154,8 @@ def convolve(apr: APR,
     method: str
         Method used to apply the operation:
 
-            - ``'pencil'``: construct isotropic neighborhoods of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])
-            - ``'slice'``: construct isotropic neighborhoods of shape (stencil.shape[0], apr.shape[1], apr.shape[2])
+            - ``'pencil'``: construct isotropic neighborhoods in a buffer of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])
+            - ``'slice'``: construct isotropic neighborhoods in a buffer of shape (stencil.shape[0], apr.shape[1], apr.shape[2])
             - ``'cuda'``: compute the convolution using the GPU. Requires the package to be built with CUDA support,
               and ``stencil`` to have shape (3, 3, 3) or (5, 5, 5).
 
@@ -166,7 +169,7 @@ def convolve(apr: APR,
 
     _check_input(apr, parts, __allowed_input_types__)
     stencil = np.ascontiguousarray(np.flip(__check_stencil(stencil)))
-    method = __check_method(method, stencil)
+    method = __check_method(method, stencil, rescale_stencil)
     output = output if isinstance(output, FloatParticles) else FloatParticles()
 
     if method == 'pencil':
