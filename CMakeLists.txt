@@ -22,7 +22,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${HDF5_INCLUDE_DIRS} ${ZLIB_INCL
 # Find or build LibAPR
 ###############################################################################
 if(PYAPR_PREFER_EXTERNAL_LIBAPR)
-    find_package(APR)
+    find_package(APR 2.1.0)
     if(APR_FOUND)
         message(STATUS "Found LibAPR - version ${APR_VERSION}")
         set(APR_LIBRARIES APR::staticLib)
