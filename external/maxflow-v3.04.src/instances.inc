@@ -18,8 +18,4 @@
 //    flowtype should be 'larger' than tcaptype 
 //    tcaptype should be 'larger' than captype
 
-template class LIBRARY_API Graph<int,int,int>;
-template class LIBRARY_API Graph<short,int,int>;
 template class LIBRARY_API Graph<float,float,float>;
-template class LIBRARY_API Graph<double,double,double>;
-

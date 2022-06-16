@@ -3,29 +3,41 @@
 // Modified by Joel Jonsson on 2/5/19.
 //
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/numpy.h>
-
 #include <ConfigAPR.h>
+#include <pybind11/pybind11.h>
 
-#include "data_containers/PyPixelData.hpp"
-#include "data_containers/PyAPR.hpp"
-#include "data_containers/PyAPRParameters.hpp"
-#include "data_containers/PyParticleData.hpp"
-#include "data_containers/ReconPatch.hpp"
-#include "data_containers/iterators/PyLinearIterator.hpp"
-#include "numerics/PyAPRNumerics.hpp"
-#include "numerics/PyAPRTreeNumerics.hpp"
-#include "numerics/reconstruction/PyAPRReconstruction.hpp"
-#include "numerics/filter/PyAPRFilter.hpp"
-#include "numerics/segmentation/PyAPRSegmentation.hpp"
-#include "numerics/transform/PyAPRTransform.hpp"
-#include "converter/PyAPRConverter.hpp"
-#include "converter/PyAPRConverterBatch.hpp"
-#include "io/PyAPRFile.hpp"
-#include "viewer/ViewerHelpers.hpp"
-#include "viewer/PyAPRRaycaster.hpp"
+#include "converter/src/BindConverter.hpp"
+#include "converter/src/BindConverterBatch.hpp"
+
+#include "data_containers/src/BindPixelData.hpp"
+#include "data_containers/src/BindAPR.hpp"
+#include "data_containers/src/BindParameters.hpp"
+#include "data_containers/src/BindParticleData.hpp"
+#include "data_containers/src/BindReconPatch.hpp"
+#include "data_containers/src/BindLinearIterator.hpp"
+#include "data_containers/src/BindLazyAccess.hpp"
+#include "data_containers/src/BindLazyData.hpp"
+#include "data_containers/src/BindLazyIterator.hpp"
+
+#include "filter/src/BindFilter.hpp"
+#include "io/src/BindAPRFile.hpp"
+#include "measure/src/BindMeasure.hpp"
+#include "morphology/src/BindMorphology.hpp"
+#include "reconstruction/src/BindReconstruction.hpp"
+#include "restoration/src/BindRichardsonLucy.hpp"
+#include "segmentation/src/BindGraphCut.hpp"
+#include "transform/src/BindProjection.hpp"
+#include "tree/src/BindFillTree.hpp"
+
+#include "viewer/src/BindRaycaster.hpp"
+#include "viewer/src/BindViewerHelpers.hpp"
+
+
+#ifdef PYAPR_USE_CUDA
+#define BUILT_WITH_CUDA true
+#else
+#define BUILT_WITH_CUDA false
+#endif
 
 namespace py = pybind11;
 
@@ -38,54 +50,86 @@ namespace py = pybind11;
 PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     m.doc() = "python binding for LibAPR library";
     m.attr("__version__") = py::str(ConfigAPR::APR_VERSION);
+    m.attr("__cuda_build__") = BUILT_WITH_CUDA;
 
     py::module data_containers = m.def_submodule("data_containers");
 
-    //wrap the PyAPR class
-    AddPyAPR(data_containers, "APR");
+    AddAPR(data_containers, "APR");
+    AddAPRParameters(data_containers);
+    AddLinearIterator(data_containers);
+    AddReconPatch(data_containers);
 
-    //wrap the PyPixelData class for different data types
+    //wrap PyPixelData class for different data types
     AddPyPixelData<uint8_t>(data_containers, "Byte");
     AddPyPixelData<uint16_t>(data_containers, "Short");
     AddPyPixelData<float>(data_containers, "Float");
+    AddPyPixelData<uint64_t>(data_containers, "Long");
 
-    // wrap the APRParameters class
-    AddPyAPRParameters(data_containers);
-
-    // wrap the PyParticleData class for different data types
+    // wrap PyParticleData class for different data types
     AddPyParticleData<uint8_t>(data_containers, "Byte");
     AddPyParticleData<float>(data_containers, "Float");
     AddPyParticleData<uint16_t>(data_containers, "Short");
     AddPyParticleData<uint64_t>(data_containers, "Long");
 
-    AddReconPatch(data_containers);
+    // wrap lazy classes
+    AddLazyAccess(data_containers, "LazyAccess");
+    AddLazyIterator(data_containers);
+    AddLazyData<uint8_t>(data_containers, "Byte");
+    AddLazyData<uint16_t>(data_containers, "Short");
+    AddLazyData<uint64_t>(data_containers, "Long");
+    AddLazyData<float>(data_containers, "Float");
 
-    // wrap PyLinearIterator
-    AddPyLinearIterator(data_containers);
 
-    // wrap numerics module and submodules
-    py::module numerics = m.def_submodule("numerics");
-    AddPyAPRNumerics(numerics, "aprnumerics");
-    AddPyAPRTreeNumerics(numerics, "treenumerics");
-    AddPyAPRReconstruction(numerics, "reconstruction");
-    AddPyAPRFilter(numerics, "filter");
-    AddPyAPRSegmentation(numerics, "segmentation");
-    AddPyAPRTransform(numerics, "transform");
-
-    // wrap APRConverter for different data types
     py::module converter = m.def_submodule("converter");
-    AddPyAPRConverter<float>(converter, "Float");
+
+    // wrap APRConverter
+    AddPyAPRConverter<uint8_t>(converter, "Byte");
     AddPyAPRConverter<uint16_t>(converter, "Short");
-    AddPyAPRConverterBatch<float>(converter, "Float");
+    AddPyAPRConverter<float>(converter, "Float");
+
+    // wrap APRConverterBatch (tiled conversion)
+    AddPyAPRConverterBatch<uint8_t>(converter, "Byte");
     AddPyAPRConverterBatch<uint16_t>(converter, "Short");
-    //AddPyAPRConverter<uint8_t>(converter, "Byte");  // need to fix or disable APRConverter GPU steps to include this
+    AddPyAPRConverterBatch<float>(converter, "Float");
 
-    // wrap APRFile
+
+    py::module filter = m.def_submodule("filter");
+    AddFilter(filter);
+
+
     py::module io = m.def_submodule("io");
-    AddPyAPRFile(io, "APRFile");
+    AddAPRFile(io, "APRFile");
 
-    // wrap visualization functions
+
+    py::module measure = m.def_submodule("measure");
+    AddMeasure(measure);
+
+
+    py::module morphology = m.def_submodule("morphology");
+    AddMorphology(morphology);
+
+
+    py::module reconstruction = m.def_submodule("reconstruction");
+    AddReconstruction(reconstruction);
+
+
+    py::module restoration = m.def_submodule("restoration");
+    AddRichardsonLucy(restoration);
+
+
+    py::module segmentation = m.def_submodule("segmentation");
+    AddGraphcut(segmentation, "graphcut");
+
+
+    py::module transform = m.def_submodule("transform");
+    AddProjection(transform);
+
+
+    py::module tree = m.def_submodule("tree");
+    AddFillTree(tree);
+
+
     py::module viewer = m.def_submodule("viewer");
-    AddViewerHelpers(viewer,"viewerHelp");
-    AddPyAPRRaycaster(viewer,"raycaster");
+    AddViewerHelpers(viewer);
+    AddRaycaster(viewer, "APRRaycaster");
 }

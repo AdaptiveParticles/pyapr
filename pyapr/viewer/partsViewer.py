@@ -1,17 +1,19 @@
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
+from _pyaprwrapper.viewer import fill_slice, fill_slice_level, min_occupied_level
+from ..utils import particles_to_type
+from .._common import _check_input
 import numpy as np
 import pyqtgraph as pg
-import sys
-import pyapr
 import matplotlib.pyplot as plt
+from typing import Union
 
 
-class MainWindow(QtGui.QWidget):
-
+class MainWindow(QtWidgets.QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.layout.setSpacing(0)
         self.setLayout(self.layout)
 
@@ -40,7 +42,7 @@ class MainWindow(QtGui.QWidget):
 
         # add a drop box for LUT selection
 
-        self.comboBox = QtGui.QComboBox(self)
+        self.comboBox = QtWidgets.QComboBox(self)
         self.comboBox.move(20, 20)
         self.comboBox.addItem('bone')
         self.comboBox.addItem('viridis')
@@ -57,7 +59,7 @@ class MainWindow(QtGui.QWidget):
         self.comboBox.currentTextChanged.connect(self.updatedLUT)
 
         # add a QLabel giving information on the current slice and the APR
-        self.slice_info = QtGui.QLabel(self)
+        self.slice_info = QtWidgets.QLabel(self)
 
         self.slice_info.move(130, 20)
         self.slice_info.setFixedWidth(200)
@@ -65,7 +67,7 @@ class MainWindow(QtGui.QWidget):
 
         # add a label for the current cursor position
 
-        self.cursor = QtGui.QLabel(self)
+        self.cursor = QtWidgets.QLabel(self)
 
         self.cursor.move(330, 20)
         self.cursor.setFixedWidth(260)
@@ -176,24 +178,19 @@ class MainWindow(QtGui.QWidget):
         self.aAPR_ref = aAPR
         self.parts_ref = parts
 
-        if isinstance(parts, pyapr.FloatParticles):
-            self.dtype = np.float32
-        elif isinstance(parts, pyapr.ShortParticles):
-            self.dtype = np.uint16
-        else:
-            raise Exception("APR viewer is currently only implemented for particles of type Float or Short")
+        self.dtype = particles_to_type(parts)
 
         self.z_num = aAPR.z_num(aAPR.level_max())
         self.x_num = aAPR.x_num(aAPR.level_max())
         self.y_num = aAPR.y_num(aAPR.level_max())
         self.level_max = aAPR.level_max()
-        self.level_min = pyapr.viewer.min_occupied_level(self.aAPR_ref)
+        self.level_min = min_occupied_level(self.aAPR_ref)
 
         ## Set up the slide
         self.slider.setMinimum(0)
         self.slider.setMaximum(self.z_num-1)
         self.slider.setTickPosition(QtWidgets.QSlider.TicksBothSides)
-        self.slider.setGeometry(0.05*self.full_size, 0.97*self.full_size, 0.95*self.full_size, 40)
+        self.slider.setGeometry(int(0.05*self.full_size), int(0.97*self.full_size), int(0.95*self.full_size), 40)
 
         ## Viewer elements
 
@@ -276,9 +273,9 @@ class MainWindow(QtGui.QWidget):
                 if prev_z != curr_z:
 
                     if self.level_toggle.isChecked():
-                        pyapr.viewer.fill_slice_level(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
+                        fill_slice_level(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
                     else:
-                        pyapr.viewer.fill_slice(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
+                        fill_slice(self.aAPR_ref, self.parts_ref, self.array_list[l], curr_z, l)
 
                     self.img_list[l].setImage(self.array_list[l], False)
 
@@ -354,8 +351,19 @@ class MainWindow(QtGui.QWidget):
         self.cursor.setText(text_string)
 
 
-def parts_viewer(apr, parts):
+def parts_viewer(apr: APR,
+                 parts: Union[ByteParticles, ShortParticles, FloatParticles, LongParticles]):
+    """
+    Spawns an interactive 2D APR viewer.
 
+    Parameters
+    ----------
+    apr: APR
+        Input APR data structure.
+    parts: ParticleData
+        Input particle intensity values.
+    """
+    _check_input(apr, parts)
     app = QtGui.QApplication.instance()
     if app is None:
         app = QtGui.QApplication([])

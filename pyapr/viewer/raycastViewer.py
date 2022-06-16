@@ -1,18 +1,24 @@
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import pyqtgraph as pg
-import pyapr
+from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
+from _pyaprwrapper.viewer import APRRaycaster
+from _pyaprwrapper.tree import fill_tree_max
+from ..utils.filegui import CustomSlider
+from .._common import _check_input
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-from pyapr.filegui import CustomSlider
+from typing import Union
+from warnings import warn
 
-class MainWindowImage(QtGui.QWidget):
+
+class MainWindowImage(QtWidgets.QWidget):
     def __init__(self):
         super(MainWindowImage, self).__init__()
 
         self.setMouseTracking(True)
 
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.setLayout(self.layout)
         self.layout.setSpacing(0)
 
@@ -45,7 +51,7 @@ class MainWindowImage(QtGui.QWidget):
 
         # add a drop box for LUT selection
 
-        self.comboBox = QtGui.QComboBox(self)
+        self.comboBox = QtWidgets.QComboBox(self)
         self.comboBox.move(20, 20)
         self.comboBox.addItem('viridis')
         self.comboBox.addItem('plasma')
@@ -283,16 +289,26 @@ class MainWindowImage(QtGui.QWidget):
         self.update_slice(self.apr_ref.level_max())
 
 
-def raycast_viewer(apr, parts):
+def raycast_viewer(apr: APR,
+                   parts: Union[ShortParticles, FloatParticles]):
+    """
+    Spawn an interactive 3D APR viewer (maximum intensity projection).
+    Scroll to zoom, click and drag to change the view.
+
+    Parameters
+    ----------
+    apr: APR
+        Input APR data structure.
+    parts: ShortParticles or FloatParticles
+        Input particle intensity values.
+    """
+    _check_input(apr, parts)
 
     # Raycast viewer currently only works for ShortParticles
-    if isinstance(parts, pyapr.FloatParticles):
-        print('Warning: raycast_viewer is currently only implemented for ShortParticles. '
-              'Using a uint16 copy of the input particles.')
-        parts_short = pyapr.ShortParticles()
-        parts_short.copy(parts)
-    else:
-        parts_short = parts
+    if not isinstance(parts, ShortParticles):
+        warn('raycast_viewer is currently only implemented for ShortParticles. Using a uint16 '
+             'copy of the input particles.', UserWarning)
+        parts = ShortParticles(parts)
 
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
@@ -308,7 +324,7 @@ def raycast_viewer(apr, parts):
     win.apr_ref = apr
     win.app_ref = app
 
-    raycaster = pyapr.viewer.raycaster()
+    raycaster = APRRaycaster()
     raycaster.set_z_anisotropy(1)
     raycaster.set_radius(0.1)
 
@@ -317,8 +333,8 @@ def raycast_viewer(apr, parts):
     win.raycaster_ref.set_angle(win.current_theta)
     win.raycaster_ref.set_phi(win.current_phi)
 
-    tree_parts = pyapr.FloatParticles()
-    pyapr.viewer.get_down_sample_parts(apr, parts, tree_parts)
+    tree_parts = FloatParticles()
+    fill_tree_max(apr, parts, tree_parts)
 
-    win.set_image(apr, parts_short, tree_parts)
+    win.set_image(apr, parts, tree_parts)
     app.exec_()

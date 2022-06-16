@@ -109,6 +109,7 @@ venv.bak/
 
 data/
 /processing
+pyapr/tests/test_files/
 
 # written by setuptools_scm
 **/_version.py

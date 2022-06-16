@@ -1,0 +1,229 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build and deploy
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master/develop branches
+  push:
+    branches:
+      - master
+      - develop
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'            # run on semantic version tags
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+'   # pre-release
+  pull_request:
+    branches:
+      - master
+      - develop
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build-wheels:
+    name: ${{ matrix.os }} build and test wheels
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: windows-latest
+            triplet: x64-windows
+            builddir: dist
+          - os: ubuntu-latest
+            triplet: x64-linux
+            builddir: wheelhouse
+          - os: macos-latest
+            triplet: x64-osx
+            builddir: wheelhouse
+    env:
+      # Indicates the CMake build directory where project files and binaries are being produced.
+      CMAKE_BUILD_DIR: ${{ github.workspace }}/builddir/
+      # Indicates the location of the vcpkg as a Git submodule of the project repository.
+      VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
+      CIBW_ENVIRONMENT_WINDOWS: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=D:\\a\\pyapr\\pyapr\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\pyapr\\pyapr\\external\\LibAPR\\"
+      CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-* cp310-*"
+      CIBW_SKIP: "*musllinux*"
+      CIBW_ARCHS: "auto64"
+      CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_24"
+      CIBW_BUILD_VERBOSITY: 1
+      CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
+      CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "pip install -U wheel delvewheel && python fix_windows_wheel.py {wheel} {dest_dir}"
+      CIBW_TEST_REQUIRES: "pytest pytest-qt pytest-xvfb"
+      CIBW_TEST_COMMAND: "python3 -m pytest -vv {project}/pyapr/tests"
+      CIBW_TEST_SKIP: "*-win_amd64"  # windows tests are run separately
+      CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
+      CIBW_ENVIRONMENT_MACOS: CPPFLAGS="-I/usr/local/opt/llvm/include" LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib" CXX="/usr/local/opt/llvm/bin/clang++" CC="/usr/local/opt/llvm/bin/clang"
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Submodule recursive
+        run: git submodule update --init --recursive
+
+      # PR/push to develop should use the develop branch of LibAPR
+      # for pull requests, we set the LibAPR branch based on the target (base) branch
+      - name: Get branch name (pull request)
+        if: ${{ github.event_name == 'pull_request' }}
+        shell: bash
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_BASE_REF} | tr / -)" >> $GITHUB_ENV
+
+      - name: Get branch name (push)
+        if: ${{ (github.event_name == 'push') && !contains(github.ref, 'tags') }}
+        shell: bash
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
+      
+      - name: Get branch name (tag push)
+        if: ${{ (github.event_name == 'push') && contains(github.ref, 'tags') }}
+        shell: bash
+        run: |
+          raw=$(git branch -r --contains ${{ github.ref }})
+          branch=${raw/origin\/}
+          echo "BRANCH_NAME=$(echo $branch)" >> $GITHUB_ENV
+
+      - name: Checkout LibAPR develop/master branch
+        shell: bash
+        run: |
+          echo "checking out branch ${{ env.BRANCH_NAME }} of submodule external/LibAPR"
+          cd external/LibAPR
+          git checkout ${{ env.BRANCH_NAME }}
+
+      # Setup the build machine with the most recent versions of CMake and Ninja. Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
+      - uses: lukka/get-cmake@latest
+      # Restore both vcpkg and its artifacts from the GitHub cache service.
+      - name: Restore vcpkg and its artifacts.
+        uses: actions/cache@v3
+        with:
+          # The first path is where vcpkg generates artifacts while consuming the vcpkg.json manifest file.
+          # The second path is the location of vcpkg (it contains the vcpkg executable and data files).
+          # The other paths starting with '!' are exclusions: they contain termporary files generated during the build of the installed packages.
+          path: |
+            ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
+            ${{ env.VCPKG_ROOT }}
+            !${{ env.VCPKG_ROOT }}/buildtrees
+            !${{ env.VCPKG_ROOT }}/packages
+            !${{ env.VCPKG_ROOT }}/downloads
+          # The key is composed in a way that it gets properly invalidated: this must happen whenever vcpkg's Git commit id changes, or the list of packages changes. In this case a cache miss must happen and a new entry with a new key with be pushed to GitHub the cache service.
+          # The key includes: hash of the vcpkg.json file, the hash of the vcpkg Git commit id, and the used vcpkg's triplet. The vcpkg's commit id would suffice, but computing an hash out it does not harm.
+          # Note: given a key, the cache content is immutable. If a cache entry has been created improperly, in order the recreate the right content the key must be changed as well, and it must be brand new (i.e. not existing already).
+          key: |
+            ${{ hashFiles( 'external/LibAPR/vcpkg.json' ) }}-${{ hashFiles( '.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}-invalidate
+
+      - name: Check file paths
+        run: |
+          cd ${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/
+          ls
+
+      - name: Show content of workspace after cache has been restored
+        run: find $RUNNER_WORKSPACE
+        shell: bash
+
+      # On Windows runners, let's ensure to have the Developer Command Prompt environment setup correctly. As used here the Developer Command Prompt created is targeting x64 and using the default the Windows SDK.
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - uses: actions/setup-python@v4
+        name: Install Python
+        with:
+          python-version: '3.9'
+
+      - name: Install cibuildwheel
+        run: |
+          python3 -m pip install cibuildwheel==2.5.0
+
+      - name: Install OpenMP dependencies with brew for OSX
+        if: contains(matrix.os,'macos')
+        run: |
+          brew install llvm
+          brew install libomp
+          brew install c-blosc
+          brew install hdf5
+
+      - name: Run cibuildwheel
+        run: |
+          python3 -m cibuildwheel --output-dir ${{matrix.builddir}}
+
+      - name: Upload wheels as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-wheels
+          path: ${{matrix.builddir}}/
+          retention-days: 30
+
+  windows-tests:
+    name: ${{ matrix.os }} py${{ matrix.python-version }} tests
+    runs-on: ${{ matrix.os }}
+    needs: build-wheels
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest ]
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Download wheels from artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ matrix.os }}-wheels
+          path: wheelhouse
+
+      - name: Set version string
+        shell: bash
+        run: echo "py_version_str=cp$(echo ${{ matrix.python-version }} | tr -d -c 0-9)" >> $GITHUB_ENV
+
+      - name: Install package from wheel
+        shell: bash
+        run: |
+          ls -R wheelhouse
+          python -m pip install --upgrade pip
+          pip install wheelhouse/pyapr-*${{ env.py_version_str }}*.whl
+
+      - name: Run tests
+        run: |
+          pip install pytest pytest-qt
+          pytest -vv
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: windows-tests
+    name: publish to pypi
+    # only run on push of (version) tag
+    if: contains(github.ref, 'tags')
+    steps:
+      - name: Download wheels from artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: wheelhouse
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U twine
+
+      - name: Publish
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          twine upload wheelhouse/*wheels/*.whl
