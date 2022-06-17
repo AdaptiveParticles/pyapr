@@ -1,7 +1,7 @@
 # pyapr
 
-[![build and deploy](https://github.com/AdaptiveParticles/pyapr/actions/workflows/main.yml/badge.svg)](https://github.com/AdaptiveParticles/pyapr/actions)
-[![codecov](https://codecov.io/gh/AdaptiveParticles/pyapr/branch/expand_testing/graph/badge.svg?token=DN63B1DMYK)](https://codecov.io/gh/AdaptiveParticles/pyapr)
+[![build and deploy](https://github.com/AdaptiveParticles/pyapr/actions/workflows/build-deploy.yml/badge.svg)](https://github.com/AdaptiveParticles/pyapr/actions)
+[![codecov](https://codecov.io/gh/AdaptiveParticles/pyapr/branch/develop/graph/badge.svg?token=DN63B1DMYK)](https://codecov.io/gh/AdaptiveParticles/pyapr)
 [![License](https://img.shields.io/pypi/l/pyapr.svg?color=green)](https://raw.githubusercontent.com/AdaptiveParticles/pyapr/master/LICENSE)
 [![Python Version](https://img.shields.io/pypi/pyversions/pyapr.svg?color=blue)]((https://python.org))
 [![PyPI](https://img.shields.io/pypi/v/pyapr.svg?color=green)](https://pypi.org/project/pyapr/)
