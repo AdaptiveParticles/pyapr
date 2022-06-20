@@ -21,7 +21,7 @@ can be used directly in a wide range of processing tasks - even on the GPU!
 
 For more detailed information about the APR and its use, see:
 - [Adaptive particle representation of fluorescence microscopy images](https://www.nature.com/articles/s41467-018-07390-9) (nature communications)
-- [Parallel Discrete Convolutions on Adaptive Particle Representations of Images](https://arxiv.org/abs/2112.03592) (arXiv preprint)
+- [Parallel Discrete Convolutions on Adaptive Particle Representations of Images](https://ieeexplore.ieee.org/abstract/document/9796006) (IEEE Transactions on Image Processing)
 
 **pyapr** is built on top of the C++ library [LibAPR] using [pybind11].
 
