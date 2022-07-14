@@ -67,33 +67,6 @@ jobs:
       - name: Submodule recursive
         run: git submodule update --init --recursive
 
-      # PR/push to develop should use the develop branch of LibAPR
-      # for pull requests, we set the LibAPR branch based on the target (base) branch
-      - name: Get branch name (pull request)
-        if: ${{ github.event_name == 'pull_request' }}
-        shell: bash
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_BASE_REF} | tr / -)" >> $GITHUB_ENV
-
-      - name: Get branch name (push)
-        if: ${{ (github.event_name == 'push') && !contains(github.ref, 'tags') }}
-        shell: bash
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
-      
-      - name: Get branch name (tag push)
-        if: ${{ (github.event_name == 'push') && contains(github.ref, 'tags') }}
-        shell: bash
-        run: |
-          raw=$(git branch -r --contains ${{ github.ref }})
-          branch=${raw/origin\/}
-          echo "BRANCH_NAME=$(echo $branch)" >> $GITHUB_ENV
-
-      - name: Checkout LibAPR develop/master branch
-        shell: bash
-        run: |
-          echo "checking out branch ${{ env.BRANCH_NAME }} of submodule external/LibAPR"
-          cd external/LibAPR
-          git checkout ${{ env.BRANCH_NAME }}
-
       # Setup the build machine with the most recent versions of CMake and Ninja. Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
       - uses: lukka/get-cmake@latest
       # Restore both vcpkg and its artifacts from the GitHub cache service.
