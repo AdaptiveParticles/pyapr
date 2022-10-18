@@ -1,10 +1,10 @@
-import pyqtgraph.Qt as Qt
+from pyqtgraph.Qt import QtCore, QtWidgets
 import pyqtgraph as pg
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-class DoubleSlider(Qt.QtWidgets.QSlider):
+class DoubleSlider(QtWidgets.QSlider):
     """
     Extends QSlider to allow floating-point values
 
@@ -13,7 +13,7 @@ class DoubleSlider(Qt.QtWidgets.QSlider):
     """
 
     # create a signal that we can connect to if necessary
-    doubleValueChanged = Qt.QtCore.pyqtSignal(float)
+    doubleValueChanged = QtCore.pyqtSignal(float)
 
     def __init__(self, decimals=2, *args, **kwargs):
         super(DoubleSlider, self).__init__(*args, **kwargs)
@@ -51,10 +51,10 @@ class CustomSlider:
 
         self.decimals = decimals
 
-        self.slider = DoubleSlider(decimals, Qt.QtCore.Qt.Horizontal, window)
-        self.maxBox = Qt.QtWidgets.QDoubleSpinBox(window, decimals=self.decimals)
+        self.slider = DoubleSlider(decimals, QtCore.Qt.Horizontal, window)
+        self.maxBox = QtWidgets.QDoubleSpinBox(window, decimals=self.decimals)
 
-        self.label = Qt.QtWidgets.QLabel(window)
+        self.label = QtWidgets.QLabel(window)
 
         self.maxBox.setMaximum(64000)
         self.maxBox.setValue(300)
@@ -95,13 +95,13 @@ class CustomSlider:
         self.label.setText(text_str)
 
 
-class MainWindowImage(Qt.QtWidgets.QWidget):
+class MainWindowImage(QtWidgets.QWidget):
     def __init__(self, slider_decimals=0):
         super(MainWindowImage, self).__init__()
 
         self.setMouseTracking(True)
 
-        self.layout = Qt.QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.setLayout(self.layout)
         self.layout.setSpacing(0)
 
@@ -112,7 +112,7 @@ class MainWindowImage(Qt.QtWidgets.QWidget):
         self.layout.addWidget(self.pg_win, 0, 0, 3, 1)
 
         # add a slider
-        self.slider = Qt.QtWidgets.QSlider(Qt.QtCore.Qt.Horizontal, self)
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
 
         self.slider.valueChanged.connect(self.valuechange)
 
@@ -129,14 +129,14 @@ class MainWindowImage(Qt.QtWidgets.QWidget):
         self.hist.item.sigLevelsChanged.connect(self.histogram_updated)
 
         # add a QLabel giving information on the current slice and the APR
-        self.slice_info = Qt.QtGui.QLabel(self)
+        self.slice_info = QtWidgets.QLabel(self)
 
         self.slice_info.move(20, 20)
         self.slice_info.setFixedWidth(250)
 
         # add a label for the current cursor position
 
-        self.cursor = Qt.QtGui.QLabel(self)
+        self.cursor = QtWidgets.QLabel(self)
 
         self.cursor.move(20, 40)
         self.cursor.setFixedWidth(250)
@@ -144,12 +144,12 @@ class MainWindowImage(Qt.QtWidgets.QWidget):
         # add parameter tuning
 
         # create push button
-        self.exit_button = Qt.QtWidgets.QPushButton('Use Parameters', self)
+        self.exit_button = QtWidgets.QPushButton('Use Parameters', self)
         self.exit_button.setFixedWidth(300)
         self.exit_button.move(300, 10)
         self.exit_button.clicked.connect(self.exitPressed)
 
-        self.max_label = Qt.QtWidgets.QLabel(self)
+        self.max_label = QtWidgets.QLabel(self)
         self.max_label.setText("Slider Max")
         self.max_label.move(610, 50)
 
@@ -278,11 +278,11 @@ class MainWindowImage(Qt.QtWidgets.QWidget):
             self.updateSliceText(new_view)
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.QtCore.Qt.Key_Left:
+        if event.key() == QtCore.Qt.Key_Left:
             # back a frame
             self.update_slice(self.current_view - 1)
 
-        if event.key() == Qt.QtCore.Qt.Key_Right:
+        if event.key() == QtCore.Qt.Key_Right:
             # forward a frame
             self.update_slice(self.current_view + 1)
 
@@ -345,13 +345,13 @@ class MainWindowImage(Qt.QtWidgets.QWidget):
 
         self.hist.setImageItem(self.img_I)
 
-        self.img_I_ds.setRect(Qt.QtCore.QRectF(self.min_x, self.min_y, self.x_num_ds*2, self.y_num_ds*2))
-        self.img_I.setRect(Qt.QtCore.QRectF(self.min_x, self.min_y, self.x_num, self.y_num))
+        self.img_I_ds.setRect(QtCore.QRectF(self.min_x, self.min_y, self.x_num_ds*2, self.y_num_ds*2))
+        self.img_I.setRect(QtCore.QRectF(self.min_x, self.min_y, self.x_num, self.y_num))
 
         ## Set up the z slider
         self.slider.setMinimum(0)
         self.slider.setMaximum(self.z_num - 1)
-        self.slider.setTickPosition(Qt.QtWidgets.QSlider.TicksBothSides)
+        self.slider.setTickPosition(QtWidgets.QSlider.TicksBothSides)
         self.slider.setGeometry(0.05 * self.full_size, 0.97 * self.full_size, 0.95 * self.full_size, 40)
 
         self.setLUT('viridis')
@@ -367,30 +367,30 @@ class MainWindowImage(Qt.QtWidgets.QWidget):
 class InteractiveIO:
     def __init__(self):
         # class methods require a QApplication instance - this helps to avoid multiple instances...
-        self.app = Qt.QtGui.QApplication.instance()
+        self.app = QtWidgets.QApplication.instance()
         if self.app is None:
-            self.app = Qt.QtGui.QApplication([])
+            self.app = QtWidgets.QApplication([])
 
     @staticmethod
     def get_tiff_file_name():
         print("Please select an input image file (TIFF)")
-        file_name = Qt.QtGui.QFileDialog.getOpenFileName(None, "Open Tiff", "~", "(*.tif *.tiff)")
+        file_name = QtWidgets.QFileDialog.getOpenFileName(None, "Open Tiff", "~", "(*.tif *.tiff)")
         return file_name[0]
 
     @staticmethod
     def get_apr_file_name():
         print("Please select an input APR file (HDF5)")
-        file_name = Qt.QtGui.QFileDialog.getOpenFileName(None, "Open APR", "", "(*.apr *.h5)")
+        file_name = QtWidgets.QFileDialog.getOpenFileName(None, "Open APR", "", "(*.apr *.h5)")
         return file_name[0]
 
     @staticmethod
     def save_apr_file_name(default_name='output.apr'):
-        file_name = Qt.QtGui.QFileDialog.getSaveFileName(None, "Save APR", default_name, "(*.apr *.h5)")
+        file_name = QtWidgets.QFileDialog.getSaveFileName(None, "Save APR", default_name, "(*.apr *.h5)")
         return file_name[0]
 
     @staticmethod
     def save_tiff_file_name(default_name='output.tif'):
-        file_name = Qt.QtGui.QFileDialog.getSaveFileName(None, "Save TIFF", default_name, "(*.tif *.tiff)")
+        file_name = QtWidgets.QFileDialog.getSaveFileName(None, "Save TIFF", default_name, "(*.tif *.tiff)")
         return file_name[0]
 
     def interactive_apr(self, converter, apr, img, slider_decimals=2):
