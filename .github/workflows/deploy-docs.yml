@@ -126,7 +126,7 @@ jobs:
 
       - name: Deploy documentation
         if: ${{ (env.BRANCH_NAME == 'master') || (env.BRANCH_NAME == 'develop') }}
-        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages            # The branch the action should deploy to.
           folder: docs/build/html     # The folder the action should deploy.
