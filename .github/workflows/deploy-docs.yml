@@ -40,6 +40,11 @@ jobs:
       - name: Submodule recursive
         run: git submodule update --init --recursive
 
+      - name: Update vcpkg
+        run: |
+          cd ${{ env.VCPKG_ROOT }}
+          git checkout master
+
       # Setup the build machine with the most recent versions of CMake and Ninja. Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
       - uses: lukka/get-cmake@latest
       # Restore both vcpkg and its artifacts from the GitHub cache service.
