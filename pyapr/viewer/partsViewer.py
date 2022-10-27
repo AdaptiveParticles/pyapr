@@ -1,4 +1,4 @@
-from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
+from pyqtgraph.Qt import QtCore, QtWidgets
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.viewer import fill_slice, fill_slice_level, min_occupied_level
 from ..utils import particles_to_type
@@ -364,9 +364,9 @@ def parts_viewer(apr: APR,
         Input particle intensity values.
     """
     _check_input(apr, parts)
-    app = QtGui.QApplication.instance()
+    app = QtWidgets.QApplication.instance()
     if app is None:
-        app = QtGui.QApplication([])
+        app = QtWidgets.QApplication([])
 
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')

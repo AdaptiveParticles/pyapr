@@ -1,4 +1,4 @@
-from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
+from pyqtgraph.Qt import QtCore, QtWidgets
 import pyqtgraph as pg
 from _pyaprwrapper.data_containers import APR, ByteParticles, ShortParticles, FloatParticles, LongParticles
 from _pyaprwrapper.viewer import APRRaycaster
@@ -314,9 +314,9 @@ def raycast_viewer(apr: APR,
     pg.setConfigOption('foreground', 'k')
     pg.setConfigOption('imageAxisOrder', 'row-major')
 
-    app = QtGui.QApplication.instance()
+    app = QtWidgets.QApplication.instance()
     if app is None:
-        app = QtGui.QApplication([])
+        app = QtWidgets.QApplication([])
 
     # Create window with GraphicsView widget
     win = MainWindowImage()
