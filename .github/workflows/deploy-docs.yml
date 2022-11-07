@@ -120,7 +120,6 @@ jobs:
           echo "VERSION_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Deploy documentation
-        if: ${{ (env.BRANCH_NAME == 'master') || (env.BRANCH_NAME == 'develop') }}
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages            # The branch the action should deploy to.
