@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>morphology &mdash; pyapr 1.0.5 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="reconstruction" href="pyapr.reconstruction.html" />
+    <link rel="prev" title="measure" href="pyapr.measure.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> pyapr
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Submodules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pyapr.html">pyapr</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pyapr.html#pyapr.cuda_enabled"><code class="docutils literal notranslate"><span class="pre">cuda_enabled()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.converter.html">converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.data_containers.html">data_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.filter.html">filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.measure.html">measure</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">morphology</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.morphology.dilation"><code class="docutils literal notranslate"><span class="pre">dilation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.morphology.erosion"><code class="docutils literal notranslate"><span class="pre">erosion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.morphology.opening"><code class="docutils literal notranslate"><span class="pre">opening()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.morphology.closing"><code class="docutils literal notranslate"><span class="pre">closing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.morphology.tophat"><code class="docutils literal notranslate"><span class="pre">tophat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.morphology.bottomhat"><code class="docutils literal notranslate"><span class="pre">bottomhat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.morphology.find_perimeter"><code class="docutils literal notranslate"><span class="pre">find_perimeter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.morphology.remove_small_objects"><code class="docutils literal notranslate"><span class="pre">remove_small_objects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.morphology.remove_small_holes"><code class="docutils literal notranslate"><span class="pre">remove_small_holes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.morphology.remove_edge_objects"><code class="docutils literal notranslate"><span class="pre">remove_edge_objects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.morphology.remove_large_objects"><code class="docutils literal notranslate"><span class="pre">remove_large_objects()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.reconstruction.html">reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.restoration.html">restoration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.segmentation.html">segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.transform.html">transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.tree.html">tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.viewer.html">viewer</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyapr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="pyapr.html">pyapr</a></li>
+      <li class="breadcrumb-item active">morphology</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pyapr.morphology.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="morphology">
+<h1>morphology<a class="headerlink" href="#morphology" title="Permalink to this heading"></a></h1>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.morphology.dilation" title="pyapr.morphology.dilation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.morphology.dilation</span></code></a>(apr, parts[, ...])</p></td>
+<td><p>Apply morphological dilation (binary or grayscale) to an APR image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.morphology.erosion" title="pyapr.morphology.erosion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.morphology.erosion</span></code></a>(apr, parts[, ...])</p></td>
+<td><p>Apply morphological erosion (binary or grayscale) to an APR image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.morphology.opening" title="pyapr.morphology.opening"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.morphology.opening</span></code></a>(apr, parts[, ...])</p></td>
+<td><p>Apply morphological opening (erosion followed by dilation) to an APR image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.morphology.closing" title="pyapr.morphology.closing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.morphology.closing</span></code></a>(apr, parts[, ...])</p></td>
+<td><p>Apply morphological closing (dilation followed by erosion) to an APR image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.morphology.tophat" title="pyapr.morphology.tophat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.morphology.tophat</span></code></a>(apr, parts[, ...])</p></td>
+<td><p>Apply top-hat transform to an APR image by subtracting an opening of the image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.morphology.bottomhat" title="pyapr.morphology.bottomhat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.morphology.bottomhat</span></code></a>(apr, parts[, ...])</p></td>
+<td><p>Apply bottom-hat transform to an APR image by subtracting it from a closing of itself.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.morphology.find_perimeter" title="pyapr.morphology.find_perimeter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.morphology.find_perimeter</span></code></a>(apr, parts)</p></td>
+<td><p>Retain the value of particles with at least one zero face-side neighbor, setting remaining particles to 0.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.morphology.remove_small_objects" title="pyapr.morphology.remove_small_objects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.morphology.remove_small_objects</span></code></a>(apr, ...)</p></td>
+<td><p>Remove objects smaller than a threshold from an input label mask.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.morphology.remove_small_holes" title="pyapr.morphology.remove_small_holes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.morphology.remove_small_holes</span></code></a>(apr, ...)</p></td>
+<td><p>Remove holes smaller than a threshold from an input particle mask.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.morphology.remove_edge_objects" title="pyapr.morphology.remove_edge_objects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.morphology.remove_edge_objects</span></code></a>(apr, labels)</p></td>
+<td><p>Remove object labels that intersect with edges of the volume.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.morphology.remove_large_objects" title="pyapr.morphology.remove_large_objects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.morphology.remove_large_objects</span></code></a>(apr, ...)</p></td>
+<td><p>Remove objects larger than a threshold from an input label mask.</p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-pyapr.morphology"></span><dl class="py function">
+<dt class="sig sig-object py" id="pyapr.morphology.dilation">
+<span class="sig-prename descclassname"><span class="pre">pyapr.morphology.</span></span><span class="sig-name descname"><span class="pre">dilation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.morphology.dilation" title="Permalink to this definition"></a></dt>
+<dd><p>Apply morphological dilation (binary or grayscale) to an APR image. Only considers face-side neighbors
+(6-connectivity in 3D). If <code class="docutils literal notranslate"><span class="pre">radius</span> <span class="pre">&gt;</span> <span class="pre">1</span></code> the operation is repeated <code class="docutils literal notranslate"><span class="pre">radius</span></code> times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>binary</strong> (<em>bool</em>) – If <cite>True</cite>, apply binary dilation. Otherwise, grayscale dilation is used. (default: False)</p></li>
+<li><p><strong>radius</strong> (<em>int</em>) – Radius of the operation (the 6-connective operation is iterated <code class="docutils literal notranslate"><span class="pre">radius</span></code> times). (default: 1)</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – If <cite>True</cite>, the operation modifies the input <code class="docutils literal notranslate"><span class="pre">parts</span></code>. Otherwise, a copy of the input is used. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parts_copy</strong> – Output particle values of the same type as the input <code class="docutils literal notranslate"><span class="pre">parts</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.morphology.erosion">
+<span class="sig-prename descclassname"><span class="pre">pyapr.morphology.</span></span><span class="sig-name descname"><span class="pre">erosion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.morphology.erosion" title="Permalink to this definition"></a></dt>
+<dd><p>Apply morphological erosion (binary or grayscale) to an APR image. Only considers face-side neighbors
+(6-connectivity in 3D). If <code class="docutils literal notranslate"><span class="pre">radius</span> <span class="pre">&gt;</span> <span class="pre">1</span></code> the operation is repeated <code class="docutils literal notranslate"><span class="pre">radius</span></code> times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>binary</strong> (<em>bool</em>) – If <cite>True</cite>, apply binary erosion. Otherwise, grayscale erosion is used. (default: False)</p></li>
+<li><p><strong>radius</strong> (<em>int</em>) – Radius of the operation (the 6-connective operation is iterated <code class="docutils literal notranslate"><span class="pre">radius</span></code> times). (default: 1)</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – If <cite>True</cite>, the operation modifies the input <code class="docutils literal notranslate"><span class="pre">parts</span></code>. Otherwise, a copy of the input is used. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parts_copy</strong> – Output particle values of the same type as the input <code class="docutils literal notranslate"><span class="pre">parts</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.morphology.opening">
+<span class="sig-prename descclassname"><span class="pre">pyapr.morphology.</span></span><span class="sig-name descname"><span class="pre">opening</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.morphology.opening" title="Permalink to this definition"></a></dt>
+<dd><p>Apply morphological opening (erosion followed by dilation) to an APR image. Only considers face-side neighbors
+(6-connectivity in 3D). If <code class="docutils literal notranslate"><span class="pre">radius</span> <span class="pre">&gt;</span> <span class="pre">1</span></code> the erosion and dilation are repeated <code class="docutils literal notranslate"><span class="pre">radius</span></code> times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>binary</strong> (<em>bool</em>) – If <cite>True</cite>, binary erosion and dilation is used. Otherwise <code class="docutils literal notranslate"><span class="pre">min</span></code> and <code class="docutils literal notranslate"><span class="pre">max</span></code> operators are used. (default: False)</p></li>
+<li><p><strong>radius</strong> (<em>int</em>) – Radius of the erosion and dilation operations. The 6-connective operations are iterated <code class="docutils literal notranslate"><span class="pre">radius</span></code> times. (default: 1)</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – If <cite>True</cite>, the operation modifies the input <code class="docutils literal notranslate"><span class="pre">parts</span></code>. Otherwise, a copy of the input is used. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parts_copy</strong> – Output particle values of the same type as the input <code class="docutils literal notranslate"><span class="pre">parts</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.morphology.closing">
+<span class="sig-prename descclassname"><span class="pre">pyapr.morphology.</span></span><span class="sig-name descname"><span class="pre">closing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.morphology.closing" title="Permalink to this definition"></a></dt>
+<dd><p>Apply morphological closing (dilation followed by erosion) to an APR image. Only considers face-side neighbors
+(6-connectivity in 3D). If <code class="docutils literal notranslate"><span class="pre">radius</span> <span class="pre">&gt;</span> <span class="pre">1</span></code> the erosion and dilation are repeated <code class="docutils literal notranslate"><span class="pre">radius</span></code> times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>binary</strong> (<em>bool</em>) – If <cite>True</cite>, binary erosion and dilation is used. Otherwise <code class="docutils literal notranslate"><span class="pre">min</span></code> and <code class="docutils literal notranslate"><span class="pre">max</span></code> operators are used. (default: False)</p></li>
+<li><p><strong>radius</strong> (<em>int</em>) – Radius of the erosion and dilation operations. The 6-connective operations are iterated <code class="docutils literal notranslate"><span class="pre">radius</span></code> times. (default: 1)</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – If <cite>True</cite>, the operation modifies the input <code class="docutils literal notranslate"><span class="pre">parts</span></code>. Otherwise, a copy of the input is used. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parts_copy</strong> – Output particle values of the same type as the input <code class="docutils literal notranslate"><span class="pre">parts</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.morphology.tophat">
+<span class="sig-prename descclassname"><span class="pre">pyapr.morphology.</span></span><span class="sig-name descname"><span class="pre">tophat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.morphology.tophat" title="Permalink to this definition"></a></dt>
+<dd><p>Apply top-hat transform to an APR image by subtracting an opening of the image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>binary</strong> (<em>bool</em>) – Use binary opening? (default: False)</p></li>
+<li><p><strong>radius</strong> (<em>int</em>) – Radius of the opening operation. (default: 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – Output particle values of the same type as the input <code class="docutils literal notranslate"><span class="pre">parts</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.numerics.transform.opening</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.morphology.bottomhat">
+<span class="sig-prename descclassname"><span class="pre">pyapr.morphology.</span></span><span class="sig-name descname"><span class="pre">bottomhat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.morphology.bottomhat" title="Permalink to this definition"></a></dt>
+<dd><p>Apply bottom-hat transform to an APR image by subtracting it from a closing of itself.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>binary</strong> (<em>bool</em>) – Use binary closing? (default: False)</p></li>
+<li><p><strong>radius</strong> (<em>int</em>) – Radius of the closing operation. (default: 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – Output particle values of the same type as the input <code class="docutils literal notranslate"><span class="pre">parts</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.numerics.transform.closing</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.morphology.find_perimeter">
+<span class="sig-prename descclassname"><span class="pre">pyapr.morphology.</span></span><span class="sig-name descname"><span class="pre">find_perimeter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.morphology.find_perimeter" title="Permalink to this definition"></a></dt>
+<dd><p>Retain the value of particles with at least one zero face-side neighbor, setting remaining particles to 0.
+For example, if the input consists of object labels, the perimeter of each object is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>output</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em>, </em><em>optional</em>) – Output ParticleData object of the same type as <code class="docutils literal notranslate"><span class="pre">parts</span></code>. If not provided, or types do not match,
+a new object is generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>output</strong> – Particle set with “interior” values set to 0.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.morphology.remove_small_objects">
+<span class="sig-prename descclassname"><span class="pre">pyapr.morphology.</span></span><span class="sig-name descname"><span class="pre">remove_small_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.morphology.remove_small_objects" title="Permalink to this definition"></a></dt>
+<dd><p>Remove objects smaller than a threshold from an input label mask. Assumes that the background value is 0.</p>
+<p>Note: internally allocates a vector of size <code class="docutils literal notranslate"><span class="pre">labels.max()+1</span></code>. If <code class="docutils literal notranslate"><span class="pre">labels</span></code> contains large values, consider
+relabeling consecutively from 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>labels</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle label mask.</p></li>
+<li><p><strong>min_volume</strong> (<em>int</em>) – Remove objects smaller in volume than <code class="docutils literal notranslate"><span class="pre">min_volume</span></code> voxels.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – If True, the input <code class="docutils literal notranslate"><span class="pre">labels</span></code> are modified in-place. Otherwise, a copy is used. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>labels_copy</strong> – The mask with small objects removed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.morphology.remove_small_holes">
+<span class="sig-prename descclassname"><span class="pre">pyapr.morphology.</span></span><span class="sig-name descname"><span class="pre">remove_small_holes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.morphology.remove_small_holes" title="Permalink to this definition"></a></dt>
+<dd><p>Remove holes smaller than a threshold from an input particle mask. Assumes that the background value is 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>labels</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle mask.</p></li>
+<li><p><strong>min_volume</strong> (<em>int</em>) – Remove holes smaller in volume than <code class="docutils literal notranslate"><span class="pre">min_volume</span></code> voxels.</p></li>
+<li><p><strong>background_label</strong> (<em>int</em>) – Value of the background label (default: 0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – The mask with holes removed. If the input mask was binary, a binary mask is returned. Otherwise, connected
+components are recomputed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.morphology.remove_edge_objects">
+<span class="sig-prename descclassname"><span class="pre">pyapr.morphology.</span></span><span class="sig-name descname"><span class="pre">remove_edge_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.morphology.remove_edge_objects" title="Permalink to this definition"></a></dt>
+<dd><p>Remove object labels that intersect with edges of the volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>labels</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle label mask.</p></li>
+<li><p><strong>background_label</strong> (<em>int</em>) – Value of the background label (default: 0)</p></li>
+<li><p><strong>z_edges</strong> (<em>bool</em>) – If True, checks edges in the z dimension. (default: True)</p></li>
+<li><p><strong>x_edges</strong> (<em>bool</em>) – If True, checks edges in the x dimension. (default: True)</p></li>
+<li><p><strong>y_edges</strong> (<em>bool</em>) – If True, checks edges in the y dimension. (default: True)</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – If True, the input <code class="docutils literal notranslate"><span class="pre">labels</span></code> are modified in-place. Otherwise, a copy is used. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>labels_copy</strong> – The mask with objects on edges set to <code class="docutils literal notranslate"><span class="pre">background_label</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.morphology.remove_large_objects">
+<span class="sig-prename descclassname"><span class="pre">pyapr.morphology.</span></span><span class="sig-name descname"><span class="pre">remove_large_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyapr.morphology.remove_large_objects" title="Permalink to this definition"></a></dt>
+<dd><p>Remove objects larger than a threshold from an input label mask. Assumes that the background value is 0.</p>
+<p>Note: internally allocates a vector of size <code class="docutils literal notranslate"><span class="pre">labels.max()+1</span></code>. If <code class="docutils literal notranslate"><span class="pre">labels</span></code> contains large values, consider
+relabeling consecutively from 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>labels</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle label mask.</p></li>
+<li><p><strong>max_volume</strong> (<em>int</em>) – Remove objects larger in volume than <code class="docutils literal notranslate"><span class="pre">min_volume</span></code> voxels.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – If True, the input <cite>labels</cite> are modified in-place. Otherwise, a copy is used. (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>labels_copy</strong> – The mask with large objects removed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyapr.measure.html" class="btn btn-neutral float-left" title="measure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyapr.reconstruction.html" class="btn btn-neutral float-right" title="reconstruction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Joel Jonsson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
