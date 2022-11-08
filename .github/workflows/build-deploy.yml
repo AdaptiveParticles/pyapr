@@ -122,10 +122,7 @@ jobs:
       - name: Run cibuildwheel
         run: |
           git status
-          cd external/LibAPR && git status
-          cd vcpkg && git status
-          cd ../../..
-          #python3 -m cibuildwheel --output-dir ${{matrix.builddir}}
+          python3 -m cibuildwheel --output-dir ${{matrix.builddir}}
 
       - name: Upload wheels as artifacts
         uses: actions/upload-artifact@v3
