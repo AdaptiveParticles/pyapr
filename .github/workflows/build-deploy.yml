@@ -121,6 +121,7 @@ jobs:
 
       - name: Run cibuildwheel
         run: |
+          git status
           python3 -m cibuildwheel --output-dir ${{matrix.builddir}}
 
       - name: Upload wheels as artifacts
