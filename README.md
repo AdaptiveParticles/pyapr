@@ -6,7 +6,6 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/pyapr.svg?color=blue)]((https://python.org))
 [![PyPI](https://img.shields.io/pypi/v/pyapr.svg?color=green)](https://pypi.org/project/pyapr/)
 [![Downloads](https://static.pepy.tech/badge/pyapr)](https://pepy.tech/project/pyapr)
-![PowerShell Gallery](https://img.shields.io/powershellgallery/p/DNS.1.1.1.1)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7304045.svg)](https://doi.org/10.5281/zenodo.7304045)
 
 Documentation can be found [here](https://adaptiveparticles.github.io/pyapr/index.html).
