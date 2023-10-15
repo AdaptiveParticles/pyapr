@@ -70,6 +70,7 @@ PYBIND11_MODULE(APR_PYTHON_MODULE_NAME, m) {
     AddPyParticleData<float>(data_containers, "Float");
     AddPyParticleData<uint16_t>(data_containers, "Short");
     AddPyParticleData<uint64_t>(data_containers, "Long");
+    AddPyParticleData<int32_t>(data_containers, "Int");
 
     // wrap lazy classes
     AddLazyAccess(data_containers, "LazyAccess");

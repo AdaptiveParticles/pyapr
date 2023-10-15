@@ -1,6 +1,6 @@
-from _pyaprwrapper.data_containers import APR, ReconPatch, ByteParticles, ShortParticles, FloatParticles, LongParticles
+from _pyaprwrapper.data_containers import APR, ReconPatch, ByteParticles, ShortParticles, FloatParticles, LongParticles, IntParticles
 from _pyaprwrapper.tree import fill_tree_mean, fill_tree_max
-from ..utils import particles_to_type
+from ..utils import particles_to_type, type_to_particles
 from .._common import _check_input
 from . import reconstruct_constant, reconstruct_level, reconstruct_smooth
 import numpy as np
@@ -23,7 +23,7 @@ class APRSlicer:
     """
     def __init__(self,
                  apr: APR,
-                 parts: Union[ByteParticles, ShortParticles, LongParticles, FloatParticles],
+                 parts: Union[ByteParticles, ShortParticles, LongParticles, FloatParticles, IntParticles],
                  mode: str = 'constant',
                  level_delta: int = 0,
                  tree_mode: str = 'mean'):
@@ -66,6 +66,13 @@ class APRSlicer:
     @property
     def ndim(self):
         return 3
+    
+    def astype(self, typespec):
+        parts = type(type_to_particles(typespec))(np.array(self.parts).astype(typespec))
+        dtype = typespec
+        # self._slice = self._slice.astype(typespec)
+        # self.tree_mode
+        return APRSlicer(self.apr, parts, mode=self.mode, level_delta=self.patch.level_delta, tree_mode='max' if typespec is int else 'mean')
 
     def new_empty_slice(self):
         return np.zeros((self.patch.z_end-self.patch.z_begin,

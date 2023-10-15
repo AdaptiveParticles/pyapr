@@ -103,16 +103,19 @@ void AddFillTree(py::module &m) {
     bindFillTreeMean<uint16_t>(m);
     bindFillTreeMean<uint64_t>(m);
     bindFillTreeMean<float>(m);
+    bindFillTreeMean<int32_t>(m);
 
     bindFillTreeMin<uint8_t>(m);
     bindFillTreeMin<uint16_t>(m);
     bindFillTreeMin<uint64_t>(m);
     bindFillTreeMin<float>(m);
+    bindFillTreeMin<int32_t>(m);
 
     bindFillTreeMax<uint8_t>(m);
     bindFillTreeMax<uint16_t>(m);
     bindFillTreeMax<uint64_t>(m);
     bindFillTreeMax<float>(m);
+    bindFillTreeMax<int32_t>(m);
 
     bindSampleFromTree<uint8_t>(m);
     bindSampleFromTree<uint16_t>(m);
