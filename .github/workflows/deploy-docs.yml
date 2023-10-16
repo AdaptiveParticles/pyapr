@@ -32,7 +32,7 @@ jobs:
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
       EXTRA_CMAKE_ARGS: "-DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/external/LibAPR/vcpkg/scripts/buildsystems/vcpkg.cmake'"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: true
@@ -75,7 +75,7 @@ jobs:
 
       - name: Check file existence
         id: check_files
-        uses: andstor/file-existence-action@v1
+        uses: andstor/file-existence-action@v2
         with:
           files: "${{ env.VCPKG_ROOT }}/vcpkg"
 
