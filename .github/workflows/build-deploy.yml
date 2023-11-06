@@ -118,11 +118,6 @@ jobs:
           brew install libomp
           brew install c-blosc
           brew install hdf5
-      
-      - name: update debian
-        if: contains(matrix.os, 'ubuntu')
-        run: |
-          sudo echo "deb https://archive.debian.org/debian stretch main" > /etc/apt/sources.list
 
       - name: Run cibuildwheel
         run: |
