@@ -122,7 +122,7 @@ jobs:
       - name: update debian
         if: contains(matrix.os, 'ubuntu')
         run: |
-          echo "deb https://archive.debian.org/debian stretch main" > /etc/apt/sources.list
+          sudo echo "deb https://archive.debian.org/debian stretch main" > /etc/apt/sources.list
 
       - name: Run cibuildwheel
         run: |
