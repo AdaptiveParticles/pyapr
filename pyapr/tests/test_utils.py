@@ -7,6 +7,7 @@ import numpy as np
 def test_utils():
     assert isinstance(pyapr.utils.type_to_particles(np.uint8), pyapr.ByteParticles)
     assert isinstance(pyapr.utils.type_to_particles(np.uint16), pyapr.ShortParticles)
+    assert isinstance(pyapr.utils.type_to_particles(np.int32), pyapr.IntParticles)
     assert isinstance(pyapr.utils.type_to_particles(np.uint64), pyapr.LongParticles)
     assert isinstance(pyapr.utils.type_to_particles(np.float32), pyapr.FloatParticles)
 
@@ -17,6 +18,7 @@ def test_utils():
 
     assert pyapr.utils.particles_to_type(pyapr.ByteParticles()) is np.uint8
     assert pyapr.utils.particles_to_type(pyapr.ShortParticles()) is np.uint16
+    assert pyapr.utils.particles_to_type(pyapr.IntParticles()) is np.int32
     assert pyapr.utils.particles_to_type(pyapr.LongParticles()) is np.uint64
     assert pyapr.utils.particles_to_type(pyapr.FloatParticles()) is np.float32
 
@@ -29,7 +31,7 @@ def test_utils():
         pyapr.utils.particles_to_type(np.zeros(5, dtype=np.uint16))
 
     with pytest.raises(ValueError):
-        pyapr.utils.type_to_particles(np.int32)
+        pyapr.utils.type_to_particles(np.int64)
 
     with pytest.raises(ValueError):
         pyapr.utils.type_to_lazy_particles(np.float64)
