@@ -14,19 +14,10 @@ Content-adaptive storage and processing of large volumetric microscopy data usin
 
 The APR is an adaptive image representation designed primarily for large 3D fluorescence microscopy datasets. By replacing pixels with particles positioned according to the image content, it enables orders-of-magnitude compression of sparse image data while maintaining image quality. However, unlike most compression formats, the APR can be used directly in a wide range of processing tasks - even on the GPU!
 
-<div style="display: flex; justify-content: space-between">
-  <figure style="display: inline-flex; flex-direction: column; text-align: center; width: 45%; margin: auto;">
-    <figcaption style="font-size: 20px">Pixels</figcaption>
-    <img src="./docs/images/pix_joined.png" alt="Pixels">
-    <figcaption>Uniform sampling</figcaption>
-  </figure>
-
-  <figure style="display: inline-flex; flex-direction: column; text-align: center; width: 45%; margin: auto;">
-    <figcaption style="font-size: 20px">APR</figcaption>
-    <img src="./docs/images/apr_joined.png" alt="APR" title="APR adapts the sampling to the information content (bottom) while maintaining image quality (top)">
-    <figcaption>Adaptive sampling</figcaption>
-  </figure>
-</div>
+| Pixels | APR |
+| :--: | :--: |
+| ![img.png](./docs/images/pix_joined.png) | ![img.png](./docs/images/apr_joined.png) |
+| Uniform sampling | Adaptive sampling |
 
 *[image source](https://bbbc.broadinstitute.org/bbbc/BBBC032), 
 [illustration source](https://ieeexplore.ieee.org/abstract/document/9796006)*
