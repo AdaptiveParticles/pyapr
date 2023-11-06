@@ -48,14 +48,14 @@ jobs:
       CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
       CIBW_SKIP: "*musllinux*"
       CIBW_ARCHS: "auto64"
-      CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_28"
+      #CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_28"
       CIBW_BUILD_VERBOSITY: 1
       CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/matthew-brett/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
       CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "pip install -U wheel delvewheel && python fix_windows_wheel.py {wheel} {dest_dir}"
       CIBW_TEST_REQUIRES: "pytest pytest-qt pytest-xvfb"
       CIBW_TEST_COMMAND: "python3 -m pytest -vv {project}/pyapr/tests"
       CIBW_TEST_SKIP: "*-win_amd64"  # windows tests are run separately
-      CIBW_BEFORE_BUILD_LINUX: "dnf makecache && dnf install -y libtiff-devel hdf5-devel.x86_64"
+      CIBW_BEFORE_BUILD_LINUX: "dnf makecache && dnf install -y libtiff-devel hdf5-devel"
       CIBW_ENVIRONMENT_MACOS: CPPFLAGS="-I/usr/local/opt/llvm/include" LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib" CXX="/usr/local/opt/llvm/bin/clang++" CC="/usr/local/opt/llvm/bin/clang"
 
     steps:
