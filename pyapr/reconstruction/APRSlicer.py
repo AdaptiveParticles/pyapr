@@ -73,10 +73,7 @@ class APRSlicer:
     
     def astype(self, typespec):
         parts = type(type_to_particles(typespec))(np.array(self.parts).astype(typespec))
-        dtype = typespec
-        # self._slice = self._slice.astype(typespec)
-        # self.tree_mode
-        return APRSlicer(self.apr, parts, mode=self.mode, level_delta=self.patch.level_delta, tree_mode='max' if typespec is int else 'mean')
+        return APRSlicer(self.apr, parts, mode=self.mode, level_delta=self.patch.level_delta, tree_mode='max' if typespec in [int, np.int32, 'int', 'int32'] else 'mean')
 
     def new_empty_slice(self):
         return np.zeros((self.patch.z_end-self.patch.z_begin,
