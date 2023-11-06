@@ -81,7 +81,7 @@ pyapr.viewer.raycast_viewer(apr, parts)
 See the [demo scripts] for more examples.
 
 ## Installation
-For Windows 10, OSX, and Linux and Python versions 3.7-3.9 direct installation with OpenMP support should work via [pip]:
+For Windows 10, OSX, and Linux direct installation with OpenMP support should work via [pip]:
 ```
 pip install pyapr
 ```
