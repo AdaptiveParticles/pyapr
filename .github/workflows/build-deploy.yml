@@ -55,7 +55,7 @@ jobs:
       CIBW_TEST_REQUIRES: "pytest pytest-qt pytest-xvfb"
       CIBW_TEST_COMMAND: "python3 -m pytest -vv {project}/pyapr/tests"
       CIBW_TEST_SKIP: "*-win_amd64"  # windows tests are run separately
-      CIBW_BEFORE_BUILD_LINUX: "dnf makecache && dnf install -y libtiff-devel hdf5-devel"
+      CIBW_BEFORE_BUILD_LINUX: "yum makecache && yum install -y libtiff-devel hdf5-devel"
       CIBW_ENVIRONMENT_MACOS: CPPFLAGS="-I/usr/local/opt/llvm/include" LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib" CXX="/usr/local/opt/llvm/bin/clang++" CC="/usr/local/opt/llvm/bin/clang"
 
     steps:
