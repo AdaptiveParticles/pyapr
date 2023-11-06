@@ -67,6 +67,10 @@ class APRSlicer:
     def ndim(self):
         return 3
     
+    def __array__(self):
+        # allows things like np.max(APRSlicer)
+        return np.array(self.parts)
+    
     def astype(self, typespec):
         parts = type(type_to_particles(typespec))(np.array(self.parts).astype(typespec))
         dtype = typespec
