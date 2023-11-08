@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>filter &mdash; pyapr 1.0.6 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=e2a723ec"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="io" href="pyapr.io.html" />
+    <link rel="prev" title="data_containers" href="pyapr.data_containers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyapr
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Submodules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pyapr.html">pyapr</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pyapr.html#pyapr.cuda_enabled"><code class="docutils literal notranslate"><span class="pre">cuda_enabled()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.converter.html">converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.data_containers.html">data_containers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.filter.convolve"><code class="docutils literal notranslate"><span class="pre">convolve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.filter.correlate"><code class="docutils literal notranslate"><span class="pre">correlate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.filter.gradient"><code class="docutils literal notranslate"><span class="pre">gradient()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.filter.sobel"><code class="docutils literal notranslate"><span class="pre">sobel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.filter.gradient_magnitude"><code class="docutils literal notranslate"><span class="pre">gradient_magnitude()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.filter.sobel_magnitude"><code class="docutils literal notranslate"><span class="pre">sobel_magnitude()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.filter.std"><code class="docutils literal notranslate"><span class="pre">std()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.filter.median_filter"><code class="docutils literal notranslate"><span class="pre">median_filter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.filter.min_filter"><code class="docutils literal notranslate"><span class="pre">min_filter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.filter.max_filter"><code class="docutils literal notranslate"><span class="pre">max_filter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyapr.filter.get_gaussian_stencil"><code class="docutils literal notranslate"><span class="pre">get_gaussian_stencil()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.measure.html">measure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.morphology.html">morphology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.reconstruction.html">reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.restoration.html">restoration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.segmentation.html">segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.transform.html">transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.tree.html">tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.utils.html">utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyapr.viewer.html">viewer</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyapr</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="pyapr.html">pyapr</a></li>
+      <li class="breadcrumb-item active">filter</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pyapr.filter.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="filter">
+<h1>filter<a class="headerlink" href="#filter" title="Link to this heading"></a></h1>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.filter.convolve" title="pyapr.filter.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.filter.convolve</span></code></a>(apr, parts, stencil[, ...])</p></td>
+<td><p>Compute the spatial convolution between an APR image and a stencil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.filter.correlate" title="pyapr.filter.correlate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.filter.correlate</span></code></a>(apr, parts, stencil)</p></td>
+<td><p>Compute the spatial cross-correlation between an APR image and a stencil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.filter.gradient" title="pyapr.filter.gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.filter.gradient</span></code></a>(apr, parts[, dim, ...])</p></td>
+<td><p>Compute the particle gradient in a given dimension using central finite differences.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.filter.sobel" title="pyapr.filter.sobel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.filter.sobel</span></code></a>(apr, parts[, dim, delta, ...])</p></td>
+<td><p>Compute the particle gradient in a given dimension using the Sobel filter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.filter.gradient_magnitude" title="pyapr.filter.gradient_magnitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.filter.gradient_magnitude</span></code></a>(apr, parts)</p></td>
+<td><p>Compute the particle gradient magnitude using central finite differences.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.filter.sobel_magnitude" title="pyapr.filter.sobel_magnitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.filter.sobel_magnitude</span></code></a>(apr, parts[, ...])</p></td>
+<td><p>Compute the particle gradient magnitude using Sobel filters.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.filter.std" title="pyapr.filter.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.filter.std</span></code></a>(apr, parts, size[, output])</p></td>
+<td><p>Compute the local standard deviation in a neighborhood around each particle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.filter.median_filter" title="pyapr.filter.median_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.filter.median_filter</span></code></a>(apr, parts[, size])</p></td>
+<td><p>Apply median filter to an APR image and return a new set of particle values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.filter.min_filter" title="pyapr.filter.min_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.filter.min_filter</span></code></a>(apr, parts[, size])</p></td>
+<td><p>Apply minimum filter to an APR image and return a new set of particle values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyapr.filter.max_filter" title="pyapr.filter.max_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.filter.max_filter</span></code></a>(apr, parts[, size])</p></td>
+<td><p>Apply maximum filter to an APR image and return a new set of particle values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyapr.filter.get_gaussian_stencil" title="pyapr.filter.get_gaussian_stencil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyapr.filter.get_gaussian_stencil</span></code></a>(size, sigma)</p></td>
+<td><p>Naively generate a Gaussian stencil.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function" id="module-pyapr.filter">
+<dt class="sig sig-object py" id="pyapr.filter.convolve">
+<span class="sig-prename descclassname"><span class="pre">pyapr.filter.</span></span><span class="sig-name descname"><span class="pre">convolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stencil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restrict_stencil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rescale_stencil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_stencil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reflect_boundary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pencil'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a></span></span><a class="headerlink" href="#pyapr.filter.convolve" title="Link to this definition"></a></dt>
+<dd><p>Compute the spatial convolution between an APR image and a stencil. The output value at each particle
+location is computed by interpolating neighboring particle values to the resolution of the target particle
+and applying the stencil.</p>
+<p>The operation does not modify the sampling of the input APR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR object</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle values</p></li>
+<li><p><strong>stencil</strong> (<em>np.ndarray</em>) – Stencil or kernel to convolve with the image. Should be 3-dimensional and of type float32, otherwise
+it is converted and expanded, e.g. shape (3, 3) -&gt; (1, 3, 3).</p></li>
+<li><p><strong>output</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em>, </em><em>optional</em>) – Particle object to which the resulting values are written. If not provided, a new object
+is generated (default: None)</p></li>
+<li><p><strong>restrict_stencil</strong> (<em>bool</em>) – If True, the stencil is adapted to coarser resolution levels such that the convolution is consistent with
+applying <code class="docutils literal notranslate"><span class="pre">stencil</span></code> to the reconstructed pixel image. (default: True)</p></li>
+<li><p><strong>rescale_stencil</strong> (<em>bool</em>) – If True, the stencil is adapted to coarser resolution levels by rescaling the weights according to
+the distance between particles. Useful for, e.g., finite difference calculations. If both <code class="docutils literal notranslate"><span class="pre">rescale_stencil</span></code>
+and <code class="docutils literal notranslate"><span class="pre">restrict_stencil</span></code> are True, rescaling is used. (default: False)</p></li>
+<li><p><strong>normalize_stencil</strong> (<em>bool</em>) – If True, the stencil is normalized to sum to 1 (if <code class="docutils literal notranslate"><span class="pre">restrict_stencil</span></code> is True, the stencil is normalized
+at each resolution level. (default: True)</p></li>
+<li><p><strong>reflect_boundary</strong> (<em>bool</em>) – If True, values are reflected at the boundary. Otherwise, zero padding is used. (default: True)</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – <p>Method used to apply the operation:</p>
+<blockquote>
+<div><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'pencil'</span></code>: construct isotropic neighborhoods in a buffer of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'slice'</span></code>: construct isotropic neighborhoods in a buffer of shape (stencil.shape[0], apr.shape[1], apr.shape[2])</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'cuda'</span></code>: compute the convolution using the GPU. Requires the package to be built with CUDA support,
+and <code class="docutils literal notranslate"><span class="pre">stencil</span></code> to have shape (3, 3, 3) or (5, 5, 5).</p></li>
+</ul>
+</div></blockquote>
+<p>The methods may differ in performance, depending on the input data, but produce the same result. (default: ‘pencil’)</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>output</strong> – The convolution value at each particle location.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.filter.correlate">
+<span class="sig-prename descclassname"><span class="pre">pyapr.filter.</span></span><span class="sig-name descname"><span class="pre">correlate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stencil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restrict_stencil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rescale_stencil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_stencil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reflect_boundary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pencil'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a></span></span><a class="headerlink" href="#pyapr.filter.correlate" title="Link to this definition"></a></dt>
+<dd><p>Compute the spatial cross-correlation between an APR image and a stencil. The output value at each particle
+location is computed by interpolating neighboring particle values to the resolution of the target particle
+and applying the stencil.</p>
+<p>The operation does not modify the sampling of the input APR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR object</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle values</p></li>
+<li><p><strong>stencil</strong> (<em>np.ndarray</em>) – Stencil or kernel to correlate with the image. Should be 3-dimensional and of type float32, otherwise
+it is converted and expanded, e.g. shape (3, 3) -&gt; (1, 3, 3).</p></li>
+<li><p><strong>output</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em>, </em><em>optional</em>) – Particle object to which the resulting values are written. If not provided, a new object
+is generated (default: None)</p></li>
+<li><p><strong>restrict_stencil</strong> (<em>bool</em>) – If True, the stencil is adapted to coarser resolution levels such that the correlation is consistent with
+applying <code class="docutils literal notranslate"><span class="pre">stencil</span></code> to the reconstructed pixel image. (default: True)</p></li>
+<li><p><strong>rescale_stencil</strong> (<em>bool</em>) – If True, the stencil is adapted to coarser resolution levels by rescaling the weights according to
+the distance between particles. Useful for, e.g., finite difference calculations. If both <code class="docutils literal notranslate"><span class="pre">rescale_stencil</span></code>
+and <code class="docutils literal notranslate"><span class="pre">restrict_stencil</span></code> are True, rescaling is used. (default: False)</p></li>
+<li><p><strong>normalize_stencil</strong> (<em>bool</em>) – If True, the stencil is normalized to sum to 1 (if <code class="docutils literal notranslate"><span class="pre">restrict_stencil</span></code> is True, the stencil is normalized
+at each resolution level. (default: True)</p></li>
+<li><p><strong>reflect_boundary</strong> (<em>bool</em>) – If True, values are reflected at the boundary. Otherwise, zero padding is used. (default: True)</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – <p>Method used to apply the operation:</p>
+<blockquote>
+<div><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'pencil'</span></code>: construct isotropic neighborhoods in a buffer of shape (stencil.shape[0], stencil.shape[1], apr.shape[2])</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'slice'</span></code>: construct isotropic neighborhoods in a buffer of shape (stencil.shape[0], apr.shape[1], apr.shape[2])</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'cuda'</span></code>: compute the correlation using the GPU. Requires the package to be built with CUDA support,
+and <code class="docutils literal notranslate"><span class="pre">stencil</span></code> to have shape (3, 3, 3) or (5, 5, 5).</p></li>
+</ul>
+</div></blockquote>
+<p>The methods may differ in performance, depending on the input data, but produce the same result. (default: ‘pencil’)</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>output</strong> – The cross-correlation value at each particle location.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.filter.gradient">
+<span class="sig-prename descclassname"><span class="pre">pyapr.filter.</span></span><span class="sig-name descname"><span class="pre">gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a></span></span><a class="headerlink" href="#pyapr.filter.gradient" title="Link to this definition"></a></dt>
+<dd><p>Compute the particle gradient in a given dimension using central finite differences. The resulting values are
+scaled based on the particle resolution level, to account for varying distances across the domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>dim</strong> (<em>int</em>) – Dimension (axis) along which the gradient is computed (0 -&gt; y, 1 -&gt; x, 2 -&gt; z). (default: 0)</p></li>
+<li><p><strong>delta</strong> (<em>float</em>) – Voxel size in the dimension of interest, used to scale the gradients. (default: 1.0)</p></li>
+<li><p><strong>output</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em>, </em><em>optional</em>) – Particle object to which the resulting values are written. If not provided, a new object
+is generated. (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>output</strong> – The gradient value at each particle location.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.filter.sobel">
+<span class="sig-prename descclassname"><span class="pre">pyapr.filter.</span></span><span class="sig-name descname"><span class="pre">sobel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a></span></span><a class="headerlink" href="#pyapr.filter.sobel" title="Link to this definition"></a></dt>
+<dd><p>Compute the particle gradient in a given dimension using the Sobel filter. The resulting values are
+scaled based on the particle resolution level, to account for varying distances across the domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>dim</strong> (<em>int</em>) – Dimension (axis) along which the gradient is computed (0 -&gt; y, 1 -&gt; x, 2 -&gt; z). (default: 0)</p></li>
+<li><p><strong>delta</strong> (<em>float</em>) – Voxel size in the dimension of interest, used to scale the gradients. (default: 1.0)</p></li>
+<li><p><strong>output</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em>, </em><em>optional</em>) – Particle object to which the resulting values are written. If not provided, a new object
+is generated. (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>output</strong> – The gradient value at each particle location.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.filter.gradient_magnitude">
+<span class="sig-prename descclassname"><span class="pre">pyapr.filter.</span></span><span class="sig-name descname"><span class="pre">gradient_magnitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(1.0,</span> <span class="pre">1.0,</span> <span class="pre">1.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a></span></span><a class="headerlink" href="#pyapr.filter.gradient_magnitude" title="Link to this definition"></a></dt>
+<dd><p>Compute the particle gradient magnitude using central finite differences. The gradient values are
+scaled based on the particle resolution level, to account for varying distances across the domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>deltas</strong> (<em>tuple</em><em> or </em><em>list</em><em> of </em><em>length 3</em>) – Voxel size in dimensions (y, x, z) used to scale the gradients. (default: (1.0, 1.0, 1.0))</p></li>
+<li><p><strong>output</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em>, </em><em>optional</em>) – Particle object to which the resulting values are written. If not provided, a new object
+is generated. (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>output</strong> – The gradient magnitude at each particle location.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.filter.sobel_magnitude">
+<span class="sig-prename descclassname"><span class="pre">pyapr.filter.</span></span><span class="sig-name descname"><span class="pre">sobel_magnitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(1.0,</span> <span class="pre">1.0,</span> <span class="pre">1.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a></span></span><a class="headerlink" href="#pyapr.filter.sobel_magnitude" title="Link to this definition"></a></dt>
+<dd><p>Compute the particle gradient magnitude using Sobel filters. The gradient values are
+scaled based on the particle resolution level, to account for varying distances across the domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>deltas</strong> (<em>tuple</em><em> or </em><em>list</em><em> of </em><em>length 3</em>) – Voxel size in dimensions (y, x, z) used to scale the gradients. (default: (1.0, 1.0, 1.0))</p></li>
+<li><p><strong>output</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em>, </em><em>optional</em>) – Particle object to which the resulting values are written. If not provided, a new object
+is generated. (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>output</strong> – The Sobel gradient magnitude at each particle location.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.filter.std">
+<span class="sig-prename descclassname"><span class="pre">pyapr.filter.</span></span><span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a></span></span><a class="headerlink" href="#pyapr.filter.std" title="Link to this definition"></a></dt>
+<dd><p>Compute the local standard deviation in a neighborhood around each particle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – Input APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>size</strong> (<em>int</em><em>, </em><em>tuple</em><em>, </em><em>list</em>) – Size of the box in which standard deviations are computed. If a single integer is provided,
+considers a box of size <code class="docutils literal notranslate"><span class="pre">min(size,</span> <span class="pre">apr.shape[dim])</span></code> in each dimension. To use different sizes,
+give a list or tuple of length 3, specifying the size in dimensions (y, x, z)</p></li>
+<li><p><strong>output</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em>, </em><em>optional</em>) – Particle object to which the resulting values are written. If not provided, a new object
+is generated. (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>output</strong> – The local standard deviation values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.filter.median_filter">
+<span class="sig-prename descclassname"><span class="pre">pyapr.filter.</span></span><span class="sig-name descname"><span class="pre">median_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(5,</span> <span class="pre">5,</span> <span class="pre">5)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.filter.median_filter" title="Link to this definition"></a></dt>
+<dd><p>Apply median filter to an APR image and return a new set of particle values.
+Each output particle is the median of an isotropic neighborhood of the given size
+in the input image. At coarse resolutions, neighboring values at finer resolution
+are average downsampled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>size</strong> (<em>(</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>)</em>) – Size of the neighborhood in (z, x, y) dimensions.
+Allowed sizes are (x, x, x) and (1, x, x) for x in [3, 5, 7, 9, 11]. Default: (5, 5, 5)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>output</strong> – Median filtered particle values of the same type as the input particles.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.filter.min_filter">
+<span class="sig-prename descclassname"><span class="pre">pyapr.filter.</span></span><span class="sig-name descname"><span class="pre">min_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(5,</span> <span class="pre">5,</span> <span class="pre">5)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.filter.min_filter" title="Link to this definition"></a></dt>
+<dd><p>Apply minimum filter to an APR image and return a new set of particle values.
+Each output particle is the minimum of an isotropic neighborhood of the given size
+in the input image. At coarse resolutions, neighboring values at finer resolution
+are minimum downsampled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle values.</p></li>
+<li><p><strong>size</strong> (<em>(</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>)</em>) – Size of the neighborhood in (z, x, y) dimensions.
+Allowed values are (x, x, x) and (1, x, x) for x in [3, 5, 7, 9, 11]. Default: (5, 5, 5)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>output</strong> – Minimum filtered particle values of the same type as the input particles.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.filter.max_filter">
+<span class="sig-prename descclassname"><span class="pre">pyapr.filter.</span></span><span class="sig-name descname"><span class="pre">max_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="_pyaprwrapper.data_containers.APR"><span class="pre">APR</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="_pyaprwrapper.data_containers.ByteParticles"><span class="pre">ByteParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="_pyaprwrapper.data_containers.ShortParticles"><span class="pre">ShortParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="_pyaprwrapper.data_containers.FloatParticles"><span class="pre">FloatParticles</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="_pyaprwrapper.data_containers.LongParticles"><span class="pre">LongParticles</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(5,</span> <span class="pre">5,</span> <span class="pre">5)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.filter.max_filter" title="Link to this definition"></a></dt>
+<dd><p>Apply maximum filter to an APR image and return a new set of particle values.
+Each output particle is the minimum of an isotropic neighborhood of the given size
+in the input image. At coarse resolutions, neighboring values at finer resolution
+are maximum downsampled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>apr</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.APR" title="pyapr.data_containers.APR"><em>APR</em></a>) – APR data structure.</p></li>
+<li><p><strong>parts</strong> (<a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles"><em>ByteParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles"><em>ShortParticles</em></a><em>, </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles"><em>FloatParticles</em></a><em> or </em><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles"><em>LongParticles</em></a>) – Input particle values</p></li>
+<li><p><strong>size</strong> (<em>(</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>)</em>) – Size of the neighborhood in (z, x, y) dimensions.
+Allowed values are (x, x, x) and (1, x, x) for x in [3, 5, 7, 9, 11]. Default: (5, 5, 5)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>output</strong> – Maximum filtered particle values of the same type as the input particles.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ByteParticles" title="pyapr.data_containers.ByteParticles">ByteParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.ShortParticles" title="pyapr.data_containers.ShortParticles">ShortParticles</a>, <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.FloatParticles" title="pyapr.data_containers.FloatParticles">FloatParticles</a> or <a class="reference internal" href="pyapr.data_containers.html#pyapr.data_containers.LongParticles" title="pyapr.data_containers.LongParticles">LongParticles</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyapr.filter.get_gaussian_stencil">
+<span class="sig-prename descclassname"><span class="pre">pyapr.filter.</span></span><span class="sig-name descname"><span class="pre">get_gaussian_stencil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyapr.filter.get_gaussian_stencil" title="Link to this definition"></a></dt>
+<dd><p>Naively generate a Gaussian stencil.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyapr.data_containers.html" class="btn btn-neutral float-left" title="data_containers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyapr.io.html" class="btn btn-neutral float-right" title="io" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Joel Jonsson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
