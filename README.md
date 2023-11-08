@@ -16,7 +16,7 @@ The APR is an adaptive image representation designed primarily for large 3D fluo
 
 | Pixels | APR |
 | :--: | :--: |
-| ![img.png](./docs/images/pix_joined.png) | ![img.png](./docs/images/apr_joined.png) |
+| ![pixels.png](https://github.com/AdaptiveParticles/pyapr/raw/master/docs/images/pix_joined.png) | ![apr.png](https://github.com/AdaptiveParticles/pyapr/raw/master/docs/images/apr_joined.png) |
 | Uniform sampling | Adaptive sampling |
 
 *[image source](https://bbbc.broadinstitute.org/bbbc/BBBC032), 
@@ -47,7 +47,7 @@ apr, parts = pyapr.converter.get_apr(img)
 pyapr.io.write('my_image.apr', apr, parts)
 ```
 
-![img.png](./docs/images/apr_file.png)
+![apr_file.png](https://github.com/AdaptiveParticles/pyapr/raw/master/docs/images/apr_file.png)
 
 To return to the pixel representation:
 ```python
@@ -65,18 +65,18 @@ apr, parts = pyapr.io.read('my_image.apr')
 # launch viewer
 pyapr.viewer.parts_viewer(apr, parts)
 ```
-![img.png](./docs/images/view_apr.png)
+![view_apr.png](https://github.com/AdaptiveParticles/pyapr/raw/master/docs/images/view_apr.png)
 
 The `View Level` toggle allows you to see the adaptation (brighter = higher resolution).
 
-![img.png](./docs/images/view_level.png)
+![view_level.png](https://github.com/AdaptiveParticles/pyapr/raw/master/docs/images/view_level.png)
 
 Or view the result in 3D using APR-native maximum intensity projection raycast (cpu).
 ```python
 # launch raycast viewer
 pyapr.viewer.raycast_viewer(apr, parts)
 ```
-![img.png](./docs/images/raycast.png)
+![raycast.png](https://github.com/AdaptiveParticles/pyapr/raw/master/docs/images/raycast.png)
 
 See the [demo scripts] for more examples.
 
