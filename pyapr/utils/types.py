@@ -1,4 +1,4 @@
-from _pyaprwrapper.data_containers import ByteParticles, ShortParticles, FloatParticles, LongParticles, \
+from _pyaprwrapper.data_containers import ByteParticles, ShortParticles, FloatParticles, LongParticles, IntParticles, \
                                           LazyDataByte, LazyDataShort, LazyDataFloat, LazyDataLong
 import numpy as np
 from typing import Union
@@ -32,8 +32,10 @@ def type_to_particles(typespec: Union[str, type]) -> ParticleData:
         return ByteParticles()
     if typespec in ('uint64', np.uint64):
         return LongParticles()
+    if typespec in (int, 'int', 'int32', np.int32):
+        return IntParticles()
     raise ValueError(f'Type {typespec} is currently not supported. Valid types are \'uint8\', \'uint16\', '
-                     f'\'uint64\' and \'float\'')
+                     f'\'uint64\', \'int\' and \'float\'')
 
 
 def type_to_lazy_particles(typespec: Union[str, type]) -> LazyData:
@@ -87,4 +89,6 @@ def particles_to_type(parts: Union[ParticleData, LazyData]) -> type:
         return np.uint8
     if isinstance(parts, (LongParticles, LazyDataLong)):
         return np.uint64
+    if isinstance(parts, IntParticles):
+        return np.int32
     raise TypeError(f'Input must be of type {ParticleData} or {LazyData} ({type(parts)} was provided)')

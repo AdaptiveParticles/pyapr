@@ -45,21 +45,20 @@ jobs:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/external/LibAPR/vcpkg
       CIBW_ENVIRONMENT_WINDOWS: EXTRA_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=D:\\a\\pyapr\\pyapr\\external\\LibAPR\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake -DVCPKG_MANIFEST_DIR=D:\\a\\pyapr\\pyapr\\external\\LibAPR\\"
-      CIBW_BUILD: "cp36-* cp37-* cp38-* cp39-* cp310-*"
+      CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
       CIBW_SKIP: "*musllinux*"
       CIBW_ARCHS: "auto64"
-      CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_24"
       CIBW_BUILD_VERBOSITY: 1
-      CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip uninstall -y delocate && pip install git+https://github.com/Chia-Network/delocate.git && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
+      CIBW_REPAIR_WHEEL_COMMAND_MACOS: "pip install -U delocate && delocate-listdeps {wheel} && delocate-wheel -w {dest_dir} -v {wheel}"
       CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "pip install -U wheel delvewheel && python fix_windows_wheel.py {wheel} {dest_dir}"
       CIBW_TEST_REQUIRES: "pytest pytest-qt pytest-xvfb"
       CIBW_TEST_COMMAND: "python3 -m pytest -vv {project}/pyapr/tests"
       CIBW_TEST_SKIP: "*-win_amd64"  # windows tests are run separately
-      CIBW_BEFORE_BUILD_LINUX: "apt update && apt install -y libtiff5-dev libhdf5-dev"
+      CIBW_BEFORE_BUILD_LINUX: "yum makecache && yum install -y libtiff-devel hdf5-devel"
       CIBW_ENVIRONMENT_MACOS: CPPFLAGS="-I/usr/local/opt/llvm/include" LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib" CXX="/usr/local/opt/llvm/bin/clang++" CC="/usr/local/opt/llvm/bin/clang"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: true
@@ -109,7 +108,7 @@ jobs:
 
       - name: Install cibuildwheel
         run: |
-          python3 -m pip install cibuildwheel==2.5.0
+          python3 -m pip install cibuildwheel
 
       - name: Install OpenMP dependencies with brew for OSX
         if: contains(matrix.os,'macos')
@@ -139,11 +138,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows-latest ]
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: false
 

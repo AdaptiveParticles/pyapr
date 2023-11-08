@@ -275,11 +275,13 @@ void AddReconstruction(py::module &m) {
     bindReconstruct<uint16_t>(m);
     bindReconstruct<uint64_t>(m);
     bindReconstruct<float>(m);
+    bindReconstruct<int32_t>(m);
 
     bindReconstructPatch<uint8_t>(m);
     bindReconstructPatch<uint16_t>(m);
     bindReconstructPatch<uint64_t>(m);
     bindReconstructPatch<float>(m);
+    bindReconstructPatch<int32_t>(m);
 
     bindReconstructLazy<uint8_t>(m);
     bindReconstructLazy<uint16_t>(m);

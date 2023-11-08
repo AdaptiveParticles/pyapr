@@ -41,3 +41,14 @@ def test_reconstruction(mode, ndim):
 
         assert np.allclose(slicer[0], lazy_slicer[0])
         assert np.allclose(slicer[0, float(0), :], lazy_slicer[0, float(0), :])
+
+    assert np.max(slicer) == parts.max() == np.max(np.array(parts))
+
+    slicer = slicer.astype(np.float32)
+    assert isinstance(slicer.parts, pyapr.FloatParticles)
+
+    slicer = slicer.astype(int)
+    assert isinstance(slicer.parts, pyapr.IntParticles)
+
+    with pytest.raises(ValueError):
+        slicer = slicer.astype(np.int8)
