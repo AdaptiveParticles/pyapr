@@ -31,13 +31,19 @@ class DoubleSlider(QtWidgets.QSlider):
         super(DoubleSlider, self).setValue(int(value * self._multi))
 
     def setMinimum(self, value):
-        return super(DoubleSlider, self).setMinimum(value * self._multi)
+        # Convert the result to an integer to comply with the expected type
+        int_value = int(value * self._multi)
+        return super(DoubleSlider, self).setMinimum(int_value)
 
     def setMaximum(self, value):
-        return super(DoubleSlider, self).setMaximum(value * self._multi)
+        # Convert the result to an integer to comply with the expected type
+        int_value = int(value * self._multi)
+        return super(DoubleSlider, self).setMaximum(int_value)
 
     def setSingleStep(self, value):
-        return super(DoubleSlider, self).setSingleStep(value * self._multi)
+        # Convert the result to an integer to comply with the expected type
+        int_value = int(value * self._multi)
+        return super(DoubleSlider, self).setSingleStep(int_value)
 
     def singleStep(self):
         return float(super(DoubleSlider, self).singleStep()) / self._multi
@@ -116,7 +122,7 @@ class MainWindowImage(QtWidgets.QWidget):
 
         self.slider.valueChanged.connect(self.valuechange)
 
-        self.setGeometry(300, 300, self.full_size, self.full_size)
+        self.setGeometry(int(300),  int(300), self.full_size, self.full_size)
 
         self.layout.addWidget(self.slider, 1, 0)
 
@@ -352,7 +358,7 @@ class MainWindowImage(QtWidgets.QWidget):
         self.slider.setMinimum(0)
         self.slider.setMaximum(self.z_num - 1)
         self.slider.setTickPosition(QtWidgets.QSlider.TicksBothSides)
-        self.slider.setGeometry(0.05 * self.full_size, 0.97 * self.full_size, 0.95 * self.full_size, 40)
+        self.slider.setGeometry(int(0.05 * self.full_size), int(0.97 * self.full_size), int(0.95 * self.full_size), int(40))
 
         self.setLUT('viridis')
 

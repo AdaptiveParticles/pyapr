@@ -68,7 +68,7 @@ class CompressWindow(MainWindow):
         self.slider_q.move(200, 70)
         self.slider_q.connectSlider(self.valuechangeQ)
         self.slider_q.maxBox.setValue(20)
-        self.slider_q.slider.setSingleStep(0.1)
+        self.slider_q.slider.setSingleStep(int(1))
 
         self.slider_B = CustomSlider(self, "background")
         self.slider_B.move(200, 100)

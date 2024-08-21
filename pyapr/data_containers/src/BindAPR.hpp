@@ -16,6 +16,21 @@ namespace py = pybind11;
 
 PYBIND11_MAKE_OPAQUE(std::vector<APR*>)
 
+
+auto _get_y_vec = [](APR& apr) -> py::array {
+    return py::array_t<uint16>(apr.linearAccess.y_vec.size(), apr.linearAccess.y_vec.begin());
+};
+
+auto _get_xz_end_vec = [](APR& apr) -> py::array {
+    return py::array_t<uint64>(apr.linearAccess.xz_end_vec.size(), apr.linearAccess.xz_end_vec.begin());
+};
+
+auto _get_level_xz_vec = [](APR& apr) -> py::array {
+    return py::array_t<uint64>(apr.linearAccess.level_xz_vec.size(), apr.linearAccess.level_xz_vec.begin());
+};
+
+
+
 void AddAPR(pybind11::module &m, const std::string &modulename) {
 
     using namespace py::literals;
@@ -38,7 +53,10 @@ void AddAPR(pybind11::module &m, const std::string &modulename) {
             .def("org_dims", &APR::org_dims, "returns the original image size in a specified dimension (y, x, z)" , "dim"_a)
             .def("shape", [](APR& self){return py::make_tuple(self.org_dims(2), self.org_dims(1), self.org_dims(0));}, "returns the original pixel image dimensions as a tuple (z, x, y)")
             .def("get_parameters", &APR::get_apr_parameters, "return the parameters used to create the APR")
-            .def("computational_ratio", &APR::computational_ratio, "return the computational ratio (number of pixels in original image / number of particles in the APR)");
+            .def("computational_ratio", &APR::computational_ratio, "return the computational ratio (number of pixels in original image / number of particles in the APR)")
+            .def("get_y_vec", _get_y_vec, "return linearAccess y_vec as a numpy array")
+            .def("get_xz_end_vec", _get_xz_end_vec, "return linearAccess xz_end_vec as a numpy array")
+            .def("get_level_xz_vec", _get_level_xz_vec, "return linearAccess level_xz_vec as a numpy array");
 
     py::bind_vector<std::vector<APR*>>(m, "APRPtrVector", py::module_local(false));
 }
