@@ -46,7 +46,10 @@ jobs:
         run: git submodule update --init --recursive
 
       # Setup the build machine with the most recent versions of CMake and Ninja. Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
+      # Pin to CMake 3.x: the vcpkg submodule in LibAPR is too old to work with CMake 4.x
       - uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: "~3.31.0"
       # Restore both vcpkg and its artifacts from the GitHub cache service.
       - name: Restore vcpkg and its artifacts.
         uses: actions/cache@v3

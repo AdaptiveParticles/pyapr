@@ -48,6 +48,9 @@ class CMakeBuild(build_ext):
             "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(extdir),
             "-DPython_EXECUTABLE={}".format(sys.executable),
             "-DCMAKE_BUILD_TYPE={}".format(build_type),  # not used on MSVC, but no harm
+            # Allow old pybind11 submodule (cmake_minimum_required VERSION 3.4)
+            # to work with CMake 4.x which dropped <3.5 compat.
+            "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
         ]
 
         # Pass CMake arguments via the environment variable 'EXTRA_CMAKE_ARGS'

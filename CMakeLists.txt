@@ -9,6 +9,31 @@ option(PYAPR_USE_OPENMP "Use OpenMP for PyAPR functionality" ON)
 option(PYAPR_USE_CUDA "Use CUDA for PyAPR functionality" OFF)
 option(PYAPR_PREFER_EXTERNAL_LIBAPR "Use installed LibAPR rather than building from submodules" OFF)
 
+###############################################################################
+# macOS: hint OpenMP to Homebrew's libomp BEFORE any subdirectories so that
+# both LibAPR and the pyapr wrapper can find it.  Apple Clang does not bundle
+# OpenMP; Homebrew's libomp provides it on both Intel and arm64 Macs.
+###############################################################################
+if(APPLE AND PYAPR_USE_OPENMP)
+    find_program(BREW_EXECUTABLE brew)
+    if(BREW_EXECUTABLE)
+        execute_process(
+            COMMAND ${BREW_EXECUTABLE} --prefix libomp
+            OUTPUT_VARIABLE LIBOMP_PREFIX
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+        if(LIBOMP_PREFIX AND EXISTS "${LIBOMP_PREFIX}")
+            message(STATUS "PyAPR: Found Homebrew libomp at ${LIBOMP_PREFIX}")
+            set(OpenMP_C_FLAGS   "-Xpreprocessor -fopenmp -I${LIBOMP_PREFIX}/include" CACHE STRING "" FORCE)
+            set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${LIBOMP_PREFIX}/include" CACHE STRING "" FORCE)
+            set(OpenMP_C_LIB_NAMES   "omp" CACHE STRING "" FORCE)
+            set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "" FORCE)
+            set(OpenMP_omp_LIBRARY "${LIBOMP_PREFIX}/lib/libomp.dylib" CACHE FILEPATH "" FORCE)
+        endif()
+    endif()
+endif()
+
 ##------------- Required libraries -------------##
 find_package(HDF5 REQUIRED)
 find_package(ZLIB REQUIRED)
